@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Programa Interactivo del Seminario v2.6 (Corregido)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibVc7AyX+KcrEkCRIR7JBUA/qkOdXsmw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+    <div id="seminar-container">
+        <div class="sticky-header">
+            <div class="header">
+                <h1>Programa Interactivo del Seminario</h1>
+                <p>Explora las sesiones. Utiliza la búsqueda o los filtros para navegar el programa.</p>
+                <div class="header-info">Este programa se actualiza en tiempo real desde la base de datos del comité.</div>
+                <div class="controls-wrapper">
+                    <div class="search-controls">
+                        <div class="search-input-wrapper">
+                            <input type="text" id="searchId" placeholder="Buscar por ID, Título o Autor..." aria-label="Buscar" />
+                            <button id="clear-search-inline-btn" class="clear-search-btn" title="Borrar búsqueda">
+                                &times;
+                            </button>
+                        </div>
+                        <button class="btn primary" onclick="buscar()">Buscar</button>
+                        <button class="btn" onclick="limpiarBusqueda()">Limpiar</button>
+                    </div>
+                    <div class="filter-controls">
+                        <div class="filter-group" id="filter-type">
+                            <button class="btn active" data-type="all">Todos</button>
+                            <button class="btn" data-type="simposio">Simposios</button>
+                            <button class="btn" data-type="ponencia">Ponencias</button>
+                        </div>
+                        <select id="filter-sala" aria-label="Filtrar por sala"></select>
+                        <select id="filter-horario" aria-label="Filtrar por horario"></select>
+                        <button id="reset-filters" class="btn">Reiniciar</button>
+                        <button id="copy-link" class="btn">Copiar Enlace</button>
+                    </div>
+                </div>
+            </div>
+            <div id="status-bar"></div>
+            <div id="tab-container" class="tab-container"></div>
+        </div>
+        <div id="loading-state" style="padding: 40px; text-align: center; font-size: 1.2em;">Cargando programa oficial...</div>
+        <div id="schedule-wrapper" style="display: none;"><div id="schedule-content"></div></div>
+        <div id="program-summary-footer"></div>
+    </div>
+
+    <script src="src/js/script.js"></script>
+</body>
+</html>

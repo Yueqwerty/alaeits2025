@@ -461,14 +461,13 @@ body {
     position: sticky;
     left: 0;
     z-index: 15;
-    width: var(--sala-header-width); /* Utiliza la variable ajustada */
+    width: var(--sala-header-width);
     min-height: 100%;
     font-size: 1.1em;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-    /* === NUEVOS ESTILOS PARA TEXTO VERTICAL === */
-    writing-mode: vertical-lr; /* Escribe el texto de arriba a abajo, de izquierda a derecha */
-    text-orientation: sideways; /* Orienta los caracteres para lectura lateral */
-    white-space: nowrap; /* Evita que el texto se rompa en varias líneas si es muy largo */
+    writing-mode: vertical-lr; 
+    text-orientation: sideways; 
+    white-space: nowrap;
     font-size: 0.95em;
   }
   .time-header-wrapper {

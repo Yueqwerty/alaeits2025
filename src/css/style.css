@@ -181,7 +181,7 @@ body {
 
 .program-section {
     padding-top: 8rem;
-    padding-bottom: 2rem;
+    padding-bottom: 12vh;
     background-color: var(--color-surface);
     display: flex;
     flex-direction: column;

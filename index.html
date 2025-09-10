@@ -9,15 +9,33 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <!-- ===== INICIO DE LOS CAMBIOS ===== -->
+    <!-- ===== INICIO DE LA RESTAURACIÓN ===== -->
 
-    <!-- 1. Enlace al CSS de Tailwind generado -->
-    <link href="/dist/output.css" rel="stylesheet">
-        
-    <!-- 2. Tu hoja de estilos personal (Asegúrate que esté DESPUÉS de la de Tailwind) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Montserrat', 'sans-serif'] },
+                    colors: {
+                        'primary': '#C8102E',    // Rojo
+                        'secondary': '#0033A0',  // Azul marino
+                        'background': '#FDF9F3', // Crema
+                        'text-dark': '#002147',   // Azul oscuro texto
+                        'text-light': '#6B7280', // Gris
+                        'favorite': '#F59E0B',   // Amarillo/Dorado
+                    },
+                    borderRadius: { 'card': '16px' },
+                }
+            }
+        }
+    </script>
+    
+    <!-- ===== FIN DE LA RESTAURACIÓN ===== -->
+
     <link rel="stylesheet" href="src/css/style.css"> 
-
-    <!-- ===== FIN DE LOS CAMBIOS (Todo lo demás fue eliminado) ===== -->
 
 </head>
 
@@ -27,6 +45,9 @@
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#" class="logo">ALAEITS 2025</a>
             <nav class="hidden md:flex items-center space-x-8">
+                <a href="https://www.alaeits2025.cl/" target="_blank" rel="noopener noreferrer" class="nav-link">
+                Inicio
+            </a>
                 <a href="#programa" class="nav-link">Programa</a>
             </nav>
         </div>

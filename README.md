@@ -11,6 +11,7 @@ Este proyecto es una aplicación web interactiva y responsiva diseñada para vis
 - **Exportación a Imagen:** Permite a los usuarios capturar una tarjeta de sesión como una imagen PNG para compartirla fácilmente.
 - **Navegación por Días:** Organiza el programa en pestañas por cada día del evento.
 - **Compartir Vista:** Genera un enlace único para compartir la vista filtrada actual.
+- **Resumen del Programa:** Muestra estadísticas del total de ponencias y simposios.
 
 ## Despliegue
 

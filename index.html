@@ -3,88 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seminario ALAEITS 2025 - Santiago, Chile</title>
+    <title>Seminario ALAEITS 2025</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="src/css/style.css">
+    
+    <!-- Configuración de Tailwind con tu paleta de colores pastel -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#e040fb',   // Morado/Magenta
+                        'secondary': '#ff80ab', // Rosado
+                        'text-dark': '#3c1844',  // Púrpura oscuro
+                        'text-light': '#7a5c83',
+                        'surface': '#ffffff',
+                        'favorite': '#ffc107',
+                    },
+                    borderRadius: {
+                        'card': '16px',
+                    },
+                    boxShadow: {
+                        'card': '0 10px 30px rgba(224, 64, 251, 0.15)',
+                        'card-hover': '0 15px 40px rgba(224, 64, 251, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <header class="main-header">
-        <div class="container">
-            <a href="#" class="logo">ALAEITS 2025</a>
-            <nav class="main-nav">
-                <a href="#info">Información</a>
-                <a href="#programa">Programa</a>
-                <a href="https://www.alaeits2025.cl/inscripciones-2/" target="_blank" class="nav-cta">Inscríbete</a>
+
+<body class="body-gradient font-sans">
+
+    <header class="fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-6 py-5 flex justify-between items-center bg-white/10 backdrop-blur-xl rounded-b-2xl">
+            <a href="#" class="text-xl font-bold text-text-dark">ALAEITS 2025</a>
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="#programa" class="font-bold text-text-dark hover:text-primary transition-colors">Información</a>
+                <a href="#programa" class="font-bold text-text-dark hover:text-primary transition-colors">Programa</a>
             </nav>
         </div>
     </header>
 
     <main>
-        <section class="hero-section">
-            <div class="animated-bg"></div>
-            <div class="container">
-                <h1 class="hero-title" data-animate><span>Seminario</span><span>ALAEITS</span><span>2025</span></h1>
-                <div class="hero-info" data-animate>
-                    <p>SANTIAGO / CHILE</p>
-                    <span class="separator"></span>
-                    <p>13 AL 15 DE OCTUBRE</p>
-                </div>
-            </div>
+        <!-- Hero Section -->
+        <section class="min-h-screen flex flex-col justify-center items-center text-center px-6 pt-24 pb-12">
+            <h1 class="text-6xl sm:text-7xl md:text-9xl font-black text-text-dark uppercase tracking-tighter leading-none" data-animate>
+                SEMINARIO<br>ALAEITS<br>2025
+            </h1>
+            <p class="text-lg font-bold text-text-dark mt-6 tracking-widest" data-animate>
+                SANTIAGO / CHILE <span class="text-primary mx-2">&#9679;</span> 13 AL 15 DE OCTUBRE
+            </p>
         </section>
 
-        <section class="marquee">
+        <!-- Marquee Section -->
+        <section class="marquee-gradient py-6 md:py-8 text-3xl md:text-5xl font-bold text-white whitespace-nowrap overflow-hidden">
             <div class="marquee-content">
-                <span>CRISIS CIVILIZATORIA</span><span class="star-icon">&#10022;</span>
-                <span>LUCHAS CONTRA-HEGEMÓNICAS</span><span class="star-icon">&#10022;</span>
-                <span>PROYECTOS EMANCIPATORIOS</span><span class="star-icon">&#10022;</span>
-                <span>CRISIS CIVILIZATORIA</span><span class="star-icon">&#10022;</span>
-                <span>LUCHAS CONTRA-HEGEMÓNICAS</span><span class="star-icon">&#10022;</span>
-                <span>PROYECTOS EMANCIPATORIOS</span><span class="star-icon">&#10022;</span>
-                <!-- Duplicated content for seamless loop -->
-                <span>CRISIS CIVILIZATORIA</span><span class="star-icon">&#10022;</span>
-                <span>LUCHAS CONTRA-HEGEMÓNICAS</span><span class="star-icon">&#10022;</span>
-                <span>PROYECTOS EMANCIPATORIOS</span><span class="star-icon">&#10022;</span>
-                <span>CRISIS CIVILIZATORIA</span><span class="star-icon">&#10022;</span>
-                <span>LUCHAS CONTRA-HEGEMÓNICAS</span><span class="star-icon">&#10022;</span>
-                <span>PROYECTOS EMANCIPATORIOS</span><span class="star-icon">&#10022;</span>
+                <span class="mx-8">PROYECTOS EMANCIPATORIOS</span><span class="text-white/50 mx-8">+</span>
+                <span class="mx-8">CRISIS CIVILIZATORIA</span><span class="text-white/50 mx-8">+</span>
+                <span class="mx-8">LUCHAS CONTRA-HEGEMÓNICAS</span><span class="text-white/50 mx-8">+</span>
+                <!-- Contenido duplicado para un bucle perfecto -->
+                <span class="mx-8">PROYECTOS EMANCIPATORIOS</span><span class="text-white/50 mx-8">+</span>
+                <span class="mx-8">CRISIS CIVILIZATORIA</span><span class="text-white/50 mx-8">+</span>
+                <span class="mx-8">LUCHAS CONTRA-HEGEMÓNICAS</span><span class="text-white/50 mx-8">+</span>
             </div>
         </section>
 
-        <section id="info" class="info-section">
-            <div class="container" data-animate>
-                <h2>Crisis civilizatoria, luchas contra hegemónicas y proyectos emancipatorios.</h2>
-                <a href="https://www.alaeits2025.cl/inscripciones-2/" class="btn-primary" target="_blank">FORMALIZA TU INSCRIPCIÓN</a>
-            </div>
-        </section>
-
-        <section id="programa" class="program-section">
-            <div class="container">
-                <h2 class="section-title" data-animate>Programa del Evento</h2>
-                <div id="program-tabs" class="program-tabs" data-animate>
-                    <!-- Pestañas de días generadas por JS -->
+        <!-- Sección del Programa (sin cambios en la estructura interna) -->
+        <section id="programa" class="py-20 md:py-28 bg-surface">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl md:text-5xl font-black text-text-dark text-center mb-12" data-animate>Programa del Evento</h2>
+                
+                <div class="bg-surface/50 backdrop-blur-lg p-4 sm:p-6 rounded-card shadow-card mb-12 sticky top-24 z-40" data-animate>
+                    <div class="grid grid-cols-1 lg:grid-cols-6 gap-4">
+                        <input type="text" id="program-search-input" placeholder="Buscar..." class="lg:col-span-2 filter-input">
+                        <select id="filter-type" class="filter-input"><option value="all">Todo Tipo</option></select>
+                        <select id="filter-sala" class="filter-input"><option value="all">Todas las Salas</option></select>
+                        <select id="filter-horario" class="filter-input"><option value="all">Todos Horarios</option></select>
+                        <button id="reset-filters" class="filter-button">Limpiar</button>
+                    </div>
                 </div>
-                <div id="program-content" class="program-content" data-animate>
-                    <!-- Contenido de los días generado por JS -->
+
+                <div id="program-tabs" class="flex justify-center border-b border-black/10 mb-12" data-animate></div>
+                
+                <div id="program-content" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"></div>
+                <div id="favorites-view" class="hidden"></div>
+                
+                <div id="no-results" class="hidden text-center py-16" data-animate>
+                    <p class="text-2xl font-semibold text-text-light">No se encontraron resultados</p>
                 </div>
             </div>
         </section>
     </main>
-
-    <footer class="main-footer">
-        <div class="container">
-            <p>&copy; 2024 Seminario ALAEITS 2025. Todos los derechos reservados.</p>
-        </div>
-    </footer>
-
-    <div id="details-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button id="modal-close-btn" class="modal-close">&times;</button>
-            <div id="modal-body"></div>
-        </div>
-    </div>
-
+    
     <script src="src/js/script.js"></script>
 </body>
 </html>

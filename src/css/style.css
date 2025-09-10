@@ -108,7 +108,7 @@ body {
 }
 
 .hero-logo {
-    max-height: 560px; /* Puedes ajustar este tamaño */
+    max-height: 360px;
     margin-bottom: 2rem;
 }
 
@@ -180,10 +180,11 @@ body {
 }
 
 .program-section {
-    padding: 5rem 0;
+    padding: 2rem 0;
     background-color: var(--color-surface);
-    position: relative;
-    overflow: hidden;
+    flex-grow: 1;
+    display: flex;
+    min-height: 0;
 }
 
 .program-section::before {
@@ -210,19 +211,19 @@ body {
     font-weight: 900;
     color: var(--color-text-dark);
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
+    flex-shrink: 0;
 }
 
 .filter-bar-wrapper {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(12px);
     padding: 1rem;
     border-radius: var(--radius-card);
     box-shadow: 0 10px 30px rgba(0, 33, 71, 0.08);
-    margin-bottom: 3rem;
-    position: sticky;
-    top: 5rem;
+    margin-bottom: 1.5rem;
     z-index: 40;
+    flex-shrink: 0;
 }
 
 .filter-bar {
@@ -285,6 +286,14 @@ body {
     margin-bottom: 3rem;
 }
 
+.program-scroll-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    margin: 0 -1rem;
+    min-height: 0;
+}
+
 .tab-button {
     font-size: 1.125rem;
     font-weight: 700;
@@ -299,7 +308,7 @@ body {
 .tab-button::after {
     content: '';
     position: absolute;
-    bottom: -4px; /* Align with border-bottom */
+    bottom: -4px;
     left: 0;
     width: 100%;
     height: 4px;
@@ -356,7 +365,7 @@ body {
 }
 
 .program-scroll-container {
-    flex: 1; /* Abreviatura para flex-grow: 1, flex-shrink: 1, flex-basis: 0% */
+    flex: 1;
     min-height: 0; 
     overflow-y: auto;
     padding: 1rem;

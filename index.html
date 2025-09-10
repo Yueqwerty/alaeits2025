@@ -20,9 +20,12 @@
                 extend: {
                     fontFamily: { sans: ['Montserrat', 'sans-serif'] },
                     colors: {
-                        'primary': '#C8102E', 'secondary': '#0033A0',
-                        'background': '#FDF9F3', 'text-dark': '#002147',
-                        'text-light': '#6B7280', 'favorite': '#F59E0B',
+                        'primary': '#C8102E',    // Rojo
+                        'secondary': '#0033A0',  // Azul marino
+                        'background': '#FDF9F3', // Crema
+                        'text-dark': '#002147',   // Azul oscuro texto
+                        'text-light': '#6B7280', // Gris
+                        'favorite': '#F59E0B',   // Amarillo/Dorado
                     },
                     borderRadius: { 'card': '16px' },
                 }
@@ -47,6 +50,10 @@
             <div class="hero-content">
                 <h1 class="hero-title">XXIV SEMINARIO<br>ALAEITS 2025</h1>
             </div>
+            <div class="geo-layer layer-1"></div>
+            <div class="geo-layer layer-2"></div>
+            <div class="geo-layer layer-3"></div>
+            <div class="geo-layer layer-4"></div>
         </section>
 
         <section class="marquee">
@@ -89,13 +96,15 @@
 
     <footer class="main-footer">
         <div class="container mx-auto px-6 text-center">
-            <img src="src/assets/images/logo-100-anios.png" alt="Logo 100 Años Trabajo Social de América Latina" class="footer-logo">
+            <div class="footer-logos">
+                <img src="src/assets/images/logo-100-anios.png" alt="Logo 100 Años Trabajo Social de América Latina" class="footer-logo">
+                <img src="src/assets/images/logo-xxiv-seminario.png" alt="Logo XXIV Seminario ALAEITS" class="footer-logo logo-alt">
+            </div>
             <p class="footer-text">Crisis civilizatoria, luchas contra hegemónicas y proyectos emancipatorios.</p>
             <p class="footer-copy">&copy; 2025 Seminario ALAEITS. Todos los derechos reservados.</p>
         </div>
     </footer>
     
-    <!-- Contenedor para notificaciones Toast -->
     <div id="toast-container" class="toast-container"></div>
 
     <script src="src/js/script.js"></script>

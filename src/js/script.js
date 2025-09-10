@@ -1,12 +1,9 @@
 /**
  * @file ALAEITS 2025 - Lógica del Programa Interactivo
- * @description Gestiona la carga, filtrado y renderizado del programa del evento desde un CSV,
- *              implementando un sistema de favoritos y un diseño de componentes basado en CSS.
  */
 document.addEventListener('DOMContentLoaded', () => {
 
     const App = {
-        // --- Configuración y Estado de la Aplicación ---
         masterScheduleURL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTeiEquNfK-SqUuAjFui6V6oIOiZPt4rA71hLATqU1h_8HlseDHuBpjW4sm3b0Q5APziFZ7wk9PQG5E/pub?output=csv",
         fullSchedule: [],
         favorites: [],
@@ -16,12 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
             'martes 14 de octubre': { nombreVisible: 'Martes 14' },
             'miércoles 15 de octubre': { nombreVisible: 'Miércoles 15' }
         },
-        elements: {}, // Cache para elementos del DOM
+        elements: {},
         LOCAL_STORAGE_KEY: 'alaeitsFavorites_v4',
 
-        /**
-         * Punto de entrada principal de la aplicación.
-         */
         init() {
             this.cacheElements();
             this.setupControls();
@@ -29,9 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
             this.setupScrollListener();
         },
         
-        /**
-         * Almacena referencias a los elementos del DOM para un acceso más rápido.
-         */
         cacheElements() {
             this.elements = {
                 header: document.querySelector('.main-header'),
@@ -49,9 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         },
 
-        /**
-         * Obtiene, parsea y procesa los datos del CSV para inicializar el programa.
-         */
         async fetchAndProcessData() {
             try {
                 this.loadFavorites();
@@ -68,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.elements.programContent.innerHTML = `<p class="col-span-full text-center">${error.message}</p>`;
             }
         },
-
+        
         parseCSV(text) {
             const headers = text.slice(0, text.indexOf('\n')).trim().split(',');
             const rows = text.slice(text.indexOf('\n') + 1).trim().split('\n');
@@ -82,10 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         },
 
-        /**
-         * Transforma los datos del CSV en una lista plana de ponencias individuales,
-         * donde cada ponencia hereda el contexto de su mesa (sala, horario, etc.).
-         */
         processData(data) {
             const mesas = {};
             data.forEach(row => {
@@ -137,7 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
             this.elements.favoritesView.classList.add('hidden');
             this.elements.programContent.classList.remove('hidden');
 
-            if (this.currentDay === 'favoritos') { this.renderFavorites(); return; }
+            if (this.currentDay === 'favoritos') {
+                this.renderFavorites();
+                return;
+            }
             
             const filteredData = this.fullSchedule.filter(p => this.filterPonencia(p));
             
@@ -152,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const typeClass = ponencia.esSimposio ? 'is-simposio' : 'is-ponencia';
             const moderadorName = ponencia.autores?.[0] || 'N/A';
             const searchQuery = this.currentFilters.search;
-
             const titulo = searchQuery ? this.highlightText(ponencia.titulo, searchQuery) : ponencia.titulo;
             const autores = searchQuery ? this.highlightText(ponencia.autores.join(', '), searchQuery) : ponencia.autores.join(', ');
 
@@ -257,9 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         saveFavorites() {
             localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(this.favorites));
-            if (this.elements.favCount) {
-                this.elements.favCount.textContent = this.favorites.length;
-            }
+            if (this.elements.favCount) this.elements.favCount.textContent = this.favorites.length;
         },
 
         toggleFavorite(event, id) {
@@ -273,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 svg.classList.add('favorited');
             }
             this.saveFavorites();
-            if (this.currentDay === 'favoritos') { this.render(); }
+            if (this.currentDay === 'favoritos') this.render();
         },
 
         filterPonencia(p) {
@@ -296,9 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const url = new URL(window.location);
             const params = new URLSearchParams();
             const ponencia = this.fullSchedule.find(p => p.id === id);
-            if(ponencia) {
-                params.set('dia', ponencia.dia);
-            }
+            if(ponencia) params.set('dia', ponencia.dia);
             params.set('ponencia', id);
             url.hash = params.toString();
 
@@ -322,11 +304,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams();
             if (this.currentDay) params.set('dia', this.currentDay);
             Object.entries(this.currentFilters).forEach(([key, value]) => {
-                if (value && value !== 'all' && value !== '') {
-                    params.set(key, value);
-                }
+                if (value && value !== 'all' && value !== '') params.set(key, value);
             });
-            // Usamos replaceState para no saturar el historial del navegador al filtrar
             history.replaceState(null, '', `#${params.toString()}`);
         },
 
@@ -334,36 +313,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.hash.substring(1));
             const diaParam = params.get('dia');
             const ponenciaId = params.get('ponencia');
-            
-            // Si hay un enlace directo a una ponencia, encontrar su día
             let targetDay = diaParam;
             if(ponenciaId && !diaParam) {
                 const targetPonencia = this.fullSchedule.find(p => p.id === ponenciaId);
                 if(targetPonencia) targetDay = targetPonencia.dia;
             }
-
-            if (targetDay && (this.diasConfig[targetDay] || targetDay === 'favoritos')) {
-                this.currentDay = targetDay;
-            } else {
-                this.currentDay = Object.keys(this.diasConfig)[0];
-            }
-
-            this.currentFilters.search = params.get('search') || '';
-            this.currentFilters.type = params.get('type') || 'all';
-            this.currentFilters.sala = params.get('sala') || 'all';
-            this.currentFilters.horario = params.get('horario') || 'all';
-
+            this.currentDay = (targetDay && (this.diasConfig[targetDay] || targetDay === 'favoritos')) ? targetDay : Object.keys(this.diasConfig)[0];
+            this.currentFilters = {
+                search: params.get('search') || '', type: params.get('type') || 'all',
+                sala: params.get('sala') || 'all', horario: params.get('horario') || 'all',
+            };
             this.elements.searchInput.value = this.currentFilters.search;
             this.elements.filterType.value = this.currentFilters.type;
             this.elements.filterSala.value = this.currentFilters.sala;
             this.elements.filterHorario.value = this.currentFilters.horario;
-
             this.setActiveTab(this.currentDay);
             this.render();
-
             if(ponenciaId) {
                 setTimeout(() => {
-                    const card = document.querySelector(`.card-header:is(:first-child):contains('${ponenciaId}')`)?.closest('.program-card');
+                    const cardHeader = Array.from(document.querySelectorAll('.card-header')).find(el => el.textContent.includes(ponenciaId));
+                    const card = cardHeader?.closest('.program-card');
                     if(card) {
                         card.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease, outline 0.3s ease';
@@ -384,9 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let timeoutId;
             return (...args) => {
                 clearTimeout(timeoutId);
-                timeoutId = setTimeout(() => {
-                    func.apply(this, args);
-                }, delay);
+                timeoutId = setTimeout(() => { func.apply(this, args); }, delay);
             };
         }
     };

@@ -2,6 +2,7 @@
  * @file ALAEITS 2025 - Lógica del Programa Interactivo
  */
 document.addEventListener('DOMContentLoaded', () => {
+
     const App = {
         masterScheduleURL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTeiEquNfK-SqUuAjFui6V6oIOiZPt4rA71hLATqU1h_8HlseDHuBpjW4sm3b0Q5APziFZ7wk9PQG5E/pub?output=csv",
         fullSchedule: [],

@@ -97,8 +97,19 @@ body {
 
 .hero-content {
     z-index: 10;
-    animation: fadeInUp 0.8s 0.9s ease-out forwards;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-logo-container {
+    animation: fadeInUp 0.8s 1.2s ease-out forwards;
     opacity: 0;
+}
+
+.hero-logo {
+    max-height: 560px; /* Puedes ajustar este tamaño */
+    margin-bottom: 2rem;
 }
 
 .hero-title {
@@ -108,6 +119,8 @@ body {
     text-transform: uppercase;
     letter-spacing: -0.02em;
     line-height: 1.1;
+    animation: fadeInUp 0.8s 1.4s ease-out forwards;
+    opacity: 0;
 }
 
 .geo-layer {

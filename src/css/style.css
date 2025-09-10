@@ -74,6 +74,21 @@ body::after {
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+.main-header .logo,
+.main-header .nav-link {
+    color: var(--color-background);
+    transition: color 0.3s ease;
+}
+
+.main-header.scrolled .logo,
+.main-header.scrolled .nav-link {
+    color: var(--color-text-dark);
+}
+
+.main-header .nav-link:hover {
+    color: #FFF; /* Blanco puro al pasar el ratón */
+}
+
 .main-header.scrolled {
     position: fixed;
     background-color: rgba(253, 249, 243, 0.85);
@@ -84,12 +99,10 @@ body::after {
 .logo {
     font-size: 1.25rem;
     font-weight: 900;
-    color: var(--color-text-dark);
 }
 
 .nav-link {
     font-weight: 700;
-    color: var(--color-text-dark);
     transition: color 0.2s ease;
     position: relative;
     padding-bottom: 4px;

@@ -1,15 +1,13 @@
-# Archivos de sistema operativo
 .DS_Store
 Thumbs.db
 
-# Logs
 *.log
 npm-debug.log*
 
-# Directorio de dependencias (muy importante si en el futuro usas npm)
 node_modules/
 
-# Archivos de entorno (para claves secretas, etc.)
+/dist
+
 .env
 .env.local
 .env.*.local

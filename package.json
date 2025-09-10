@@ -1,0 +1,29 @@
+{
+  "name": "alaeits2025",
+  "version": "1.0.0",
+  "description": "Este proyecto es una aplicación web interactiva y responsiva diseñada para visualizar, filtrar y buscar el programa de un seminario académico. La aplicación carga los datos dinámicamente desde una hoja de cálculo de Google Sheets y los presenta en una interfaz clara y fácil de usar.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yueqwerty/alaeits2025.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Yueqwerty/alaeits2025/issues"
+  },
+  "homepage": "https://github.com/Yueqwerty/alaeits2025#readme",
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.13",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.13"
+  }
+}

@@ -9,29 +9,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-    
+    <!-- ===== INICIO DE LOS CAMBIOS ===== -->
+
+    <!-- 1. Enlace al CSS de Tailwind generado -->
+    <link href="/dist/output.css" rel="stylesheet">
+        
+    <!-- 2. Tu hoja de estilos personal (Asegúrate que esté DESPUÉS de la de Tailwind) -->
     <link rel="stylesheet" href="src/css/style.css"> 
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Montserrat', 'sans-serif'] },
-                    colors: {
-                        'primary': '#C8102E',    // Rojo
-                        'secondary': '#0033A0',  // Azul marino
-                        'background': '#FDF9F3', // Crema
-                        'text-dark': '#002147',   // Azul oscuro texto
-                        'text-light': '#6B7280', // Gris
-                        'favorite': '#F59E0B',   // Amarillo/Dorado
-                    },
-                    borderRadius: { 'card': '16px' },
-                }
-            }
-        }
-    </script>
+
+    <!-- ===== FIN DE LOS CAMBIOS (Todo lo demás fue eliminado) ===== -->
+
 </head>
 
 <body class="font-sans">
@@ -47,23 +34,23 @@
 
     <main>
         <section class="hero-andes">
-                        <div class="stars-bg">
-                    <div id="stars"></div>
-                    <div id="stars2"></div>
-                    <div id="stars3"></div>
-                </div>
-                <div class="shooting-stars">
-                    <div class="shooting-star"></div>
-                    <div class="shooting-star"></div>
-                </div>
+            <div class="stars-bg">
+                <div id="stars"></div>
+                <div id="stars2"></div>
+                <div id="stars3"></div>
+            </div>
+            <div class="shooting-stars">
+                <div class="shooting-star"></div>
+                <div class="shooting-star"></div>
+            </div>
             <div class="hero-content">
                 <img src="src/assets/images/logo-100-anios.png" alt="Logo 100 Años Trabajo Social de América Latina" class="hero-logo">
             </div>
             
-                <div class="geo-layer layer-4"></div>
-                <div class="geo-layer layer-3"></div>
-                <div class="geo-layer layer-2"></div>
-                <div class="geo-layer layer-1"></div>
+            <div class="geo-layer layer-4"></div>
+            <div class="geo-layer layer-3"></div>
+            <div class="geo-layer layer-2"></div>
+            <div class="geo-layer layer-1"></div>
         </section>
 
         <section class="marquee">
@@ -88,7 +75,6 @@
                     </div>
                 </div>
 
-                <!-- Este es el contenedor que tendrá el scroll -->
                 <div class="program-scroll-container">
                     <div class="program-tabs" id="program-tabs"></div>
                     <div id="program-content" class="program-content-grid"></div>

@@ -118,14 +118,14 @@ body::after {
 }
 
 .hero-andes {
-    min-height: 90vh;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 6rem 1.5rem;
     position: relative;
     overflow: hidden;
+    background: linear-gradient(180deg, #010419 40%, #151A3D 70%, #5D3756 100%);
 }
 
 .hero-content {
@@ -165,32 +165,30 @@ body::after {
 }
 
 .layer-4 {
-    background-color: var(--color-secondary-light);
-    clip-path: polygon(0 75%, 25% 68%, 50% 72%, 75% 65%, 100% 70%, 100% 100%, 0% 100%);
-    animation: andes-rise-left 1.2s 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; /* <- CAMBIO AQUÍ */
+    background-color: #0D1026; /* Casi negro azulado */
+    clip-path: polygon(0 85%, 15% 75%, 30% 82%, 50% 70%, 70% 80%, 85% 75%, 100% 88%, 100% 100%, 0% 100%);
+    animation: andes-rise-left 1.5s 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
     z-index: 1;
 }
 
 .layer-3 {
-    background-color: var(--color-primary-light);
-    clip-path: polygon(0 85%, 20% 75%, 45% 82%, 60% 76%, 80% 80%, 100% 75%, 100% 100%, 0% 100%);
-    animation: andes-rise-right 1.2s 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; /* <- CAMBIO AQUÍ */
+    background-color: #151A3D; /* Azul profundo */
+    clip-path: polygon(0 90%, 20% 80%, 40% 88%, 65% 75%, 80% 85%, 100% 80%, 100% 100%, 0% 100%);
+    animation: andes-rise-right 1.5s 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
     z-index: 2;
 }
 
 .layer-2 {
-    background-color: var(--color-secondary);
-    opacity: 0.8;
-    clip-path: polygon(0 100%, 0 88%, 15% 80%, 35% 86%, 55% 80%, 70% 85%, 70% 100%);
-    animation: andes-rise-left 1.2s 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; /* <- CAMBIO AQUÍ */
+    background-color: var(--color-text-dark); /* El azul oscuro principal */
+    clip-path: polygon(0 100%, 0 92%, 25% 82%, 45% 90%, 70% 80%, 80% 88%, 100% 95%, 100% 100%);
+    animation: andes-rise-left 1.5s 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
     z-index: 3;
 }
 
 .layer-1 {
-    background-color: var(--color-primary);
-    opacity: 0.9;
-    clip-path: polygon(100% 100%, 30% 100%, 50% 82%, 75% 90%, 90% 85%, 100% 88%);
-    animation: andes-rise-right 1.2s 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; /* <- CAMBIO AQUÍ */
+    background-color: var(--color-secondary); /* Azul marino */
+    clip-path: polygon(100% 100%, 30% 100%, 55% 90%, 80% 94%, 100% 90%);
+    animation: andes-rise-right 1.5s 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
     z-index: 4;
 }
 
@@ -598,6 +596,15 @@ mark {
     animation: toastOut 0.3s ease forwards;
 }
 
+.stars-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
 @keyframes marquee {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
@@ -655,4 +662,109 @@ mark {
     stroke: var(--color-favorite);
     fill: var(--color-favorite);
     animation: popAndShine 0.4s ease-out;
+}
+
+.stars-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+#stars {
+  width: 1px;
+  height: 1px;
+  background: transparent;
+  box-shadow: 1872px 694px #FFF, 1726px 81px #FFF, 1530px 583px #FFF, 62px 914px #FFF, 891px 114px #FFF, 423px 18px #FFF, 321px 1845px #FFF, 810px 1019px #FFF, 458px 1193px #FFF, 1695px 1585px #FFF, 43px 1269px #FFF, 1374px 1756px #FFF, 1421px 343px #FFF, 1423px 44px #FFF, 1485px 529px #FFF, 1799px 728px #FFF, 128px 1206px #FFF, 1060px 1079px #FFF, 1198px 846px #FFF, 1445px 544px #FFF;
+  animation: animStar 50s linear infinite;
+}
+#stars:after {
+  content: " ";
+  position: absolute;
+  top: 2000px;
+  width: 1px;
+  height: 1px;
+  background: transparent;
+  box-shadow: 1872px 694px #FFF, 1726px 81px #FFF, 1530px 583px #FFF, 62px 914px #FFF, 891px 114px #FFF, 423px 18px #FFF, 321px 1845px #FFF, 810px 1019px #FFF, 458px 1193px #FFF, 1695px 1585px #FFF, 43px 1269px #FFF, 1374px 1756px #FFF, 1421px 343px #FFF, 1423px 44px #FFF, 1485px 529px #FFF, 1799px 728px #FFF, 128px 1206px #FFF, 1060px 1079px #FFF, 1198px 846px #FFF, 1445px 544px #FFF;
+}
+
+#stars2 {
+  width: 2px;
+  height: 2px;
+  background: transparent;
+  box-shadow: 1399px 311px #FFF, 940px 487px #FFF, 1133px 569px #FFF, 731px 1038px #FFF, 386px 848px #FFF, 252px 1470px #FFF, 54px 129px #FFF, 795px 1248px #FFF, 1758px 459px #FFF, 408px 233px #FFF, 401px 1500px #FFF, 64px 691px #FFF;
+  animation: animStar 100s linear infinite;
+}
+#stars2:after {
+  content: " ";
+  position: absolute;
+  top: 2000px;
+  width: 2px;
+  height: 2px;
+  background: transparent;
+  box-shadow: 1399px 311px #FFF, 940px 487px #FFF, 1133px 569px #FFF, 731px 1038px #FFF, 386px 848px #FFF, 252px 1470px #FFF, 54px 129px #FFF, 795px 1248px #FFF, 1758px 459px #FFF, 408px 233px #FFF, 401px 1500px #FFF, 64px 691px #FFF;
+}
+
+#stars3 {
+  width: 3px;
+  height: 3px;
+  background: transparent;
+  box-shadow: 1805px 1388px #FFF, 298px 1974px #FFF, 184px 974px #FFF, 1782px 1993px #FFF, 977px 783px #FFF, 888px 987px #FFF, 1960px 453px #FFF;
+  animation: animStar 150s linear infinite;
+}
+#stars3:after {
+  content: " ";
+  position: absolute;
+  top: 2000px;
+  width: 3px;
+  height: 3px;
+  background: transparent;
+  box-shadow: 1805px 1388px #FFF, 298px 1974px #FFF, 184px 974px #FFF, 1782px 1993px #FFF, 977px 783px #FFF, 888px 987px #FFF, 1960px 453px #FFF;
+}
+
+.shooting-stars {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+}
+.shooting-star {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 2px;
+    background: linear-gradient(-45deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+    border-radius: 999px;
+    filter: drop-shadow(0 0 6px white);
+    animation: shooting-star-anim 10s ease-in-out infinite;
+}
+
+.shooting-star:nth-child(2) {
+    animation-delay: 3s;
+    animation-duration: 8s;
+}
+
+/* ---- KEYFRAMES (ANIMACIONES) ---- */
+
+@keyframes animStar {
+  from {transform: translateY(0px);}
+  to {transform: translateY(-2000px);}
+}
+
+@keyframes shooting-star-anim {
+    0% { transform: translateX(-50vw) translateY(-50vh) rotate(45deg); width: 0; }
+    30% { width: 150px; }
+    100% { transform: translateX(50vw) translateY(50vh) rotate(45deg); width: 0; }
+}
+
+@keyframes andes-rise-left {
+  from { opacity: 0; transform: translateY(80%) translateX(-10%); }
+  to { opacity: 1; transform: translateY(0) translateX(0); }
+}
+
+@keyframes andes-rise-right {
+  from { opacity: 0; transform: translateY(80%) translateX(10%); }
+  to { opacity: 1; transform: translateY(0) translateX(0); }
 }

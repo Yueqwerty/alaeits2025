@@ -37,7 +37,7 @@ body::before {
 
 body::after {
     content: '';
-    position: absolute;
+    position: fixed;
     top: 180vh;
     right: -30vw;
     width: 70vw;
@@ -232,7 +232,7 @@ body::after {
     background-color: var(--color-surface);
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 160vh;
     box-sizing: border-box;
 }
 

@@ -24,22 +24,15 @@ document.addEventListener('DOMContentLoaded', () => {
             'martes 14 de octubre': { nombreVisible: 'Martes 14' },
             'miércoles 15 de octubre': { nombreVisible: 'Miércoles 15' }
         },
-        elements: {}, // Objeto para guardar elementos del DOM en caché.
+        elements: {},
 
         // --- INICIALIZACIÓN ---
-
-        /**
-         * Método principal que arranca la aplicación.
-         */
         init() {
             this.cacheElements();
             this.setupControls();
             this.fetchAndProcessData();
         },
 
-        /**
-         * Guarda referencias a los elementos del DOM para evitar búsquedas repetidas.
-         */
         cacheElements() {
             this.elements.programContent = document.getElementById('program-content');
             this.elements.favoritesView = document.getElementById('favorites-view');
@@ -50,14 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
             this.elements.filterSala = document.getElementById('filter-sala');
             this.elements.filterHorario = document.getElementById('filter-horario');
             this.elements.resetBtn = document.getElementById('reset-filters');
-            this.elements.favCount = null; // Se buscará después de renderizar los tabs
+            this.elements.favCount = null;
         },
 
         // --- MANEJO DE DATOS ---
-
-        /**
-         * Obtiene los datos del CSV, los procesa y arranca el primer renderizado.
-         */
         async fetchAndProcessData() {
             try {
                 this.loadFavorites();
@@ -78,11 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
-        /**
-         * Convierte un texto CSV en un array de objetos.
-         * @param {string} text - El contenido del archivo CSV.
-         * @returns {Array<Object>} Un array de objetos, donde cada objeto es una fila.
-         */
         parseCSV(text) {
             const headers = text.slice(0, text.indexOf('\n')).trim().split(',');
             const rows = text.slice(text.indexOf('\n') + 1).trim().split('\n');
@@ -98,51 +82,32 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         },
 
-        /**
-         * Transforma los datos brutos del CSV en una lista plana de ponencias individuales.
-         * Este es el "corazón" de la lógica de datos.
-         * @param {Array<Object>} data - Los datos parseados del CSV.
-         * @returns {Array<Object>} Una lista donde cada elemento es una ponencia con su contexto.
-         */
         processData(data) {
             const mesas = {};
-            // 1. Agrupar por ID_Mesa para heredar el contexto (sala, horario, etc.)
             data.forEach(row => {
                 if (!row.ID_Mesa) return;
                 if (!mesas[row.ID_Mesa]) {
                     mesas[row.ID_Mesa] = {
-                        id: row.ID_Mesa,
-                        dia: row.Dia.trim(),
-                        horario: row.Horario_Bloque,
-                        sala: row.Sala,
-                        titulo: row.Titulo_Mesa,
-                        esSimposio: row.Tipo_Item === 'Simposio',
+                        id: row.ID_Mesa, dia: row.Dia.trim(), horario: row.Horario_Bloque,
+                        sala: row.Sala, titulo: row.Titulo_Mesa, esSimposio: row.Tipo_Item === 'Simposio',
                         eje: (row.Titulo_Mesa.match(/^(EJE \d+):/) || [null, null])[1],
                         items: []
                     };
                 }
                 mesas[row.ID_Mesa].items.push({
-                    id: row.ID_Item,
-                    titulo: row.Titulo_Item,
+                    id: row.ID_Item, titulo: row.Titulo_Item,
                     autores: row.Autores_Item.split(';').map(a => a.trim())
                 });
             });
 
-            // 2. Desagrupar para crear una lista plana de ponencias individuales.
             const ponenciasIndividuales = [];
             Object.values(mesas).forEach(mesa => {
                 mesa.items.forEach(item => {
-                    if (item.id === 'DISC') return; // Excluir items no relevantes
+                    if (item.id === 'DISC') return;
                     ponenciasIndividuales.push({
-                        id: item.id,
-                        titulo: item.titulo,
-                        autores: item.autores,
-                        mesaId: mesa.id,
-                        mesaTitulo: mesa.titulo,
-                        dia: mesa.dia,
-                        horario: mesa.horario,
-                        sala: mesa.sala,
-                        eje: mesa.eje,
+                        id: item.id, titulo: item.titulo, autores: item.autores,
+                        mesaId: mesa.id, mesaTitulo: mesa.titulo, dia: mesa.dia,
+                        horario: mesa.horario, sala: mesa.sala, eje: mesa.eje,
                         esSimposio: mesa.esSimposio
                     });
                 });
@@ -151,10 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         // --- RENDERIZADO ---
-
-        /**
-         * Orquesta el renderizado de la vista actual (día del programa o favoritos).
-         */
         render() {
             this.elements.favoritesView.classList.add('hidden');
             this.elements.programContent.classList.remove('hidden');
@@ -186,7 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.elements.programContent.innerHTML = '';
                 this.elements.noResults.classList.remove('hidden');
             }
-            // Ejecutar las animaciones después de que el DOM se haya actualizado.
             this.setupScrollAnimations();
         },
         
@@ -196,18 +156,30 @@ document.addEventListener('DOMContentLoaded', () => {
          * @returns {string} La cadena HTML de la tarjeta.
          */
         renderCard(ponencia) {
-            const { id, titulo, autores, horario, sala, eje, esSimposio } = ponencia;
+            const { id, titulo, autores, horario, sala, eje, esSimposio, mesaId } = ponencia;
             const isFavorited = App.favorites.includes(id);
             const typeClass = esSimposio ? 'border-primary' : 'border-secondary';
             
+            // --- CAMBIO 1: Obtener el moderador (primer autor de la lista) ---
+            const moderadorName = autores && autores.length > 0 ? autores[0] : 'N/A';
+
             return `
             <div class="bg-surface/70 backdrop-blur-md rounded-card shadow-card hover:shadow-card-hover transition-shadow duration-300 flex flex-col border-l-4 ${typeClass}" data-animate>
                 <div class="p-6 flex-grow flex flex-col relative">
                     <button class="favorite-btn" onclick="App.toggleFavorite(event, '${id}')">
                         <svg class="w-6 h-6 ${isFavorited ? 'favorited' : ''}" viewBox="0 0 24 24" stroke-width="2"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.539 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.539-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
                     </button>
-                    <span class="text-xs font-bold uppercase text-text-light mb-2">ID: ${id}</span>
+                    
+                    <!-- CAMBIO 2: Mostrar Mesa ID y Ponencia ID -->
+                    <span class="text-xs font-bold uppercase text-text-light mb-2">MESA: ${mesaId} / ID: ${id}</span>
+                    
                     <h3 class="text-xl font-bold text-text-dark mb-2">${titulo}</h3>
+                    
+                    <!-- CAMBIO 3: Añadir la línea del Moderador -->
+                    <p class="text-sm text-text-dark mb-2">
+                        <span class="font-bold">Modera:</span> ${moderadorName}
+                    </p>
+
                     <p class="text-text-light text-sm font-medium mb-4 flex-grow">${autores.join(', ')}</p>
                     ${eje ? `<span class="bg-primary/10 text-primary font-bold text-xs py-1 px-3 rounded-full self-start">${eje}</span>` : ''}
                 </div>
@@ -218,9 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>`;
         },
         
-        /**
-         * Rellena dinámicamente las opciones de los filtros select.
-         */
         populateFilters() {
             const salas = [...new Set(this.fullSchedule.map(p => p.sala).filter(Boolean))].sort((a,b) => parseInt(a) - parseInt(b));
             const horarios = [...new Set(this.fullSchedule.map(p => p.horario).filter(Boolean))].sort();
@@ -233,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let tabsHTML = Object.entries(this.diasConfig).map(([key, val]) => `<button class="tab-button text-lg mx-4 py-2 font-bold text-text-light border-b-4 border-transparent transition-colors" data-day="${key}">${val.nombreVisible}</button>`).join('');
             tabsHTML += `<button class="tab-button text-lg mx-4 py-2 font-bold text-text-light border-b-4 border-transparent transition-colors flex items-center" data-day="favoritos">Mi Horario <span id="fav-count" class="ml-2 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">${this.favorites.length}</span></button>`;
             this.elements.programTabs.innerHTML = tabsHTML;
-            this.elements.favCount = document.getElementById('fav-count'); // Cachear después de crear
+            this.elements.favCount = document.getElementById('fav-count');
         },
 
         renderFavorites() {
@@ -253,30 +222,24 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         // --- MANEJO DE EVENTOS Y ESTADO ---
-
         setupControls() {
-            // Optimización: Debounce para el input de búsqueda
             const debouncedRender = this.debounce(() => this.render(), 300);
-
             this.elements.searchInput.addEventListener('input', e => {
                 this.currentFilters.search = e.target.value;
                 debouncedRender();
             });
-
             ['type', 'sala', 'horario'].forEach(type => {
                 this.elements[`filter${type.charAt(0).toUpperCase() + type.slice(1)}`].addEventListener('change', e => {
                     this.currentFilters[type] = e.target.value;
                     this.render();
                 });
             });
-
             this.elements.resetBtn.addEventListener('click', () => {
                 this.currentFilters = { search: '', type: 'all', sala: 'all', horario: 'all' };
                 this.elements.searchInput.value = '';
                 ['type', 'sala', 'horario'].forEach(type => this.elements[`filter${type.charAt(0).toUpperCase() + type.slice(1)}`].value = 'all');
                 this.render();
             });
-
             this.elements.programTabs.addEventListener('click', e => {
                 const button = e.target.closest('.tab-button');
                 if (button) {
@@ -297,9 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         },
         
-        loadFavorites() {
-            this.favorites = JSON.parse(localStorage.getItem('alaeitsFavorites_v2') || '[]');
-        },
+        loadFavorites() { this.favorites = JSON.parse(localStorage.getItem('alaeitsFavorites_v2') || '[]'); },
         
         saveFavorites() {
             localStorage.setItem('alaeitsFavorites_v2', JSON.stringify(this.favorites));
@@ -319,16 +280,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 buttonSVG.classList.add('favorited');
             }
             this.saveFavorites();
-            if (this.currentDay === 'favoritos') {
-                this.render();
-            }
+            if (this.currentDay === 'favoritos') { this.render(); }
         },
 
         // --- HELPERS Y UTILIDADES ---
-
-        /**
-         * Activa las animaciones para los elementos que entran en el viewport.
-         */
         setupScrollAnimations() {
             const animatedElements = document.querySelectorAll('[data-animate]:not(.is-visible)');
             const observer = new IntersectionObserver((entries) => {
@@ -342,12 +297,6 @@ document.addEventListener('DOMContentLoaded', () => {
             animatedElements.forEach(el => observer.observe(el));
         },
         
-        /**
-         * Crea una versión "debounced" de una función que retrasa su ejecución.
-         * @param {Function} func - La función a ejecutar después del retraso.
-         * @param {number} delay - El tiempo de espera en milisegundos.
-         * @returns {Function} La nueva función con el debounce aplicado.
-         */
         debounce(func, delay) {
             let timeoutId;
             return (...args) => {
@@ -359,5 +308,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    window.App = App;
     App.init();
 });

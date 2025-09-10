@@ -9,7 +9,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     
+    <!-- Script principal de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- ¡SOLUCIÓN AQUÍ! Añade el script del plugin de formularios -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    
     <link rel="stylesheet" href="src/css/style.css">
     
     <!-- Configuración de Tailwind con tu paleta de colores pastel -->
@@ -21,16 +26,14 @@
                         sans: ['Montserrat', 'sans-serif'],
                     },
                     colors: {
-                        'primary': '#e040fb',   // Morado/Magenta
-                        'secondary': '#ff80ab', // Rosado
-                        'text-dark': '#3c1844',  // Púrpura oscuro
+                        'primary': '#e040fb',
+                        'secondary': '#ff80ab',
+                        'text-dark': '#3c1844',
                         'text-light': '#7a5c83',
                         'surface': '#ffffff',
                         'favorite': '#ffc107',
                     },
-                    borderRadius: {
-                        'card': '16px',
-                    },
+                    borderRadius: { 'card': '16px' },
                     boxShadow: {
                         'card': '0 10px 30px rgba(224, 64, 251, 0.15)',
                         'card-hover': '0 15px 40px rgba(224, 64, 251, 0.25)',
@@ -70,25 +73,25 @@
                 <span class="mx-8">PROYECTOS EMANCIPATORIOS</span><span class="text-white/50 mx-8">+</span>
                 <span class="mx-8">CRISIS CIVILIZATORIA</span><span class="text-white/50 mx-8">+</span>
                 <span class="mx-8">LUCHAS CONTRA-HEGEMÓNICAS</span><span class="text-white/50 mx-8">+</span>
-                <!-- Contenido duplicado para un bucle perfecto -->
                 <span class="mx-8">PROYECTOS EMANCIPATORIOS</span><span class="text-white/50 mx-8">+</span>
                 <span class="mx-8">CRISIS CIVILIZATORIA</span><span class="text-white/50 mx-8">+</span>
                 <span class="mx-8">LUCHAS CONTRA-HEGEMÓNICAS</span><span class="text-white/50 mx-8">+</span>
             </div>
         </section>
 
-        <!-- Sección del Programa (sin cambios en la estructura interna) -->
+        <!-- Sección del Programa -->
         <section id="programa" class="py-20 md:py-28 bg-surface">
             <div class="container mx-auto px-6">
                 <h2 class="text-4xl md:text-5xl font-black text-text-dark text-center mb-12" data-animate>Programa del Evento</h2>
                 
+                <!-- Eliminamos la clase 'filter-input' de los <select> ya que el plugin se encarga -->
                 <div class="bg-surface/50 backdrop-blur-lg p-4 sm:p-6 rounded-card shadow-card mb-12 sticky top-24 z-40" data-animate>
-                    <div class="grid grid-cols-1 lg:grid-cols-6 gap-4">
-                        <input type="text" id="program-search-input" placeholder="Buscar..." class="lg:col-span-2 filter-input">
-                        <select id="filter-type" class="filter-input"><option value="all">Todo Tipo</option></select>
-                        <select id="filter-sala" class="filter-input"><option value="all">Todas las Salas</option></select>
-                        <select id="filter-horario" class="filter-input"><option value="all">Todos Horarios</option></select>
-                        <button id="reset-filters" class="filter-button">Limpiar</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <input type="text" id="program-search-input" placeholder="Buscar..." class="w-full md:col-span-2 lg:col-span-2 rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+                        <select id="filter-type" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary"><option value="all">Todo Tipo</option></select>
+                        <select id="filter-sala" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary"><option value="all">Todas las Salas</option></select>
+                        <select id="filter-horario" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary"><option value="all">Todos Horarios</option></select>
+                        <button id="reset-filters" class="w-full md:col-start-2 lg:col-start-auto bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">Limpiar</button>
                     </div>
                 </div>
 

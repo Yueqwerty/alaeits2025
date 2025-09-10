@@ -9,98 +9,78 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <!-- Script principal de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- ¡SOLUCIÓN AQUÍ! Añade el script del plugin de formularios -->
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     
-    <link rel="stylesheet" href="src/css/style.css">
+    <link rel="stylesheet" href="src/css/style.css"> 
     
-    <!-- Configuración de Tailwind con tu paleta de colores pastel -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Montserrat', 'sans-serif'] },
                     colors: {
-                        'primary': '#e040fb',
-                        'secondary': '#ff80ab',
-                        'text-dark': '#3c1844',
-                        'text-light': '#7a5c83',
-                        'surface': '#ffffff',
-                        'favorite': '#ffc107',
+                        'primary': '#e040fb', 'secondary': '#ff80ab',
+                        'text-dark': '#3c1844', 'text-light': '#7a5c83',
+                        'surface': '#ffffff', 'favorite': '#ffc107',
                     },
                     borderRadius: { 'card': '16px' },
-                    boxShadow: {
-                        'card': '0 10px 30px rgba(224, 64, 251, 0.15)',
-                        'card-hover': '0 15px 40px rgba(224, 64, 251, 0.25)',
-                    }
                 }
             }
         }
     </script>
 </head>
 
-<body class="body-gradient font-sans">
+<body class="font-sans">
 
-    <header class="fixed top-0 left-0 right-0 z-50">
-        <div class="container mx-auto px-6 py-5 flex justify-between items-center bg-white/10 backdrop-blur-xl rounded-b-2xl">
-            <a href="#" class="text-xl font-bold text-text-dark">ALAEITS 2025</a>
+    <header class="main-header">
+        <div class="container mx-auto px-6 py-5 flex justify-between items-center">
+            <a href="#" class="logo">ALAEITS 2025</a>
             <nav class="hidden md:flex items-center space-x-8">
-                <a href="#programa" class="font-bold text-text-dark hover:text-primary transition-colors">Información</a>
-                <a href="#programa" class="font-bold text-text-dark hover:text-primary transition-colors">Programa</a>
+                <a href="#programa" class="nav-link">Programa</a>
             </nav>
         </div>
     </header>
 
     <main>
-        <!-- Hero Section -->
-        <section class="min-h-screen flex flex-col justify-center items-center text-center px-6 pt-24 pb-12">
-            <h1 class="text-6xl sm:text-7xl md:text-9xl font-black text-text-dark uppercase tracking-tighter leading-none" data-animate>
-                SEMINARIO<br>ALAEITS<br>2025
-            </h1>
-            <p class="text-lg font-bold text-text-dark mt-6 tracking-widest" data-animate>
-                SANTIAGO / CHILE <span class="text-primary mx-2">&#9679;</span> 13 AL 15 DE OCTUBRE
-            </p>
-        </section>
-
-        <!-- Marquee Section -->
-        <section class="marquee-gradient py-6 md:py-8 text-3xl md:text-5xl font-bold text-white whitespace-nowrap overflow-hidden">
-            <div class="marquee-content">
-                <span class="mx-8">PROYECTOS EMANCIPATORIOS</span><span class="text-white/50 mx-8">+</span>
-                <span class="mx-8">CRISIS CIVILIZATORIA</span><span class="text-white/50 mx-8">+</span>
-                <span class="mx-8">LUCHAS CONTRA-HEGEMÓNICAS</span><span class="text-white/50 mx-8">+</span>
-                <span class="mx-8">PROYECTOS EMANCIPATORIOS</span><span class="text-white/50 mx-8">+</span>
-                <span class="mx-8">CRISIS CIVILIZATORIA</span><span class="text-white/50 mx-8">+</span>
-                <span class="mx-8">LUCHAS CONTRA-HEGEMÓNICAS</span><span class="text-white/50 mx-8">+</span>
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">SEMINARIO<br>ALAEITS<br>2025</h1>
+                <p class="hero-subtitle">SANTIAGO / CHILE <span class="text-primary mx-2">&#9679;</span> 13 AL 15 DE OCTUBRE</p>
             </div>
         </section>
 
-        <!-- Sección del Programa -->
-        <section id="programa" class="py-20 md:py-28 bg-surface">
+        <section class="marquee">
+            <div class="marquee-content">
+                <span>PROYECTOS EMANCIPATORIOS</span><span class="separator">+</span>
+                <span>CRISIS CIVILIZATORIA</span><span class="separator">+</span>
+                <span>LUCHAS CONTRA-HEGEMÓNICAS</span><span class="separator">+</span>
+                <span>PROYECTOS EMANCIPATORIOS</span><span class="separator">+</span>
+                <span>CRISIS CIVILIZATORIA</span><span class="separator">+</span>
+                <span>LUCHAS CONTRA-HEGEMÓNICAS</span><span class="separator">+</span>
+            </div>
+        </section>
+
+        <section id="programa" class="program-section">
             <div class="container mx-auto px-6">
-                <h2 class="text-4xl md:text-5xl font-black text-text-dark text-center mb-12" data-animate>Programa del Evento</h2>
+                <h2 class="section-title">Programa del Evento</h2>
                 
-                <!-- Eliminamos la clase 'filter-input' de los <select> ya que el plugin se encarga -->
-                <div class="bg-surface/50 backdrop-blur-lg p-4 sm:p-6 rounded-card shadow-card mb-12 sticky top-24 z-40" data-animate>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                        <input type="text" id="program-search-input" placeholder="Buscar..." class="w-full md:col-span-2 lg:col-span-2 rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
-                        <select id="filter-type" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary"><option value="all">Todo Tipo</option></select>
-                        <select id="filter-sala" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary"><option value="all">Todas las Salas</option></select>
-                        <select id="filter-horario" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary"><option value="all">Todos Horarios</option></select>
-                        <button id="reset-filters" class="w-full md:col-start-2 lg:col-start-auto bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">Limpiar</button>
+                <div class="filter-bar-wrapper">
+                    <div class="filter-bar">
+                        <input type="text" id="program-search-input" placeholder="Buscar...">
+                        <select id="filter-type"></select>
+                        <select id="filter-sala"></select>
+                        <select id="filter-horario"></select>
+                        <button id="reset-filters">Limpiar</button>
                     </div>
                 </div>
 
-                <div id="program-tabs" class="flex justify-center border-b border-black/10 mb-12" data-animate></div>
+                <div class="program-tabs" id="program-tabs"></div>
                 
                 <div id="program-content" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"></div>
                 <div id="favorites-view" class="hidden"></div>
                 
-                <div id="no-results" class="hidden text-center py-16" data-animate>
+                <div id="no-results" class="hidden text-center py-16">
                     <p class="text-2xl font-semibold text-text-light">No se encontraron resultados</p>
                 </div>
             </div>

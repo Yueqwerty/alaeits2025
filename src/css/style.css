@@ -1,59 +1,228 @@
-/* Gradiente de fondo del body */
-.body-gradient {
+/*
+ * ALAEITS 2025 - Hoja de Estilos Principal
+ * 
+ * Este archivo utiliza un enfoque de componentes sobre Tailwind CSS.
+ * Define componentes reutilizables y animaciones, usando variables CSS
+ * que se alinean con la configuración de tailwind.config.js.
+ */
+
+/* --- 1. SISTEMA DE DISEÑO (TOKENS) --- */
+:root {
+    --color-primary: #e040fb;
+    --color-secondary: #ff80ab;
+    --color-text-dark: #3c1844;
+    --color-text-light: #7a5c83;
+    --color-surface: #ffffff;
+    --color-favorite: #ffc107;
+    --font-sans: 'Montserrat', sans-serif;
+    --radius-card: 16px;
+}
+
+/* --- 2. ESTILOS BASE Y GRADIENTES --- */
+body {
+    font-family: var(--font-sans);
+    color: var(--color-text-light);
     background-color: #fceaff;
     background-image: linear-gradient(135deg, #fceaff 0%, #f8cdda 100%);
 }
 
-/* Gradiente de la marquesina */
-.marquee-gradient {
-    background-image: linear-gradient(to right, var(--tw-color-primary) 0%, var(--tw-color-secondary) 100%);
-}
+/* --- 3. COMPONENTES PRINCIPALES --- */
 
-/* Animación de la marquesina */
-@keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+/* Header */
+.main-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
-.marquee-content {
-    animation: marquee 40s linear infinite;
+.logo { font-size: 1.25rem; font-weight: 700; color: var(--color-text-dark); }
+.nav-link { font-weight: 700; color: var(--color-text-dark); transition: color 0.2s ease; }
+.nav-link:hover { color: var(--color-primary); }
+
+/* Hero Section */
+.hero {
+    min-height: 100vh;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 6rem 1.5rem 3rem;
+}
+.hero-content {
+    opacity: 0; /* Animado por JS */
+    animation: fadeInUp 0.8s 0.2s ease-out forwards;
+}
+.hero-title {
+    font-size: clamp(3.5rem, 10vw, 8rem); /* Responsive font size */
+    font-weight: 900;
+    color: var(--color-text-dark);
+    text-transform: uppercase;
+    letter-spacing: -0.05em;
+    line-height: 1;
+}
+.hero-subtitle {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-text-dark);
+    margin-top: 1.5rem;
+    letter-spacing: 0.1em;
 }
 
-/* Animación de entrada para elementos al hacer scroll */
-[data-animate] { 
-    opacity: 0; 
-    transform: translateY(30px); 
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out; 
+/* Marquee Section */
+.marquee {
+    padding: 1.5rem 0;
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    background-image: linear-gradient(to right, var(--color-primary) 0%, var(--color-secondary) 100%);
 }
-[data-animate].is-visible { 
-    opacity: 1; 
-    transform: translateY(0); 
-}
+@media (min-width: 768px) { .marquee { padding: 2rem 0; font-size: 3rem; } }
+.marquee-content { display: flex; animation: marquee 40s linear infinite; }
+.marquee .separator { color: rgba(255, 255, 255, 0.5); margin: 0 2rem; }
 
-/* Estilo para los filtros */
-.filter-input, .filter-button {
-    background-color: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(60, 24, 68, 0.1);
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    font-family: 'Montserrat', sans-serif;
+/* Program Section */
+.program-section { padding: 5rem 0; background-color: var(--color-surface); }
+.section-title { font-size: 2.5rem; font-weight: 900; color: var(--color-text-dark); text-align: center; margin-bottom: 3rem; }
+@media (min-width: 768px) { .section-title { font-size: 3rem; } }
+
+/* Filter Bar */
+.filter-bar-wrapper {
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(12px);
+    padding: 1rem;
+    border-radius: var(--radius-card);
+    box-shadow: 0 10px 30px rgba(60, 24, 68, 0.1);
+    margin-bottom: 3rem;
+    position: sticky;
+    top: 6rem; /* Ajustar según altura del header */
+    z-index: 40;
+}
+.filter-bar { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+@media (min-width: 768px) { .filter-bar { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .filter-bar { grid-template-columns: 2fr 1fr 1fr 1fr auto; } }
+.filter-bar input, .filter-bar select, .filter-bar button {
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+.filter-bar button { background-color: #f3f4f6; font-weight: 700; color: #374151; transition: background-color 0.2s ease; }
+.filter-bar button:hover { background-color: #e5e7eb; }
+
+/* Program Tabs */
+.program-tabs { display: flex; justify-content: center; border-bottom: 1px solid #e5e7eb; margin-bottom: 3rem; }
+.tab-button {
+    font-size: 1.125rem;
+    font-weight: 700;
+    padding: 0 1rem 1rem;
+    margin: 0 1rem;
+    color: var(--color-text-light);
+    border-bottom: 4px solid transparent;
     transition: all 0.2s ease;
 }
-.filter-input:focus {
-    outline: none;
-    border-color: var(--tw-color-primary);
-    box-shadow: 0 0 0 3px rgba(224, 64, 251, 0.2);
+.tab-button:hover { color: var(--color-text-dark); }
+.tab-button.active { color: var(--color-primary); border-color: var(--color-primary); }
+
+/* --- 4. PROGRAM CARD (Componente Clave) --- */
+.program-card {
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius-card);
+    box-shadow: 0 10px 30px rgba(224, 64, 251, 0.15);
+    border-left: 4px solid; /* El color se aplica con clase is-simposio/is-ponencia */
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0; /* Animado por JS */
 }
-.filter-button {
-    background-color: rgba(60, 24, 68, 0.05);
-    font-weight: 600;
+.program-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(224, 64, 251, 0.25);
 }
-.filter-button:hover {
-    background-color: rgba(60, 24, 68, 0.1);
+.program-card.is-simposio { border-color: var(--color-primary); }
+.program-card.is-ponencia { border-color: var(--color-secondary); }
+
+.card-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; position: relative; }
+.card-header {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-text-light);
+    margin-bottom: 0.5rem;
+}
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-dark);
+    margin-bottom: 0.5rem;
+}
+.card-moderator { font-size: 0.875rem; color: var(--color-text-dark); margin-bottom: 0.5rem; }
+.card-authors {
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+    font-weight: 500;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+.card-eje {
+    background-color: rgba(224, 64, 251, 0.1);
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    align-self: flex-start;
+}
+.card-footer {
+    background-color: rgba(0, 0, 0, 0.03);
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-text-light);
+    display: flex;
+    justify-content: space-between;
+    border-bottom-left-radius: var(--radius-card);
+    border-bottom-right-radius: var(--radius-card);
+}
+.favorite-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+.favorite-btn svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    stroke: #d1d5db; /* gris */
+    fill: none;
+    transition: all 0.2s ease;
+}
+.favorite-btn:hover svg { stroke: var(--color-favorite); transform: scale(1.1); }
+.favorite-btn svg.favorited { stroke: var(--color-favorite); fill: var(--color-favorite); }
+
+
+/* --- 5. ANIMACIONES --- */
+@keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Estilo del botón de favoritos */
-.favorite-btn svg.favorited {
-    stroke: var(--tw-color-favorite);
-    fill: var(--tw-color-favorite);
+/* Selector para animaciones en scroll */
+.animate-on-scroll {
+    opacity: 0;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.animate-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0) !important;
 }

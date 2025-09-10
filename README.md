@@ -20,29 +20,6 @@ Aplicación web de una sola página (SPA) construida con Vanilla JS para la visu
 -   **URLs Reactivas (Deep Linking):** El estado de los filtros y la vista actual se codifica en el hash de la URL (`#`). Esto permite compartir enlaces directos a vistas específicas del programa, las cuales son interpretadas al cargar la página.
 -   **Build Optimizado:** El uso del CLI de Tailwind permite "purgar" todas las clases no utilizadas, generando un archivo `output.css` final extremadamente ligero, optimizado para producción.
 
-## Estructura del Proyecto
-/alaeits2025
-|
-|-- /dist
-| |-- output.css # Archivo CSS compilado y optimizado por Tailwind
-|
-|-- /node_modules # Dependencias de desarrollo (Tailwind)
-|
-|-- /src
-| |-- /assets # Imágenes y otros recursos estáticos
-| |-- /css
-| | |-- input.css # Archivo de entrada para las directivas @tailwind
-| | |-- style.css # Estilos personalizados y sobreescrituras
-| |-- /js
-| |-- script.js # Lógica principal de la aplicación
-|
-|-- .gitignore # Archivos y carpetas a ignorar por Git
-|-- index.html # Punto de entrada de la aplicación
-|-- package.json # Metadatos del proyecto y scripts de npm
-|-- package-lock.json # Versiones exactas de las dependencias
-|-- tailwind.config.js # Archivo de configuración de Tailwind CSS
-
-
 ## Instalación y Desarrollo Local
 
 **Prerrequisitos:** Tener [Node.js](https://nodejs.org/) (v16+) instalado.

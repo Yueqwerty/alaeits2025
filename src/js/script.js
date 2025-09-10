@@ -88,15 +88,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!row.ID_Mesa) return;
                 if (!mesas[row.ID_Mesa]) {
                     mesas[row.ID_Mesa] = {
-                        id: row.ID_Mesa, dia: row.Dia.trim(), horario: row.Horario_Bloque,
-                        sala: row.Sala, titulo: row.Titulo_Mesa, esSimposio: row.Tipo_Item === 'Simposio',
+                        id: row.ID_Mesa,
+                        dia: row.Dia.trim(),
+                        horario: row.Horario_Bloque,
+                        sala: row.Sala,
+                        titulo: row.Titulo_Mesa,
+                        esSimposio: row.Tipo_Item === 'Simposio',
                         eje: (row.Titulo_Mesa.match(/^(EJE \d+):/) || [null, null])[1],
                         items: []
                     };
                 }
                 mesas[row.ID_Mesa].items.push({
-                    id: row.ID_Item, titulo: row.Titulo_Item,
-                    autores: row.Autores_Item.split(';').map(a => a.trim())
+                    id: row.ID_Item,
+                    titulo: row.Titulo_Item,
+                    // CORRECCIÓN: Separar autores por coma (,) en lugar de punto y coma (;)
+                    autores: row.Autores_Item.split(',').map(a => a.trim())
                 });
             });
 
@@ -105,9 +111,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 mesa.items.forEach(item => {
                     if (item.id === 'DISC') return;
                     ponenciasIndividuales.push({
-                        id: item.id, titulo: item.titulo, autores: item.autores,
-                        mesaId: mesa.id, mesaTitulo: mesa.titulo, dia: mesa.dia,
-                        horario: mesa.horario, sala: mesa.sala, eje: mesa.eje,
+                        id: item.id,
+                        titulo: item.titulo,
+                        autores: item.autores,
+                        mesaId: mesa.id,
+                        mesaTitulo: mesa.titulo,
+                        dia: mesa.dia,
+                        horario: mesa.horario,
+                        sala: mesa.sala,
+                        eje: mesa.eje,
                         esSimposio: mesa.esSimposio
                     });
                 });
@@ -150,17 +162,10 @@ document.addEventListener('DOMContentLoaded', () => {
             this.setupScrollAnimations();
         },
         
-        /**
-         * Genera el HTML para una única tarjeta de ponencia.
-         * @param {Object} ponencia - El objeto de la ponencia a renderizar.
-         * @returns {string} La cadena HTML de la tarjeta.
-         */
         renderCard(ponencia) {
             const { id, titulo, autores, horario, sala, eje, esSimposio, mesaId } = ponencia;
             const isFavorited = App.favorites.includes(id);
             const typeClass = esSimposio ? 'border-primary' : 'border-secondary';
-            
-            // --- CAMBIO 1: Obtener el moderador (primer autor de la lista) ---
             const moderadorName = autores && autores.length > 0 ? autores[0] : 'N/A';
 
             return `
@@ -169,17 +174,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button class="favorite-btn" onclick="App.toggleFavorite(event, '${id}')">
                         <svg class="w-6 h-6 ${isFavorited ? 'favorited' : ''}" viewBox="0 0 24 24" stroke-width="2"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.539 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.539-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
                     </button>
-                    
-                    <!-- CAMBIO 2: Mostrar Mesa ID y Ponencia ID -->
                     <span class="text-xs font-bold uppercase text-text-light mb-2">MESA: ${mesaId} / ID: ${id}</span>
-                    
                     <h3 class="text-xl font-bold text-text-dark mb-2">${titulo}</h3>
-                    
-                    <!-- CAMBIO 3: Añadir la línea del Moderador -->
                     <p class="text-sm text-text-dark mb-2">
                         <span class="font-bold">Modera:</span> ${moderadorName}
                     </p>
-
                     <p class="text-text-light text-sm font-medium mb-4 flex-grow">${autores.join(', ')}</p>
                     ${eje ? `<span class="bg-primary/10 text-primary font-bold text-xs py-1 px-3 rounded-full self-start">${eje}</span>` : ''}
                 </div>
@@ -260,7 +259,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         },
         
-        loadFavorites() { this.favorites = JSON.parse(localStorage.getItem('alaeitsFavorites_v2') || '[]'); },
+        loadFavorites() {
+            this.favorites = JSON.parse(localStorage.getItem('alaeitsFavorites_v2') || '[]');
+        },
         
         saveFavorites() {
             localStorage.setItem('alaeitsFavorites_v2', JSON.stringify(this.favorites));
@@ -280,7 +281,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 buttonSVG.classList.add('favorited');
             }
             this.saveFavorites();
-            if (this.currentDay === 'favoritos') { this.render(); }
+            if (this.currentDay === 'favoritos') {
+                this.render();
+            }
         },
 
         // --- HELPERS Y UTILIDADES ---

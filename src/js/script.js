@@ -3,136 +3,137 @@
  */
 document.addEventListener('DOMContentLoaded', () => {
 
-    const App = {
-        masterScheduleURL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTeiEquNfK-SqUuAjFui6V6oIOiZPt4rA71hLATqU1h_8HlseDHuBpjW4sm3b0Q5APziFZ7wk9PQG5E/pub?output=csv",
-        fullSchedule: [],
-        favorites: [],
-        currentFilters: { search: '', type: 'all', sala: 'all', horario: 'all' },
-        currentDay: '',
-        diasConfig: {
-            'martes 14 de octubre': { nombreVisible: 'Martes 14' },
-            'miércoles 15 de octubre': { nombreVisible: 'Miércoles 15' }
-        },
-        elements: {},
-        LOCAL_STORAGE_KEY: 'alaeitsFavorites_v4',
+const App = {
+    masterScheduleURL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTeiEquNfK-SqUuAjFui6V6oIOiZPt4rA71hLATqU1h_8HlseDHuBpjW4sm3b0Q5APziFZ7wk9PQG5E/pub?output=csv",
+    fullSchedule: [],
+    favorites: [],
+    currentFilters: { search: '', type: 'all', sala: 'all', horario: 'all' },
+    currentDay: '',
+    diasConfig: {
+        'martes 14 de octubre': { nombreVisible: 'Martes 14' },
+        'miércoles 15 de octubre': { nombreVisible: 'Miércoles 15' }
+    },
+    elements: {},
+    LOCAL_STORAGE_KEY: 'alaeitsFavorites_v4',
 
-        init() {
-            this.cacheElements();
-            this.setupControls();
-            this.fetchAndProcessData();
-            this.setupScrollListener();
-        },
-        
-        cacheElements() {
-            this.elements = {
-                header: document.querySelector('.main-header'),
-                programContent: document.getElementById('program-content'),
-                favoritesView: document.getElementById('favorites-view'),
-                programTabs: document.getElementById('program-tabs'),
-                noResults: document.getElementById('no-results'),
-                searchInput: document.getElementById('program-search-input'),
-                filterType: document.getElementById('filter-type'),
-                filterSala: document.getElementById('filter-sala'),
-                filterHorario: document.getElementById('filter-horario'),
-                resetBtn: document.getElementById('reset-filters'),
-                clearFiltersNoResultsBtn: document.getElementById('clear-filters-no-results'),
-                toastContainer: document.getElementById('toast-container'),
+    init() {
+        this.cacheElements();
+        this.setupControls();
+        this.fetchAndProcessData();
+        this.setupScrollListener();
+    },
+    
+    cacheElements() {
+        this.elements = {
+            header: document.querySelector('.main-header'),
+            programContent: document.getElementById('program-content'),
+            favoritesView: document.getElementById('favorites-view'),
+            programTabs: document.getElementById('program-tabs'),
+            noResults: document.getElementById('no-results'),
+            searchInput: document.getElementById('program-search-input'),
+            filterType: document.getElementById('filter-type'),
+            filterSala: document.getElementById('filter-sala'),
+            filterHorario: document.getElementById('filter-horario'),
+            resetBtn: document.getElementById('reset-filters'),
+            clearFiltersNoResultsBtn: document.getElementById('clear-filters-no-results'),
+            toastContainer: document.getElementById('toast-container'),
+        };
+    },
+
+    async fetchAndProcessData() {
+        try {
+            this.loadFavorites();
+            const response = await fetch(`${this.masterScheduleURL}&timestamp=${new Date().getTime()}`);
+            if (!response.ok) throw new Error("No se pudo cargar el programa. Verifique el enlace del CSV.");
+            
+            const buffer = await response.arrayBuffer();
+            const decoder = new TextDecoder('utf-8');
+            const csvText = decoder.decode(buffer);
+
+            this.fullSchedule = this.processData(this.parseCSV(csvText));
+            
+            this.populateFilters();
+            this.renderTabs();
+            this.applyStateFromURL();
+        } catch (error) {
+            this.elements.programContent.innerHTML = `<p class="col-span-full text-center">${error.message}</p>`;
+        }
+    },
+    
+    parseCSV(text) {
+        const headers = text.slice(0, text.indexOf('\n')).trim().split(',');
+        const rows = text.slice(text.indexOf('\n') + 1).trim().split('\n');
+        return rows.map(row => {
+            const values = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
+            return headers.reduce((obj, header, index) => {
+                const cleanHeader = header.trim().replace(/"/g, '');
+                if (cleanHeader) obj[cleanHeader] = (values[index] || '').trim().replace(/^"|"$/g, '');
+                return obj;
+            }, {});
+        });
+    },
+
+    processData(data) {
+    const mesas = {};
+    data.forEach(row => {
+        if (!row.ID_Mesa || !row.Titulo_Item) return;
+
+        const diaLimpio = String(row.Dia).replace(/\u00A0/g, ' ').trim();
+
+        if (!mesas[row.ID_Mesa]) {
+            mesas[row.ID_Mesa] = {
+                id: (row.ID_Mesa || '').trim(),
+                dia: diaLimpio,
+                horario: (row.Horario_Bloque || '').trim(),
+                sala: (row.Sala || '').trim(),
+                titulo: (row.Titulo_Mesa || '').trim(),
+                esSimposio: row.Tipo_Item === 'Simposio',
+                eje: (row.Titulo_Mesa.match(/^(EJE \d+):/) || [null, null])[1],
+                items: []
             };
-        },
+        }
+        mesas[row.ID_Mesa].items.push({
+            id: (row.ID_Item || '').trim(),
+            titulo: (row.Titulo_Item || '').trim(),
+            autores: (row.Autores_Item || '').split(',').map(a => a.trim().replace(/^"|"$/g, '')).filter(Boolean)
+        });
+    });
 
-        async fetchAndProcessData() {
-            try {
-                this.loadFavorites();
-                const response = await fetch(`${this.masterScheduleURL}&timestamp=${new Date().getTime()}`);
-                if (!response.ok) throw new Error("No se pudo cargar el programa. Verifique el enlace del CSV.");
-                
-                const csvText = await response.text();
-                this.fullSchedule = this.processData(this.parseCSV(csvText));
-                
-                this.populateFilters();
-                this.renderTabs();
-                this.applyStateFromURL();
-            } catch (error) {
-                this.elements.programContent.innerHTML = `<p class="col-span-full text-center">${error.message}</p>`;
-            }
-        },
-        
-        parseCSV(text) {
-            const headers = text.slice(0, text.indexOf('\n')).trim().split(',');
-            const rows = text.slice(text.indexOf('\n') + 1).trim().split('\n');
-            return rows.map(row => {
-                const values = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
-                return headers.reduce((obj, header, index) => {
-                    const cleanHeader = header.trim().replace(/"/g, '');
-                    if (cleanHeader) obj[cleanHeader] = (values[index] || '').trim().replace(/^"|"$/g, '');
-                    return obj;
-                }, {});
+    const ponenciasIndividuales = [];
+    Object.values(mesas).forEach(mesa => {
+        mesa.items.forEach(item => {
+            if (item.id === 'DISC') return;
+            ponenciasIndividuales.push({
+                id: item.id,
+                titulo: item.titulo,
+                autores: item.autores,
+                mesaId: mesa.id,
+                mesaTitulo: mesa.titulo,
+                dia: mesa.dia,
+                horario: mesa.horario,
+                sala: mesa.sala,
+                eje: mesa.eje,
+                esSimposio: mesa.esSimposio
             });
-        },
+        });
+    });
+    return ponenciasIndividuales;
+},
 
-        processData(data) {
-            const mesas = {};
-            data.forEach(row => {
-                if (!row.ID_Mesa) return;
-                if (!mesas[row.ID_Mesa]) {
-                    mesas[row.ID_Mesa] = {
-                        id: row.ID_Mesa,
-                        dia: row.Dia.trim(),
-                        horario: row.Horario_Bloque,
-                        sala: row.Sala,
-                        titulo: row.Titulo_Mesa,
-                        esSimposio: row.Tipo_Item === 'Simposio',
-                        eje: (row.Titulo_Mesa.match(/^(EJE \d+):/) || [null, null])[1],
-                        items: []
-                    };
-                }
-                mesas[row.ID_Mesa].items.push({
-                    id: row.ID_Item,
-                    titulo: row.Titulo_Item,
-                    autores: row.Autores_Item.split(',').map(a => a.trim().replace(/^"|"$/g, '')).filter(Boolean)
-                });
-            });
-
-            const ponenciasIndividuales = [];
-            Object.values(mesas).forEach(mesa => {
-                mesa.items.forEach(item => {
-                    if (item.id === 'DISC') return;
-                    ponenciasIndividuales.push({
-                        id: item.id,
-                        titulo: item.titulo,
-                        autores: item.autores,
-                        mesaId: mesa.id,
-                        mesaTitulo: mesa.titulo,
-                        dia: mesa.dia,
-                        horario: mesa.horario,
-                        sala: mesa.sala,
-                        eje: mesa.eje,
-                        esSimposio: mesa.esSimposio
-                    });
-                });
-            });
-            return ponenciasIndividuales;
-        },
-
-        async render() {
-            this.elements.programContent.classList.add('loading');
-            await new Promise(res => setTimeout(res, 150));
-            
-            this.elements.favoritesView.classList.add('hidden');
-            this.elements.programContent.classList.remove('hidden');
-
-            if (this.currentDay === 'favoritos') {
-                this.renderFavorites();
-                return;
-            }
-            
-            const filteredData = this.fullSchedule.filter(p => this.filterPonencia(p));
-            
-            this.elements.programContent.innerHTML = filteredData.length > 0 ? filteredData.map(p => this.renderCard(p)).join('') : '';
-            this.elements.noResults.classList.toggle('hidden', filteredData.length > 0);
-            
-            this.elements.programContent.classList.remove('loading');
-        },
+    async render() {
+        this.elements.programContent.classList.add('loading');
+        await new Promise(res => setTimeout(res, 150));
+        this.elements.favoritesView.classList.add('hidden');
+        this.elements.programContent.classList.remove('hidden');
+        if (this.currentDay === 'favoritos') {
+            this.renderFavorites();
+            return;
+        }
+        const filteredData = this.fullSchedule.filter(p => this.filterPonencia(p));
+        this.elements.programContent.innerHTML = filteredData.length > 0 ? filteredData.map(p => this.renderCard(p)).join('') : '';
+        this.elements.noResults.classList.toggle('hidden', filteredData.length > 0);
+        this.elements.programContent.classList.remove('loading');
+    },
         
         renderCard(ponencia) {
             const isFavorited = this.favorites.includes(ponencia.id);
@@ -262,12 +263,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         filterPonencia(p) {
             const search = this.currentFilters.search.toLowerCase();
-            const matchSearch = search === '' || p.titulo.toLowerCase().includes(search) || (p.id && p.id.toLowerCase().includes(search)) || p.autores.join(' ').toLowerCase().includes(search) || p.mesaTitulo.toLowerCase().includes(search);
-            return p.dia.toLowerCase() === this.currentDay.toLowerCase() &&
-                (this.currentFilters.type === 'all' || (this.currentFilters.type === 'simposio' ? p.esSimposio : !p.esSimposio)) &&
-                (this.currentFilters.sala === 'all' || p.sala === this.currentFilters.sala) &&
-                (this.currentFilters.horario === 'all' || p.horario === this.currentFilters.horario) &&
-                matchSearch;
+            const hasActiveSearch = search !== '';
+
+            if (hasActiveSearch) {
+            return (
+                p.titulo.toLowerCase().includes(search) ||
+                (p.id && p.id.toLowerCase().includes(search)) ||
+                p.autores.join(' ').toLowerCase().includes(search) ||
+                p.mesaTitulo.toLowerCase().includes(search)
+            );
+            } else {
+            const diaPonenciaLimpio = String(p.dia).replace(/\u00A0/g, ' ').trim().toLowerCase();
+            const diaPestanaLimpio = String(this.currentDay).replace(/\u00A0/g, ' ').trim().toLowerCase();
+            
+            const matchDay = diaPonenciaLimpio === diaPestanaLimpio;
+            const matchType = this.currentFilters.type === 'all' || (this.currentFilters.type === 'simposio' ? p.esSimposio : !p.esSimposio);
+            const matchSala = this.currentFilters.sala === 'all' || p.sala === this.currentFilters.sala;
+            const matchHorario = this.currentFilters.horario === 'all' || p.horario === this.currentFilters.horario;
+
+            return matchDay && matchType && matchSala && matchHorario;
+            }
         },
 
         highlightText(text, query) {

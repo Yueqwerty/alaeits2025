@@ -40,7 +40,7 @@ const App = {
         };
     },
 
-    async fetchAndProcessData() {
+            async fetchAndProcessData() {
         try {
             this.loadFavorites();
             const response = await fetch(`${this.masterScheduleURL}&timestamp=${new Date().getTime()}`);
@@ -52,25 +52,73 @@ const App = {
 
             this.fullSchedule = this.processData(this.parseCSV(csvText));
             
+            console.log(`Cargadas ${this.fullSchedule.length} ponencias`);
+            console.log('Primeras 3 ponencias:', this.fullSchedule.slice(0, 3));
+            
             this.populateFilters();
             this.renderTabs();
             this.applyStateFromURL();
         } catch (error) {
+            console.error('Error completo:', error);
             this.elements.programContent.innerHTML = `<p class="col-span-full text-center">${error.message}</p>`;
         }
     },
     
-    parseCSV(text) {
-        const headers = text.slice(0, text.indexOf('\n')).trim().split(',');
-        const rows = text.slice(text.indexOf('\n') + 1).trim().split('\n');
-        return rows.map(row => {
-            const values = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
-            return headers.reduce((obj, header, index) => {
+        parseCSV(text) {
+        const lines = text.trim().split('\n');
+        const headers = this.parseCSVLine(lines[0]);
+        
+        console.log('Headers encontrados:', headers);
+        
+        const rows = [];
+        for (let i = 1; i < lines.length; i++) {
+            if (lines[i].trim() === '') continue;
+            
+            const values = this.parseCSVLine(lines[i]);
+            if (values.length === 0) continue;
+            
+            const row = {};
+            headers.forEach((header, index) => {
                 const cleanHeader = header.trim().replace(/"/g, '');
-                if (cleanHeader) obj[cleanHeader] = (values[index] || '').trim().replace(/^"|"$/g, '');
-                return obj;
-            }, {});
-        });
+                if (cleanHeader) {
+                    row[cleanHeader] = (values[index] || '').trim().replace(/^"|"$/g, '');
+                }
+            });
+            
+            if (row.ID_Mesa && row.Titulo_Item) {
+                rows.push(row);
+            }
+        }
+        
+        console.log(`Filas parseadas: ${rows.length}`);
+        return rows;
+    },
+
+    parseCSVLine(line) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            
+            if (char === '"') {
+                if (inQuotes && line[i + 1] === '"') {
+                    current += '"';
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (char === ',' && !inQuotes) {
+                result.push(current);
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        
+        result.push(current);
+        return result;
     },
 
     processData(data) {
@@ -78,7 +126,7 @@ const App = {
     data.forEach(row => {
         if (!row.ID_Mesa || !row.Titulo_Item) return;
 
-        const diaLimpio = String(row.Dia).replace(/\u00A0/g, ' ').trim();
+        const diaLimpio = String(row.Dia).replace(/\u00A0/g, ' ').trim().toLowerCase();
 
         if (!mesas[row.ID_Mesa]) {
             mesas[row.ID_Mesa] = {
@@ -120,24 +168,43 @@ const App = {
     return ponenciasIndividuales;
 },
 
-    async render() {
+        async render() {
         this.elements.programContent.classList.add('loading');
         await new Promise(res => setTimeout(res, 150));
+        
         this.elements.favoritesView.classList.add('hidden');
         this.elements.programContent.classList.remove('hidden');
+        
         if (this.currentDay === 'favoritos') {
             this.renderFavorites();
             return;
         }
+        
         const filteredData = this.fullSchedule.filter(p => this.filterPonencia(p));
         this.elements.programContent.innerHTML = filteredData.length > 0 ? filteredData.map(p => this.renderCard(p)).join('') : '';
+        
+        const hasFilters = this.currentFilters.search !== '' || 
+                        this.currentFilters.type !== 'all' || 
+                        this.currentFilters.sala !== 'all' || 
+                        this.currentFilters.horario !== 'all';
+        
         this.elements.noResults.classList.toggle('hidden', filteredData.length > 0);
+        
+        if (hasFilters && filteredData.length > 0) {
+            console.log(`Se encontraron ${filteredData.length} resultados`);
+        }
+        
         this.elements.programContent.classList.remove('loading');
     },
         
         renderCard(ponencia) {
             const isFavorited = this.favorites.includes(ponencia.id);
             const typeClass = ponencia.esSimposio ? 'is-simposio' : 'is-ponencia';
+            
+            const diaVisible = (this.diasConfig[ponencia.dia]?.nombreVisible || ponencia.dia) || '--';
+            const horarioVisible = ponencia.horario || '--';
+            const salaVisible = ponencia.sala ? `SALA ${ponencia.sala}` : '--';
+            
             const moderadorName = ponencia.autores?.[0] || 'N/A';
             const searchQuery = this.currentFilters.search;
             const titulo = searchQuery ? this.highlightText(ponencia.titulo, searchQuery) : ponencia.titulo;
@@ -159,8 +226,9 @@ const App = {
                     ${ponencia.eje ? `<div class="card-eje">${ponencia.eje}</div>` : ''}
                 </div>
                 <div class="card-footer">
-                    <span>${ponencia.horario}</span>
-                    <span>SALA ${ponencia.sala}</span>
+                    <span>${horarioVisible}</span>
+                    <span>${diaVisible}</span>
+                    <span>${salaVisible}</span>
                 </div>
             </div>`;
         },
@@ -265,24 +333,34 @@ const App = {
             const search = this.currentFilters.search.toLowerCase();
             const hasActiveSearch = search !== '';
 
+            if (this.currentDay !== 'favoritos') {
+                const diaPonenciaLimpio = String(p.dia).replace(/\u00A0/g, ' ').trim().toLowerCase();
+                const diaPestanaLimpio = String(this.currentDay).replace(/\u00A0/g, ' ').trim().toLowerCase();
+                
+                if (diaPonenciaLimpio !== diaPestanaLimpio) {
+                    return false;
+                }
+            }
+
             if (hasActiveSearch) {
-            return (
-                p.titulo.toLowerCase().includes(search) ||
-                (p.id && p.id.toLowerCase().includes(search)) ||
-                p.autores.join(' ').toLowerCase().includes(search) ||
-                p.mesaTitulo.toLowerCase().includes(search)
-            );
-            } else {
-            const diaPonenciaLimpio = String(p.dia).replace(/\u00A0/g, ' ').trim().toLowerCase();
-            const diaPestanaLimpio = String(this.currentDay).replace(/\u00A0/g, ' ').trim().toLowerCase();
-            
-            const matchDay = diaPonenciaLimpio === diaPestanaLimpio;
+                const matchesSearch = (
+                    p.titulo.toLowerCase().includes(search) ||
+                    (p.id && p.id.toLowerCase().includes(search)) ||
+                    p.autores.join(' ').toLowerCase().includes(search) ||
+                    p.mesaTitulo.toLowerCase().includes(search)
+                );
+                
+                if (!matchesSearch) {
+                    return false;
+                }
+            }
+
+            // Aplicar el resto de filtros
             const matchType = this.currentFilters.type === 'all' || (this.currentFilters.type === 'simposio' ? p.esSimposio : !p.esSimposio);
             const matchSala = this.currentFilters.sala === 'all' || p.sala === this.currentFilters.sala;
             const matchHorario = this.currentFilters.horario === 'all' || p.horario === this.currentFilters.horario;
 
-            return matchDay && matchType && matchSala && matchHorario;
-            }
+            return matchType && matchSala && matchHorario;
         },
 
         highlightText(text, query) {

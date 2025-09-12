@@ -659,7 +659,6 @@ mark {
   }
 }
 
-/* Animación para las montañas que suben desde la derecha */
 @keyframes andes-rise-right {
   from {
     opacity: 0;
@@ -759,7 +758,6 @@ mark {
     animation-duration: 8s;
 }
 
-/* ---- KEYFRAMES (ANIMACIONES) ---- */
 
 @keyframes animStar {
   from {transform: translateY(0px);}

@@ -121,12 +121,26 @@ const App = {
         return result;
     },
 
+    normalizarFecha(fecha) {
+            const fechaStr = String(fecha).replace(/\u00A0/g, ' ').trim();
+            
+            if (fechaStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+                const [dia, mes] = fechaStr.split('/');
+                if (dia === '14' && mes === '10') return 'martes 14 de octubre';
+                if (dia === '15' && mes === '10') return 'miércoles 15 de octubre';
+            }
+            
+            return fechaStr.toLowerCase();
+        },
+
+
     processData(data) {
     const mesas = {};
     data.forEach(row => {
         if (!row.ID_Mesa || !row.Titulo_Item) return;
 
-        const diaLimpio = String(row.Dia).replace(/\u00A0/g, ' ').trim().toLowerCase();
+        const diaLimpio = this.normalizarFecha(String(row.Dia));
+        
 
         if (!mesas[row.ID_Mesa]) {
             mesas[row.ID_Mesa] = {

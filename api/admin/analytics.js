@@ -58,18 +58,6 @@ module.exports = async (req, res) => {
         ORDER BY scheduled_day
       `),
       
-      // Room utilization
-      pool.query(`
-        SELECT 
-          room,
-          COUNT(*) as events_count,
-          COUNT(DISTINCT scheduled_day || scheduled_time_block) as time_slots_used
-        FROM events 
-        WHERE room IS NOT NULL 
-        GROUP BY room 
-        ORDER BY room
-      `),
-      
       // Time slot utilization
       pool.query(`
         SELECT 

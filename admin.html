@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Comando - ALAEITS 2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <!-- Enlazamos a tu nuevo y excelente dashboard.css -->
+    <link rel="stylesheet" href="src/css/dashboard.css">
+</head>
+<body>
+
+    <div id="app">
+        <!-- Encabezado Principal de la Aplicación -->
+        <header class="header">
+            <div class="header-left">
+                <h1>ALAEITS 2025</h1>
+                <nav class="main-nav">
+                    <a href="#" class="nav-item active" data-view="dashboard">📊 Dashboard</a>
+                    <a href="#" class="nav-item" data-view="schedule">🗓️ Planificación</a>
+                    <a href="#" class="nav-item" data-view="search">🔍 Búsqueda</a>
+                </nav>
+            </div>
+            <div class="header-right">
+                <button id="logout-btn" class="btn btn-danger">Cerrar Sesión</button>
+            </div>
+        </header>
+
+        <!-- Contenido Principal que cambiará según la vista -->
+        <main class="main-content">
+
+            <!-- VISTA #1: DASHBOARD DE ANALÍTICAS -->
+            <div id="dashboard-view" class="view-container active">
+                <div class="dashboard-layout">
+                    <section class="metrics-section">
+                        <div id="metrics-grid" class="metrics-grid"></div>
+                    </section>
+                    <section id="charts-container" class="charts-container"></section>
+                </div>
+            </div>
+
+            <!-- VISTA #2: PLANIFICACIÓN DEL HORARIO -->
+            <div id="schedule-view" class="view-container">
+                <div class="schedule-layout">
+                    <aside class="sidebar">
+                        <div class="sidebar-header">
+                            <h2>Eventos Pendientes</h2>
+                            <span id="draft-count" class="badge badge-id">0</span>
+                        </div>
+                        <div id="draft-list" class="event-list"></div>
+                    </aside>
+                    <div class="schedule-main">
+                        <div class="schedule-controls">
+                            <div class="filters">
+                                <label for="day-filter">Filtrar por Día:</label>
+                                <select id="day-filter">
+                                    <option value="todos">Todos los Días</option>
+                                    <option value="martes 14 de octubre">Martes 14</option>
+                                    <option value="miércoles 15 de octubre">Miércoles 15</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="schedule-grid" class="schedule-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA #3: BÚSQUEDA Y OPERACIONES EN LOTE -->
+            <div id="search-view" class="view-container">
+                 <div class="search-layout">
+                    <header class="search-header">
+                        <div class="search-controls">
+                            <div class="search-input-group">
+                                <span class="search-icon">🔍</span>
+                                <input type="text" id="search-input" class="search-input" placeholder="Buscar por título, autor o ID...">
+                            </div>
+                            <div id="search-filters" class="search-filters">
+                                <select name="status"></select>
+                                <select name="event_type"></select>
+                                <select name="scheduled_day"></select>
+                            </div>
+                            <button id="bulk-mode-btn" class="btn btn-outline">Activar Modo Lote</button>
+                        </div>
+                        <div id="bulk-actions-bar" class="bulk-actions-bar">
+                            <button id="select-all-btn" class="btn btn-secondary">Seleccionar Todo</button>
+                            <select id="bulk-operation">
+                                <option value="">-- Elegir operación --</option>
+                                <option value="publish">Marcar como Publicado</option>
+                                <option value="draft">Marcar como Borrador</option>
+                                <option value="delete">Eliminar Seleccionados</option>
+                            </select>
+                            <button id="apply-bulk-btn" class="btn btn-primary" disabled>Aplicar</button>
+                        </div>
+                    </header>
+                    <div id="search-results" class="search-results"></div>
+                 </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- MODAL PARA DETALLES DEL EVENTO (oculto por defecto) -->
+    <div id="event-modal" class="modal">
+        <div id="event-modal-content" class="modal-content"></div>
+    </div>
+
+    <!-- SUPERPOSICIÓN DE CARGA (oculto por defecto) -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="src/js/auth.js" defer></script>
+    <script src="src/js/dashboard.js"></script>
+</body>
+</html>

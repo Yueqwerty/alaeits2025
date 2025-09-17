@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
+        form { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { text-align: center; }
+        div { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; }
+        input { width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; padding: 0.75rem; border: none; background-color: #007bff; color: white; border-radius: 4px; cursor: pointer; }
+        #error-message { color: red; text-align: center; margin-top: 1rem; display: none; }
+    </style>
+</head>
+<body>
+    <form id="login-form">
+        <h1>Admin Login</h1>
+        <div>
+            <label for="username">Usuario</label>
+            <input type="text" id="username" required>
+        </div>
+        <div>
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" required>
+        </div>
+        <button type="submit">Ingresar</button>
+        <p id="error-message">Usuario o contraseña incorrectos.</p>
+    </form>
+
+    <script src="src/js/auth.js"></script>
+</body>
+</html>

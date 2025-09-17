@@ -1,13 +1,72 @@
+# ===================================================================
+# Archivo .gitignore optimizado para el proyecto ALAEITS 2025
+# ===================================================================
+
+# 1. Archivos de sistema operativo y editores
+# -------------------------------------------------------------------
+# Ignora archivos de metadata de macOS y Windows.
 .DS_Store
 Thumbs.db
 
+# Ignora configuraciones de editores como VS Code.
+.vscode/
+
+
+# 2. Archivos de Logs
+# -------------------------------------------------------------------
+# Ignora logs generados por npm o por la aplicación.
 *.log
 npm-debug.log*
 
+
+# 3. Dependencias
+# -------------------------------------------------------------------
+# ¡La regla más importante! Nunca subir las dependencias del proyecto.
+# Estas se instalan con `npm install`.
 node_modules/
 
-/dist
 
+# 4. Archivos generados por el Build
+# -------------------------------------------------------------------
+# La carpeta 'dist' es generada por Tailwind/PostCSS a partir de 'src'.
+# Siempre debemos ignorarla y generarla en el servidor o localmente.
+dist/
+
+
+# 5. Archivos de Entorno y Secretos
+# -------------------------------------------------------------------
+# ¡CRÍTICO PARA LA SEGURIDAD! Nunca subir archivos que contengan
+# claves de API, contraseñas o URLs de bases de datos.
 .env
 .env.local
 .env.*.local
+
+
+# 6. Archivos de Configuración Local y de Despliegue
+# -------------------------------------------------------------------
+# La carpeta .vercel contiene la configuración de enlace local a Vercel
+# que es específica de cada máquina.
+.vercel/
+
+
+# 7. Archivos de Migración y Datos Sensibles
+# -------------------------------------------------------------------
+# La carpeta _migration_data contiene los CSVs con los datos iniciales.
+# A menudo se ignora para no exponer listas de correos, nombres, etc.
+# Si tus CSV no contienen datos sensibles, puedes eliminar esta línea.
+_migration_data/
+
+
+# 8. Archivos de Verificación y Scripts de Un Solo Uso
+# -------------------------------------------------------------------
+# Archivo de verificación de Google.
+google*.html
+
+# Scripts de un solo uso que no son parte de la aplicación principal.
+# Si los quieres guardar como referencia, puedes eliminar estas líneas.
+migrate.js
+hash-password.js
+
+# -------------------------------------------------------------------
+# Fin del archivo .gitignore
+# -------------------------------------------------------------------

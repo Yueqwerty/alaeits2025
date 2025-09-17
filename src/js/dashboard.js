@@ -390,7 +390,6 @@ class EnhancedCongressDashboard {
         <div class="activity-list">
           ${recentActivity.map(event => `
             <div class="activity-item">
-              <div class="activity-icon ${event.event_type}"></div>
               <div class="activity-content">
                 <div class="activity-title">${event.title?.es || 'No title'}</div>
                 <div class="activity-meta">

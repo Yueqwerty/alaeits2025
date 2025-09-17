@@ -301,7 +301,6 @@ class EnhancedCongressDashboard {
     
     const metricsHTML = `
       <div class="metric-card">
-        <div class="metric-icon"></div>
         <div class="metric-content">
           <div class="metric-value">${summary.totalEvents}</div>
           <div class="metric-label">Total Events</div>
@@ -309,7 +308,6 @@ class EnhancedCongressDashboard {
       </div>
       
       <div class="metric-card">
-        <div class="metric-icon"></div>
         <div class="metric-content">
           <div class="metric-value">${summary.totalScheduled}</div>
           <div class="metric-label">Scheduled</div>
@@ -318,7 +316,6 @@ class EnhancedCongressDashboard {
       </div>
       
       <div class="metric-card">
-        <div class="metric-icon"></div>
         <div class="metric-content">
           <div class="metric-value">${summary.totalDrafts}</div>
           <div class="metric-label">Drafts Pending</div>
@@ -326,7 +323,6 @@ class EnhancedCongressDashboard {
       </div>
       
       <div class="metric-card">
-        <div class="metric-icon"></div>
         <div class="metric-content">
           <div class="metric-value">${summary.overallUtilization}%</div>
           <div class="metric-label">Room Utilization</div>

@@ -1,11 +1,10 @@
-// api/admin/event-manager.js (VERSIÓN FINAL CON UPDATE DINÁMICO Y DELETE)
+require('dotenv').config({ path: '.env.local' }); // CORREGIDO: ruta correcta
 
-require('dotenv').config({ path: '../../.env.local' });
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
 
 const pool = new Pool({
-  connectionString: process.env.POSTG-RES_URL,
+  connectionString: process.env.POSTGRES_URL, // CORREGIDO: nombre correcto
   ssl: { rejectUnauthorized: false },
 });
 
@@ -29,65 +28,90 @@ module.exports = async (req, res) => {
       // --- CASO DE ACTUALIZACIÓN ---
       case 'PUT': {
         const { eventId, updatedData } = req.body;
+        
+        console.log('🔄 Event Manager PUT - eventId:', eventId, 'updatedData:', updatedData);
+        
         if (!eventId || !updatedData) {
-          return res.status(400).json({ message: 'Faltan datos en la petición (eventId o updatedData).' });
+          return res.status(400).json({ 
+            message: 'Faltan datos en la petición (eventId o updatedData).' 
+          });
         }
 
-        // --- LÓGICA DINÁMICA ---
-        // Obtenemos los nombres de las columnas a actualizar desde el objeto `updatedData`
+        // --- LÓGICA DINÁMICA CORREGIDA ---
         const fields = Object.keys(updatedData);
-        // Obtenemos los valores correspondientes
         const values = Object.values(updatedData);
 
-        // Si no se enviaron campos para actualizar, no hacemos nada
         if (fields.length === 0) {
-          return res.status(400).json({ message: 'No se proporcionaron campos para actualizar.' });
+          return res.status(400).json({ 
+            message: 'No se proporcionaron campos para actualizar.' 
+          });
         }
         
-        // Añadimos 'updated_at' para que siempre se actualice la fecha de modificación
-        fields.push('updated_at');
-        values.push('NOW()');
-
-        // Construimos la cláusula SET de la consulta SQL dinámicamente
-        // Ejemplo: "title" = $1, "authors" = $2, "updated_at" = $3
+        // Construimos la cláusula SET dinámicamente
         const setClause = fields.map((field, i) => `"${field}" = $${i + 1}`).join(', ');
-
-        const query = `UPDATE events SET ${setClause} WHERE id = $${fields.length + 1} RETURNING *`;
         
-        // El último valor del array de valores es el eventId para el WHERE
+        // CORREGIDO: Añadimos updated_at como función SQL, no como parámetro
+        const query = `
+          UPDATE events 
+          SET ${setClause}, updated_at = NOW() 
+          WHERE id = $${fields.length + 1} 
+          RETURNING *
+        `;
+        
+        console.log('📝 SQL Query:', query);
+        console.log('📝 Query params:', [...values, eventId]);
+        
         const { rows } = await pool.query(query, [...values, eventId]);
 
         if (rows.length === 0) {
           return res.status(404).json({ message: 'Evento no encontrado.' });
         }
-        return res.status(200).json({ message: 'Evento actualizado exitosamente.', event: rows[0] });
+        
+        console.log('✅ Event updated successfully:', rows[0]);
+        return res.status(200).json({ 
+          message: 'Evento actualizado exitosamente.', 
+          event: rows[0] 
+        });
       }
 
       // --- CASO DE ELIMINACIÓN ---
       case 'DELETE': {
         const { eventId } = req.body;
+        
         if (!eventId) {
           return res.status(400).json({ message: 'Falta el ID del evento.' });
         }
 
+        console.log('🗑️ Deleting event:', eventId);
+        
         const { rowCount } = await pool.query('DELETE FROM events WHERE id = $1', [eventId]);
 
         if (rowCount === 0) {
           return res.status(404).json({ message: 'Evento no encontrado para eliminar.' });
         }
+        
+        console.log('✅ Event deleted successfully');
         return res.status(200).json({ message: 'Evento eliminado exitosamente.' });
       }
 
-      // Si es cualquier otro método (GET, POST, etc.)
+      // Si es cualquier otro método
       default:
         res.setHeader('Allow', ['PUT', 'DELETE']);
-        return res.status(405).json({ message: `Método ${req.method} no permitido.` });
+        return res.status(405).json({ 
+          message: `Método ${req.method} no permitido.` 
+        });
     }
   } catch (error) {
+    console.error('❌ Error en event-manager:', error);
+    console.error('❌ Error stack:', error.stack);
+    
     if (error.message === 'Token no proporcionado' || error instanceof jwt.JsonWebTokenError) {
       return res.status(401).json({ message: 'Autenticación fallida.' });
     }
-    console.error('Error en event-manager:', error);
-    return res.status(500).json({ message: 'Error interno del servidor.' });
+    
+    return res.status(500).json({ 
+      message: 'Error interno del servidor.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };

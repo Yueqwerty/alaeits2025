@@ -473,7 +473,44 @@ class EnhancedCongressDashboard {
       });
       this.gridEl.appendChild(dayBlock);
     });
+    setTimeout(() => this.updateSlotVisuals(), 100);
   }
+
+  updateSlotVisuals() {
+  const roomSlots = document.querySelectorAll('.room-slot');
+  
+  roomSlots.forEach(slot => {
+    const eventCards = slot.querySelectorAll('.event-card');
+    const eventCount = eventCards.length;
+    const maxCapacity = 6;
+    
+    slot.classList.remove('is-full', 'is-overloaded');
+    
+    const existingIndicator = slot.querySelector('.capacity-indicator');
+    if (existingIndicator) {
+      existingIndicator.remove();
+    }
+    
+    let indicatorClass = '';
+    let indicatorText = `${eventCount}/${maxCapacity}`;
+    
+    if (eventCount === maxCapacity) {
+      slot.classList.add('is-full');
+      indicatorClass = 'full';
+    } else if (eventCount > maxCapacity) {
+      slot.classList.add('is-overloaded');
+      indicatorClass = 'overloaded';
+    }
+    
+    if (eventCount > 0) {
+      const indicator = document.createElement('div');
+      indicator.className = `capacity-indicator ${indicatorClass}`;
+      indicator.textContent = indicatorText;
+      slot.style.position = 'relative';
+      slot.appendChild(indicator);
+    }
+  });
+}
 
   renderSearchView() {
     // Populate filter options
@@ -527,6 +564,7 @@ class EnhancedCongressDashboard {
     const title = event.title?.es || 'No Title';
     const authors = event.authors?.es || 'No Authors';
     const typeClass = event.event_type === 'simposio' ? 'simposio' : '';
+    const clickHandler = `onclick="dashboard.showEventModal('${event.id}')"`;
 
     if (type === 'mini') {
       return `<div class="event-card event-card-mini ${typeClass}" data-id="${event.id}" data-tooltip="${title}\n${authors}" onclick="dashboard.showEventDetails('${event.id}')">
@@ -755,32 +793,56 @@ class EnhancedCongressDashboard {
   }
 
   initializeDragAndDrop() {
-    this.sortableInstances.forEach(s => {
-      if (s && typeof s.destroy === 'function') {
-        s.destroy();
-      }
-    });
-    this.sortableInstances = [];
-    
-    const containers = [
-      this.draftListEl, 
-      ...document.querySelectorAll('.room-slot')
-    ].filter(Boolean);
+  this.sortableInstances.forEach(s => {
+    if (s && typeof s.destroy === 'function') {
+      s.destroy();
+    }
+  });
+  this.sortableInstances = [];
+  
+  const containers = [
+    this.draftListEl, 
+    ...document.querySelectorAll('.room-slot')
+  ].filter(Boolean);
 
-    containers.forEach(container => {
-      if (container) {
-        const sortableInstance = new Sortable(container, {
-          group: 'shared',
-          animation: 150,
-          ghostClass: 'sortable-ghost',
-          chosenClass: 'sortable-chosen',
-          dragClass: 'sortable-drag',
-          onEnd: (evt) => this.handleDrop(evt),
-        });
-        this.sortableInstances.push(sortableInstance);
-      }
-    });
-  }
+  containers.forEach(container => {
+    if (container) {
+      const sortableInstance = new Sortable(container, {
+        group: 'shared',
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        
+        // NUEVA VALIDACIÓN DE MOVIMIENTO
+        onMove: (evt) => {
+          const targetContainer = evt.to;
+          const maxCapacity = 6;
+          
+          // Solo validar si el destino es un room-slot
+          if (targetContainer.classList.contains('room-slot')) {
+            const currentEventCount = targetContainer.querySelectorAll('.event-card').length;
+            
+            // Bloquear si ya está en capacidad máxima
+            if (currentEventCount >= maxCapacity) {
+              this.showNotification('This time slot is full (max 6 events)', 'warning');
+              return false; // Bloquea el movimiento
+            }
+          }
+          
+          return true; // Permite el movimiento
+        },
+        
+        onEnd: (evt) => {
+          this.handleDrop(evt);
+          // Actualizar visuals después del drop
+          setTimeout(() => this.updateSlotVisuals(), 200);
+        },
+      });
+      this.sortableInstances.push(sortableInstance);
+    }
+  });
+}
 
   async handleDrop(evt) {
     const { item, from, to, newDraggableIndex } = evt;

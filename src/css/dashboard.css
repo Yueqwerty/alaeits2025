@@ -1437,3 +1437,36 @@ html, body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Añadir a dashboard.css */
+.room-slot.is-full {
+  background-color: rgba(76, 175, 80, 0.1);
+  border-color: #4CAF50;
+}
+
+.room-slot.is-overloaded {
+  background-color: rgba(244, 67, 54, 0.1);
+  border-color: #f44336;
+  animation: pulse-red 1s infinite;
+}
+
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(244, 67, 54, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+}
+
+.capacity-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 0.7em;
+  font-weight: bold;
+}
+
+.capacity-indicator.full { background: #bbecbd; }
+.capacity-indicator.overloaded { background: #e1827b; }

@@ -1438,7 +1438,6 @@ html, body {
   }
 }
 
-/* Añadir a dashboard.css */
 .room-slot.is-full {
   background-color: rgba(76, 175, 80, 0.1);
   border-color: #4CAF50;

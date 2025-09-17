@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
       case 'PUT': {
         const { eventId, updatedData } = req.body;
         
-        console.log('🔄 Event Manager PUT - eventId:', eventId, 'updatedData:', updatedData);
+        console.log('Event Manager PUT - eventId:', eventId, 'updatedData:', updatedData);
         
         if (!eventId || !updatedData) {
           return res.status(400).json({ 
@@ -58,16 +58,15 @@ module.exports = async (req, res) => {
           RETURNING *
         `;
         
-        console.log('📝 SQL Query:', query);
-        console.log('📝 Query params:', [...values, eventId]);
+        console.log('SQL Query:', query);
+        console.log('Query params:', [...values, eventId]);
         
         const { rows } = await pool.query(query, [...values, eventId]);
 
         if (rows.length === 0) {
           return res.status(404).json({ message: 'Evento no encontrado.' });
         }
-        
-        console.log('✅ Event updated successfully:', rows[0]);
+        console.log('Event updated successfully:', rows[0]);
         return res.status(200).json({ 
           message: 'Evento actualizado exitosamente.', 
           event: rows[0] 
@@ -82,15 +81,14 @@ module.exports = async (req, res) => {
           return res.status(400).json({ message: 'Falta el ID del evento.' });
         }
 
-        console.log('🗑️ Deleting event:', eventId);
+        console.log('Deleting event:', eventId);
         
         const { rowCount } = await pool.query('DELETE FROM events WHERE id = $1', [eventId]);
 
         if (rowCount === 0) {
           return res.status(404).json({ message: 'Evento no encontrado para eliminar.' });
         }
-        
-        console.log('✅ Event deleted successfully');
+        console.log('Event deleted successfully');
         return res.status(200).json({ message: 'Evento eliminado exitosamente.' });
       }
 
@@ -102,8 +100,8 @@ module.exports = async (req, res) => {
         });
     }
   } catch (error) {
-    console.error('❌ Error en event-manager:', error);
-    console.error('❌ Error stack:', error.stack);
+    console.error('Error en event-manager:', error);
+    console.error('Error stack:', error.stack);
     
     if (error.message === 'Token no proporcionado' || error instanceof jwt.JsonWebTokenError) {
       return res.status(401).json({ message: 'Autenticación fallida.' });

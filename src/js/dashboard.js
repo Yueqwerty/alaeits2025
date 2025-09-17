@@ -376,22 +376,7 @@ class EnhancedCongressDashboard {
           `).join('')}
         </div>
       </div>
-      
-      <div class="chart-container">
-        <h3>Top Room Utilization</h3>
-        <div class="list-chart">
-          ${roomUtilization.slice(0, 10).map(room => `
-            <div class="list-item">
-              <span class="list-label">Room ${room.room}</span>
-              <div class="list-bar">
-                <div class="list-fill" style="width: ${room.utilization_rate}%"></div>
-              </div>
-              <span class="list-value">${room.utilization_rate}%</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
+          `;
     
     this.chartsContainer.innerHTML = chartsHTML;
   }

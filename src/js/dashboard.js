@@ -74,12 +74,16 @@ class EnhancedCongressDashboard {
     });
   }
 
-  // Callbacks para cambios reactivos
   onDataChange(property, value) {
-    if (property === 'searchResults') {
+    if (property === 'analytics' && this.state.currentView === 'dashboard') {
+      this.scheduleRender(() => this.renderDashboard());
+    } 
+    else if (property === 'searchResults') {
       this.scheduleRender(() => this.renderSearchResults());
     } else if (['drafts', 'published'].includes(property)) {
-      this.scheduleRender(() => this.renderScheduleView());
+      if (this.state.currentView === 'schedule') {
+          this.scheduleRender(() => this.renderScheduleView());
+      }
     }
   }
 

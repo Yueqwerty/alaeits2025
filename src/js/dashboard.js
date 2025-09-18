@@ -124,7 +124,8 @@ class EnhancedCongressDashboard {
       applyBulkBtn: '#apply-bulk-btn',
       eventModal: '#event-modal',
       eventModalContent: '#event-modal-content',
-      loadingOverlay: '#loading-overlay'
+      loadingOverlay: '#loading-overlay',
+      syncMdbBtn: '#sync-mdb-btn'
     };
 
     Object.entries(selectors).forEach(([key, selector]) => {
@@ -322,6 +323,11 @@ class EnhancedCongressDashboard {
       return;
     }
 
+    if (target === this.elements.syncMdbBtn) {
+      this.handleSyncMdb();
+      return;
+    }
+
     if (target === this.elements.bulkModeBtn) {
       this.toggleBulkMode();
       return;
@@ -479,7 +485,7 @@ class EnhancedCongressDashboard {
       const response = await fetch('/api/admin/event-manager', {
         method: 'PUT',
         headers: { 
-          'Content-Type': 'application/json', 
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.authToken}` 
         },
         body: JSON.stringify({ eventId, updatedData }),
@@ -1642,6 +1648,61 @@ class EnhancedCongressDashboard {
     this.cache.clear();
     
     console.log('Dashboard cleanup completed');
+  }
+
+  // ✅ FUNCIÓN CORREGIDA handleSyncMdb
+  async handleSyncMdb() {
+    if (!confirm('Esto buscará nuevos eventos en la hoja de cálculo MBD y los añadirá a la lista de pendientes. ¿Continuar?')) {
+        return;
+    }
+
+    // Deshabilitar el botón durante sync
+    if (this.elements.syncMdbBtn) {
+        this.elements.syncMdbBtn.disabled = true;
+        this.elements.syncMdbBtn.innerHTML = '<span class="spinner"></span> Sincronizando...';
+    }
+
+    this.showLoading(true);
+    this.showNotification('Iniciando sincronización...', 'info');
+
+    try {
+        const response = await fetch('/api/admin/sync-mdb', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${this.authToken}`
+            }
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Error en el servidor durante la sincronización.');
+        }
+
+        // Mostrar resultado más detallado
+        if (result.addedCount > 0) {
+            this.showNotification(`Sincronización exitosa: ${result.addedCount} nuevos eventos añadidos`, 'success');
+        } else {
+            this.showNotification('Sincronización completada: No se encontraron nuevos eventos', 'info');
+        }
+
+        // ✅ CORRECCIÓN: Usar los métodos correctos
+        if (result.addedCount > 0) {
+            await this.reloadData(['events', 'analytics']); // ✅ Método correcto
+            this.renderCurrentView();                       // ✅ Método correcto
+        }
+
+    } catch (error) {
+        this.handleError('Sincronización MBD', error);
+    } finally {
+        this.showLoading(false);
+        
+        // Reactivar botón
+        if (this.elements.syncMdbBtn) {
+            this.elements.syncMdbBtn.disabled = false;
+            this.elements.syncMdbBtn.innerHTML = '<i class="fas fa-sync"></i> Sincronizar MBD';
+        }
+    }
   }
 }
 

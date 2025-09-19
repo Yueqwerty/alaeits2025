@@ -62,20 +62,22 @@ class ALAEITSProgramManager {
     /**
      * Inicialización del sistema
      */
-    async init() {
+        async init() {
         const startTime = performance.now();
         
         try {
             await this.waitForDOM();
             this.cacheElements();
-            this.ensureToastContainer
+            this.ensureToastContainer(); // ✅ CORREGIDO - Agregados paréntesis
             this.loadFavorites();
             this.setupEventListeners();
             
             await this.loadData();
             
-            this.setupInitialView();
+            // ✅ MOVER ESTA LÍNEA ANTES DE setupInitialView
             this.state.initialized = true;
+            
+            this.setupInitialView();
             
             this.metrics.loadTime = performance.now() - startTime;
             this.log(`Sistema inicializado en ${this.metrics.loadTime.toFixed(2)}ms`);
@@ -292,19 +294,18 @@ class ALAEITSProgramManager {
     /**
      * Configuración inicial de la vista
      */
-    setupInitialView() {
-        this.renderTabs();
-        this.applyStateFromURL();
-        
-        if (!this.state.currentDay) {
-            const firstDay = Object.keys(this.config.diasConfig)[0];
-            this.state.currentDay = firstDay;
+        setupInitialView() {
+            this.renderTabs();
+            this.applyStateFromURL();
+            
+            if (!this.state.currentDay) {
+                const firstDay = Object.keys(this.config.diasConfig)[0];
+                this.state.currentDay = firstDay;
+            }
+            
+            this.setActiveTab(this.state.currentDay);
+            this.performSearch();
         }
-        
-        this.setActiveTab(this.state.currentDay);
-        this.setActiveTab(this.state.currentDay);
-        this.render();
-    }
 
     /**
      * Configuración de event listeners
@@ -588,15 +589,15 @@ class ALAEITSProgramManager {
         }
     }
 
-        ensureToastContainer() {
-            if (!this.elements.toastContainer) {
-                const container = document.createElement('div');
-                container.id = 'toast-container';
-                container.className = 'toast-container';
-                document.body.appendChild(container);
-                this.elements.toastContainer = container;
-            }
+    ensureToastContainer() {
+        if (!this.elements.toastContainer) {
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+            this.elements.toastContainer = container;
         }
+    }
 
     /**
      * Crear tarjeta de evento (MÉTODO CORREGIDO)

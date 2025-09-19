@@ -68,6 +68,7 @@ class ALAEITSProgramManager {
         try {
             await this.waitForDOM();
             this.cacheElements();
+            this.ensureToastContainer
             this.loadFavorites();
             this.setupEventListeners();
             
@@ -102,13 +103,11 @@ class ALAEITSProgramManager {
      */
     cacheElements() {
         const selectors = {
-            // Contenedores principales
             programContent: '#program-content',
             favoritesView: '#favorites-view',
             programTabs: '#program-tabs',
             noResults: '#no-results',
             
-            // Controles de filtrado
             searchInput: '#program-search-input',
             filterType: '#filter-type',
             filterSala: '#filter-sala', 
@@ -116,10 +115,8 @@ class ALAEITSProgramManager {
             resetBtn: '#reset-filters',
             clearFiltersNoResultsBtn: '#clear-filters-no-results',
             
-            // UI y feedback
             toastContainer: '#toast-container',
-            header: '.main-header',
-            loadingIndicator: '.loading-indicator'
+            header: '.main-header'
         };
 
         Object.entries(selectors).forEach(([key, selector]) => {
@@ -127,7 +124,10 @@ class ALAEITSProgramManager {
             if (element) {
                 this.elements[key] = element;
             } else {
-                this.warn(`Elemento no encontrado: ${selector}`);
+                // Solo mostrar warning para elementos realmente importantes
+                if (!['toastContainer', 'noResults', 'header'].includes(key)) {
+                    this.warn(`Elemento no encontrado: ${selector}`);
+                }
             }
         });
 
@@ -586,6 +586,16 @@ class ALAEITSProgramManager {
             this.elements.favoritesView.innerHTML = noFavoritesHTML;
         }
     }
+
+        ensureToastContainer() {
+            if (!this.elements.toastContainer) {
+                const container = document.createElement('div');
+                container.id = 'toast-container';
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+                this.elements.toastContainer = container;
+            }
+        }
 
     /**
      * Crear tarjeta de evento (MÉTODO CORREGIDO)

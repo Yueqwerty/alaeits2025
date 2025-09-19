@@ -302,6 +302,7 @@ class ALAEITSProgramManager {
         }
         
         this.setActiveTab(this.state.currentDay);
+        this.setActiveTab(this.state.currentDay);
         this.render();
     }
 

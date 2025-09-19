@@ -880,6 +880,12 @@ class ALAEITSProgramManager {
         const hasResults = this.state.filteredData.length > 0;
         const hasActiveFilters = this.hasActiveFilters();
 
+        // ✅ CRÍTICO: No mostrar #no-results en vista de favoritos
+        if (this.state.currentDay === 'favoritos') {
+            this.elements.noResults.classList.add('hidden');
+            return;
+        }
+
         this.elements.noResults.classList.toggle('hidden', hasResults);
 
         if (!hasResults && this.elements.noResults) {
@@ -887,11 +893,14 @@ class ALAEITSProgramManager {
             
             if (hasActiveFilters) {
                 message = 'No hay eventos que coincidan con los filtros aplicados.';
-            } else if (this.state.currentDay === 'favoritos') {
-                message = 'No has guardado ningún evento como favorito.';
             }
 
-            this.elements.noResults.querySelector('p')?.textContent || (this.elements.noResults.innerHTML = `<p class="text-center text-gray-600">${message}</p>`);
+            const existingP = this.elements.noResults.querySelector('p');
+            if (existingP) {
+                existingP.textContent = message;
+            } else {
+                this.elements.noResults.innerHTML = `<p class="text-center text-gray-600">${message}</p>`;
+            }
         }
     }
 

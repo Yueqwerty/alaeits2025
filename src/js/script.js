@@ -904,6 +904,12 @@ class ALAEITSProgramManager {
         }
     }
 
+    updateNoResultsState() {
+    if (!this.elements.noResults) return;
+
+    this.elements.noResults.classList.add('hidden');
+}
+
     hasActiveFilters() {
         return this.state.filters.search !== '' ||
                this.state.filters.type !== 'all' ||

@@ -368,18 +368,22 @@ body::after {
     transform: scaleX(1);
 }
 
+#program-content {
+    width: 100%;
+    min-height: 400px;
+    padding: 1rem;
+}
+
 .program-content-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
+    width: 100%;
     transition: opacity 0.3s ease-out;
+    justify-content: start; /* Evita que las tarjetas se centren cuando hay pocas */
 }
 
-.program-content-grid.loading {
-    opacity: 0.5;
-    transform: scale(0.98);
-}
-
+/* Limitar el ancho máximo de las tarjetas cuando hay pocas */
 .program-card {
     background-color: white;
     border-radius: var(--radius-card);
@@ -387,7 +391,16 @@ body::after {
     border-left: 5px solid;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    max-width: 450px; /* Añadir ancho máximo */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+@media (min-width: 1024px) {
+    .program-content-grid {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2.5rem;
+    }
 }
 
 .program-card:hover {
@@ -432,6 +445,7 @@ body::after {
     font-weight: 700;
     color: var(--color-text-dark);
     margin-bottom: 0.5rem;
+    line-height: 1.3;
 }
 
 .card-moderator {
@@ -446,6 +460,7 @@ body::after {
     font-weight: 500;
     margin-bottom: 1rem;
     flex-grow: 1;
+    line-height: 1.4;
 }
 
 .card-eje {
@@ -456,6 +471,31 @@ body::after {
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
     align-self: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+/* TAG DE TURNO MEJORADO */
+.card-turn-order {
+    font-size: 0.7rem;
+    color: var(--color-text-dark);
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border: 1px solid #cbd5e1;
+    padding: 4px 10px;
+    border-radius: 8px;
+    display: inline-block;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    align-self: flex-start;
+}
+
+.card-tags {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
 }
 
 .card-footer {
@@ -468,6 +508,8 @@ body::after {
     justify-content: space-between;
     border-bottom-left-radius: var(--radius-card);
     border-bottom-right-radius: var(--radius-card);
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 .favorite-btn {
@@ -477,6 +519,7 @@ body::after {
     cursor: pointer;
     background: none;
     border: none;
+    z-index: 10;
 }
 
 .favorite-btn svg {
@@ -499,6 +542,7 @@ body::after {
     cursor: pointer;
     background: none;
     border: none;
+    z-index: 10;
 }
 
 .share-btn svg {

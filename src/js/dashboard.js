@@ -860,14 +860,21 @@ class EnhancedCongressDashboard {
       });
     });
   }
-
-    extractEjeNumber(ejeData) {
-      if (!ejeData || !ejeData.es) return null;
-      
-      const match = ejeData.es.match(/EJE (\d+):/);
+  extractEjeNumber(ejeData) {
+    if (!ejeData) return null;
+    
+    if (typeof ejeData === 'object' && ejeData.es) {
+      const match = ejeData.es.match(/EJE (\d+):/i);
       return match ? match[1] : null;
     }
-
+    
+    if (typeof ejeData === 'string') {
+      const match = ejeData.match(/EJE (\d+):/i);
+      return match ? match[1] : null;
+    }
+    
+    return null;
+  }
   createEventCard(event, type) {
     const title = event.title?.es || 'Sin Título';
     const authors = event.authors?.es || 'Sin Autores';
@@ -877,28 +884,33 @@ class EnhancedCongressDashboard {
     card.dataset.id = event.id;
     card.className = `event-card ${typeClass}`;
 
-      if (type === 'mini') {
-        card.classList.add('event-card-mini');
-        card.setAttribute('data-tooltip', `${title}\n${authors}`);
-        
-        const ejeNumber = this.extractEjeNumber(event.eje);
-        
-        card.innerHTML = `
-          <div class="event-id">${event.id}</div>
-          ${ejeNumber ? `<div class="event-eje">Eje ${ejeNumber}</div>` : ''}
-          ${event.turn_order !== null ? `<div class="turn-order">#${event.turn_order + 1}</div>` : ''}
-        `;
-      } else {
+    console.log('Event data for', event.id, ':', {
+      eje: event.eje,
+      ejeType: typeof event.eje
+    });
+
+    if (type === 'mini') {
+      card.classList.add('event-card-mini');
+      card.setAttribute('data-tooltip', `${title}\n${authors}`);
+      
+      const ejeNumber = this.extractEjeNumber(event.eje);
+      
       card.innerHTML = `
-        <div class="event-header">
-          <strong>${title}</strong>
-          <span class="event-id-badge">${event.id}</span>
-        </div>
-        <p class="event-authors">${authors}</p>
-        <div class="event-meta">
-          <span class="event-type">${event.event_type}</span>
-        </div>
+        <div class="event-id">${event.id}</div>
+        ${ejeNumber ? `<div class="event-eje">Eje ${ejeNumber}</div>` : ''}
+        ${event.turn_order !== null ? `<div class="turn-order">#${event.turn_order + 1}</div>` : ''}
       `;
+    } else {
+      card.innerHTML = `
+          <div class="event-header">
+            <strong>${title}</strong>
+            <span class="event-id-badge">${event.id}</span>
+          </div>
+          <p class="event-authors">${authors}</p>
+          <div class="event-meta">
+            <span class="event-type">${event.event_type}</span>
+          </div>
+        `;
     }
 
     return card;

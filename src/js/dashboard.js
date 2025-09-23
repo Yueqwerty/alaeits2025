@@ -861,6 +861,13 @@ class EnhancedCongressDashboard {
     });
   }
 
+    extractEjeNumber(ejeData) {
+      if (!ejeData || !ejeData.es) return null;
+      
+      const match = ejeData.es.match(/EJE (\d+):/);
+      return match ? match[1] : null;
+    }
+
   createEventCard(event, type) {
     const title = event.title?.es || 'Sin Título';
     const authors = event.authors?.es || 'Sin Autores';
@@ -870,14 +877,18 @@ class EnhancedCongressDashboard {
     card.dataset.id = event.id;
     card.className = `event-card ${typeClass}`;
 
-    if (type === 'mini') {
-      card.classList.add('event-card-mini');
-      card.setAttribute('data-tooltip', `${title}\n${authors}`);
-      card.innerHTML = `
-        <div class="event-id">${event.id}</div>
-        ${event.turn_order !== null ? `<div class="turn-order">#${event.turn_order + 1}</div>` : ''}
-      `;
-    } else {
+      if (type === 'mini') {
+        card.classList.add('event-card-mini');
+        card.setAttribute('data-tooltip', `${title}\n${authors}`);
+        
+        const ejeNumber = this.extractEjeNumber(event.eje);
+        
+        card.innerHTML = `
+          <div class="event-id">${event.id}</div>
+          ${ejeNumber ? `<div class="event-eje">Eje ${ejeNumber}</div>` : ''}
+          ${event.turn_order !== null ? `<div class="turn-order">#${event.turn_order + 1}</div>` : ''}
+        `;
+      } else {
       card.innerHTML = `
         <div class="event-header">
           <strong>${title}</strong>

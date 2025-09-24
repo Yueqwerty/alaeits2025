@@ -860,21 +860,24 @@ class EnhancedCongressDashboard {
       });
     });
   }
-  extractEjeNumber(ejeData) {
-    if (!ejeData) return null;
-    
-    if (typeof ejeData === 'object' && ejeData.es) {
-      const match = ejeData.es.match(/EJE (\d+):/i);
-      return match ? match[1] : null;
+    extractEjeNumber(event) {
+      if (event.eje && event.eje.es && typeof event.eje.es === 'string') {
+        const match = event.eje.es.match(/EJE\s*(\d+)/i);
+        if (match) return match[1];
+      }
+      
+      if (event.mesa_title && event.mesa_title.es && typeof event.mesa_title.es === 'string') {
+        const match = event.mesa_title.es.match(/EJE\s*(\d+)/i);
+        if (match) return match[1];
+      }
+      
+      if (event.title && event.title.es && typeof event.title.es === 'string') {
+        const match = event.title.es.match(/EJE\s*(\d+)/i);
+        if (match) return match[1];
+      }
+      
+      return null;
     }
-    
-    if (typeof ejeData === 'string') {
-      const match = ejeData.match(/EJE (\d+):/i);
-      return match ? match[1] : null;
-    }
-    
-    return null;
-  }
   createEventCard(event, type) {
     const title = event.title?.es || 'Sin Título';
     const authors = event.authors?.es || 'Sin Autores';
@@ -893,7 +896,7 @@ class EnhancedCongressDashboard {
       card.classList.add('event-card-mini');
       card.setAttribute('data-tooltip', `${title}\n${authors}`);
       
-      const ejeNumber = this.extractEjeNumber(event.eje);
+      const ejeNumber = this.extractEjeNumber(event);
       
       card.innerHTML = `
         <div class="event-id">${event.id}</div>
@@ -902,15 +905,15 @@ class EnhancedCongressDashboard {
       `;
     } else {
       card.innerHTML = `
-          <div class="event-header">
-            <strong>${title}</strong>
-            <span class="event-id-badge">${event.id}</span>
-          </div>
-          <p class="event-authors">${authors}</p>
-          <div class="event-meta">
-            <span class="event-type">${event.event_type}</span>
-          </div>
-        `;
+        <div class="event-header">
+          <strong>${title}</strong>
+          <span class="event-id-badge">${event.id}</span>
+        </div>
+        <p class="event-authors">${authors}</p>
+        <div class="event-meta">
+          <span class="event-type">${event.event_type}</span>
+        </div>
+      `;
     }
 
     return card;

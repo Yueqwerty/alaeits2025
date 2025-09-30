@@ -831,9 +831,9 @@ mark {
 }
 
 @keyframes shooting-star-anim {
-    0% { transform: translateX(-50vw) translateY(-50vh) rotate(45deg); width: 0; }
+    0% { transform: translateX(-50vw) translateY(-50vh) rotate(35deg); width: 0; }
     30% { width: 150px; }
-    100% { transform: translateX(50vw) translateY(50vh) rotate(45deg); width: 0; }
+    100% { transform: translateX(50vw) translateY(50vh) rotate(35deg); width: 0; }
 }
 
 @keyframes andes-rise-left {

@@ -557,6 +557,28 @@ body::after {
     transform: scale(1.1);
 }
 
+.ver-mesa-btn {
+    position: absolute;
+    bottom: 1rem;
+    right: 3.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.ver-mesa-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #9ca3af;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.ver-mesa-btn:hover svg {
+    color: var(--color-primary);
+    transform: scale(1.1);
+}
+
 .no-results-message {
     text-align: center;
 }
@@ -822,4 +844,281 @@ mark {
 @keyframes andes-rise-right {
   from { opacity: 0; transform: translateY(80%) translateX(10%); }
   to { opacity: 1; transform: translateY(0) translateX(0); }
+}
+
+/* Modal para mesa completa */
+.mesa-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mesa-modal-overlay.visible {
+    opacity: 1;
+}
+
+.mesa-modal-content {
+    background: white;
+    border-radius: var(--radius-card);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(20px) scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.mesa-modal-overlay.visible .mesa-modal-content {
+    transform: translateY(0) scale(1);
+}
+
+.mesa-modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, var(--color-primary-light), var(--color-secondary-light));
+}
+
+.mesa-modal-header h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--color-text-dark);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.mesa-modal-header p {
+    margin: 0;
+    font-weight: 500;
+    color: var(--color-text-dark);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-text-dark);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+}
+
+.mesa-modal-body {
+    padding: 1.5rem 2rem;
+}
+
+.timeline {
+    padding: 2rem;
+    position: relative;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 3rem;
+    top: 2rem;
+    bottom: 2rem;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--color-primary), var(--color-secondary));
+    border-radius: 1.5px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+    padding-left: 0;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-item::before {
+    content: attr(data-turn);
+    position: absolute;
+    left: -2.5rem;
+    top: 0.5rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    z-index: 2;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-content {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.timeline-content:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.timeline-content h4 {
+    margin: 0 0 0.75rem 0;
+    color: var(--color-text-dark);
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.timeline-authors {
+    margin: 0.5rem 0;
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.timeline-eje {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--color-primary-light), var(--color-secondary-light));
+    color: var(--color-text-dark);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+}
+
+.timeline-mesa-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.timeline-closing-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.timeline-closing {
+    background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+    border: 2px dashed #d1d5db;
+}
+
+.mesa-modal-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: white;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 4px 12px rgba(200, 16, 46, 0.3);
+    transform: translateY(-1px);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Responsive design para el modal */
+@media (max-width: 768px) {
+    .mesa-modal-content {
+        margin: 1rem;
+        width: calc(100% - 2rem);
+        max-height: calc(100vh - 2rem);
+    }
+
+    .mesa-modal-header,
+    .mesa-modal-info,
+    .mesa-modal-footer {
+        padding: 1rem;
+    }
+
+    .timeline {
+        padding: 1rem;
+    }
+
+    .timeline::before {
+        left: 2.25rem;
+    }
+
+    .timeline-item {
+        padding-left: 3rem;
+    }
+
+    .timeline-number {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.8rem;
+    }
+
+    .mesa-modal-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 }

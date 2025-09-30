@@ -824,6 +824,20 @@ class EnhancedCongressDashboard {
     });
     
     roomSlot.appendChild(eventsFragment);
+
+    // Añadir botón de acciones si hay eventos en el slot
+    if (eventsInSlot.length > 0) {
+      const actionsBtn = document.createElement('button');
+      actionsBtn.className = 'slot-actions-btn';
+      actionsBtn.innerHTML = '•••';
+      actionsBtn.setAttribute('data-tooltip', 'Mover mesa completa');
+      actionsBtn.onclick = (e) => {
+        e.stopPropagation();
+        this.showMoveSlotModal(day, time, roomNum, eventsInSlot.length);
+      };
+      roomSlot.appendChild(actionsBtn);
+    }
+
     return roomSlot;
   }
 
@@ -1678,6 +1692,222 @@ class EnhancedCongressDashboard {
     this.cache.clear();
     
     console.log('Dashboard cleanup completed');
+  }
+
+  // Modal para mover mesa completa
+  showMoveSlotModal(sourceDay, sourceTime, sourceRoom, eventCount) {
+    const modalHTML = `
+      <div class="modal-overlay" id="move-slot-modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Mover Mesa Completa</h3>
+            <button class="close-btn" onclick="this.closest('.modal-overlay').remove()">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="move-slot-info">
+              <p><strong>Origen:</strong> ${sourceDay} - ${sourceTime} - Sala ${sourceRoom}</p>
+              <p><strong>Eventos:</strong> ${eventCount} ponencias</p>
+            </div>
+            <div class="form-group">
+              <label for="destination-day">Día de destino:</label>
+              <select id="destination-day" class="form-select">
+                <option value="">Seleccionar día...</option>
+                ${Object.keys(this.scheduleBlocks).filter(k => k !== 'salas').map(day =>
+                  `<option value="${day}">${day}</option>`
+                ).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="destination-time">Horario de destino:</label>
+              <select id="destination-time" class="form-select" disabled>
+                <option value="">Primero selecciona un día</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="destination-room">Sala de destino:</label>
+              <select id="destination-room" class="form-select" disabled>
+                <option value="">Selecciona día y horario primero</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancelar</button>
+            <button class="btn btn-primary" onclick="dashboard.executeMoveSlot('${sourceDay}', '${sourceTime}', ${sourceRoom})" disabled id="move-confirm-btn">Mover Mesa</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Setup event listeners para el modal
+    const modal = document.getElementById('move-slot-modal');
+    const daySelect = document.getElementById('destination-day');
+    const timeSelect = document.getElementById('destination-time');
+    const roomSelect = document.getElementById('destination-room');
+    const confirmBtn = document.getElementById('move-confirm-btn');
+
+    // Listener para cambios en el día
+    daySelect.addEventListener('change', () => {
+      const selectedDay = daySelect.value;
+      timeSelect.disabled = !selectedDay;
+      roomSelect.disabled = true;
+      confirmBtn.disabled = true;
+
+      if (selectedDay) {
+        const timeBlocks = this.scheduleBlocks[selectedDay];
+        timeSelect.innerHTML = `
+          <option value="">Seleccionar horario...</option>
+          ${timeBlocks.map(time => `<option value="${time}">${time}</option>`).join('')}
+        `;
+        roomSelect.innerHTML = '<option value="">Primero selecciona un horario</option>';
+      } else {
+        timeSelect.innerHTML = '<option value="">Primero selecciona un día</option>';
+        roomSelect.innerHTML = '<option value="">Selecciona día y horario primero</option>';
+      }
+    });
+
+    // Listener para cambios en el horario
+    timeSelect.addEventListener('change', async () => {
+      const selectedDay = daySelect.value;
+      const selectedTime = timeSelect.value;
+      roomSelect.disabled = !selectedTime;
+      confirmBtn.disabled = true;
+
+      if (selectedDay && selectedTime) {
+        try {
+          // Obtener salas ocupadas para este slot
+          const occupiedRooms = await this.getOccupiedRooms(selectedDay, selectedTime);
+
+          // Generar opciones de salas (1-30)
+          const roomOptions = [];
+          roomOptions.push('<option value="">Seleccionar sala...</option>');
+
+          for (let roomNum = 1; roomNum <= 30; roomNum++) {
+            const occupancy = occupiedRooms.get(roomNum) || 0;
+            const capacity = 6;
+            const available = capacity - occupancy;
+
+            if (available > 0) {
+              roomOptions.push(`<option value="${roomNum}">Sala ${roomNum} (${available} espacios disponibles)</option>`);
+            } else {
+              roomOptions.push(`<option value="${roomNum}" disabled>Sala ${roomNum} (llena - ${occupancy}/${capacity})</option>`);
+            }
+          }
+
+          roomSelect.innerHTML = roomOptions.join('');
+        } catch (error) {
+          console.error('Error loading room availability:', error);
+          roomSelect.innerHTML = '<option value="">Error cargando salas</option>';
+        }
+      } else {
+        roomSelect.innerHTML = '<option value="">Primero selecciona un horario</option>';
+      }
+    });
+
+    // Listener para cambios en la sala
+    roomSelect.addEventListener('change', () => {
+      confirmBtn.disabled = !roomSelect.value;
+    });
+
+    // Cerrar modal al hacer click fuera
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.remove();
+      }
+    });
+  }
+
+  async getOccupiedRooms(day, time) {
+    try {
+      // Filtar eventos publicados para el día y hora específicos
+      const eventsInSlot = this.data.published.filter(event =>
+        event.scheduled_day === day &&
+        event.scheduled_time_block === time &&
+        event.room !== null
+      );
+
+      // Contar ocupación por sala
+      const occupancy = new Map();
+      eventsInSlot.forEach(event => {
+        const room = parseInt(event.room);
+        occupancy.set(room, (occupancy.get(room) || 0) + 1);
+      });
+
+      return occupancy;
+    } catch (error) {
+      console.error('Error calculating room occupancy:', error);
+      return new Map();
+    }
+  }
+
+  async executeMoveSlot(sourceDay, sourceTime, sourceRoom) {
+    const daySelect = document.getElementById('destination-day');
+    const timeSelect = document.getElementById('destination-time');
+    const roomSelect = document.getElementById('destination-room');
+
+    const destinationDay = daySelect.value;
+    const destinationTime = timeSelect.value;
+    const destinationRoom = roomSelect.value;
+
+    if (!destinationDay || !destinationTime || !destinationRoom) {
+      this.showNotification('Por favor selecciona día, horario y sala de destino', 'warning');
+      return;
+    }
+
+    if (sourceDay === destinationDay && sourceTime === destinationTime && sourceRoom == destinationRoom) {
+      this.showNotification('El origen y destino no pueden ser iguales', 'warning');
+      return;
+    }
+
+    this.state.loading = true;
+
+    try {
+      const response = await fetch('/api/admin/bulk-operations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.authToken}`
+        },
+        body: JSON.stringify({
+          operation: 'move_slot',
+          data: {
+            source: {
+              day: sourceDay,
+              time: sourceTime,
+              room: sourceRoom
+            },
+            destination: {
+              day: destinationDay,
+              time: destinationTime,
+              room: destinationRoom
+            }
+          }
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || `HTTP error! status: ${response.status}`);
+      }
+
+      this.showNotification(
+        `Mesa movida exitosamente: ${result.affected} eventos movidos de Sala ${sourceRoom} a Sala ${destinationRoom}`,
+        'success'
+      );
+
+      // Cerrar modal y actualizar datos
+      document.getElementById('move-slot-modal').remove();
+      this.invalidateCache(['events', 'analytics']);
+      await this.reloadData(['events', 'analytics']);
+      this.renderScheduleView();
+
+    } catch (error) {
+      this.handleError('Error moviendo mesa', error);
+    } finally {
+      this.state.loading = false;
+    }
   }
 
   // ✅ FUNCIÓN CORREGIDA handleSyncMdb

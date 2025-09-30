@@ -633,6 +633,11 @@ class ALAEITSProgramManager {
                         <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM14.333 4.427a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM6.35 15.345a2.25 2.25 0 100 4.186 2.25 2.25 0 000-4.186zM15.75 12a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0z" />
                     </svg>
                 </button>
+                <button class="ver-mesa-btn" title="Ver programación de sala" onclick="programManager.showSalaDetails('${event.sala}', '${event.dia}', '${event.horario}')">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 17.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                    </svg>
+                </button>
                 <div class="card-header">MESA: ${event.mesaId} / ID: ${event.id}</div>
                 <h3 class="card-title">${titulo}</h3>
                 <p class="card-moderator"><span class="font-bold">Modera:</span> ${moderadorName}</p>
@@ -1103,7 +1108,88 @@ class ALAEITSProgramManager {
         
         this.log('Sistema destruido');
     }
-}
+
+/**
+     * Mostrar modal con la línea de tiempo de la sala específica (VERSIÓN CORREGIDA)
+     */
+    showSalaDetails(sala, dia, horario) {
+        if (!sala || !dia || !horario) {
+            this.showToast('Información incompleta para mostrar la mesa.', 'error');
+            return;
+        }
+
+        // --- CORRECCIÓN CLAVE ---
+        // Filtramos asegurando la comparación de texto y que el evento tenga un turno asignado.
+        const salaEvents = this.state.fullSchedule
+            .filter(event => {
+                const eventSala = String(event.sala || '').trim();
+                const searchSala = String(sala || '').trim();
+                const eventDia = String(event.dia || '').trim();
+                const searchDia = String(dia || '').trim();
+                const eventHorario = String(event.horario || '').trim();
+                const searchHorario = String(horario || '').trim();
+                
+                // Esta condición excluye eventos como "Discusión Grupal" que no tienen turno.
+                const hasTurnOrder = event.turnOrder !== null && event.turnOrder !== undefined;
+
+                return eventSala === searchSala &&
+                       eventDia === searchDia &&
+                       eventHorario === searchHorario &&
+                       hasTurnOrder;
+            })
+            .sort((a, b) => a.turnOrder - b.turnOrder); // Sort simplificado
+
+        if (salaEvents.length === 0) {
+            this.showToast('No se encontraron ponencias programadas para esta mesa.', 'warning');
+            return;
+        }
+
+        const firstEvent = salaEvents[0];
+        const diaVisible = this.config.diasConfig[firstEvent.dia]?.nombreVisible || firstEvent.dia;
+
+        // Construcción del HTML del modal
+        const modalHTML = `
+            <div class="mesa-modal-overlay" id="mesa-modal">
+                <div class="mesa-modal-content">
+                    <div class="mesa-modal-header">
+                        <h3>Programación de la Mesa</h3>
+                        <p>${diaVisible} | ${firstEvent.horario} | Sala ${firstEvent.sala}</p>
+                    </div>
+                    <div class="mesa-modal-body">
+                        <div class="timeline">
+                            ${salaEvents.map((event) => `
+                                <div class="timeline-item ${event.typeClass}" data-turn="${event.turnOrder + 1}">
+                                    <div class="timeline-content">
+                                        <div class="timeline-mesa-badge">${event.mesaId}</div>
+                                        <h4>${event.titulo}</h4>
+                                        <p class="timeline-authors">Por: ${event.autores.join(', ') || 'Sin autores'}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Añadir y mostrar el modal
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        const modal = document.getElementById('mesa-modal');
+
+        // Animación de entrada
+        requestAnimationFrame(() => {
+            modal.classList.add('visible');
+        });
+
+        // Lógica para cerrar el modal
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('visible');
+                setTimeout(() => modal.remove(), 300);
+            }
+        });
+    }
+} // End of class ALAEITSProgramManager
 
 // Inicialización global
 window.ALAEITSProgramManager = ALAEITSProgramManager;

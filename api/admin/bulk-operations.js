@@ -27,22 +27,36 @@ module.exports = async (req, res) => {
 
     const { operation, eventIds, data } = req.body;
 
-    if (!operation || !eventIds || !Array.isArray(eventIds) || eventIds.length === 0) {
-      return res.status(400).json({ message: 'Invalid request data' });
+    // Para move_slot no necesitamos eventIds, solo operation y data
+    if (!operation) {
+      return res.status(400).json({ message: 'Operation is required' });
     }
 
-    // Validar que los IDs existan antes de hacer la operación
-    const existingEvents = await client.query(
-      'SELECT id FROM events WHERE id = ANY($1)',
-      [eventIds]
-    );
+    // Validaciones específicas para move_slot vs otras operaciones
+    if (operation === 'move_slot') {
+      if (!data || !data.source || !data.destination) {
+        return res.status(400).json({ message: 'Source and destination are required for move_slot' });
+      }
+    } else {
+      if (!eventIds || !Array.isArray(eventIds) || eventIds.length === 0) {
+        return res.status(400).json({ message: 'Event IDs are required for this operation' });
+      }
+    }
 
-    if (existingEvents.rows.length !== eventIds.length) {
-      return res.status(400).json({ 
-        message: 'Some event IDs do not exist',
-        found: existingEvents.rows.length,
-        requested: eventIds.length
-      });
+    // Validar que los IDs existan antes de hacer la operación (solo para operaciones que no sean move_slot)
+    if (operation !== 'move_slot') {
+      const existingEvents = await client.query(
+        'SELECT id FROM events WHERE id = ANY($1)',
+        [eventIds]
+      );
+
+      if (existingEvents.rows.length !== eventIds.length) {
+        return res.status(400).json({
+          message: 'Some event IDs do not exist',
+          found: existingEvents.rows.length,
+          requested: eventIds.length
+        });
+      }
     }
 
     await client.query('BEGIN');
@@ -172,7 +186,7 @@ module.exports = async (req, res) => {
 
       case 'clear_schedule':
         result = await client.query(`
-          UPDATE events 
+          UPDATE events
           SET scheduled_day = NULL,
               scheduled_time_block = NULL,
               room = NULL,
@@ -183,13 +197,85 @@ module.exports = async (req, res) => {
         `, [eventIds]);
         break;
 
+      case 'move_slot':
+        // Data esperada: { source: { day, time, room }, destination: { day, time, room } }
+        const { source, destination } = data;
+
+        // Validar que todos los datos estén completos
+        if (!source.day || !source.time || !source.room || !destination.day || !destination.time || !destination.room) {
+          await client.query('ROLLBACK');
+          return res.status(400).json({
+            message: 'Source and destination must include day, time, and room'
+          });
+        }
+
+        const destinationRoom = parseInt(destination.room);
+
+        // Validar que la sala de destino sea válida
+        if (destinationRoom < 1 || destinationRoom > 30) {
+          await client.query('ROLLBACK');
+          return res.status(400).json({
+            message: 'Destination room must be between 1 and 30'
+          });
+        }
+
+        // 1. Verificar que la sala de destino no esté llena
+        const capacityCheck = await client.query(`
+          SELECT COUNT(*) as count
+          FROM events
+          WHERE scheduled_day = $1
+            AND scheduled_time_block = $2
+            AND room = $3
+            AND status = 'publicado'
+        `, [destination.day, destination.time, destinationRoom]);
+
+        const currentOccupancy = parseInt(capacityCheck.rows[0].count);
+
+        // Contar cuántos eventos vamos a mover
+        const sourceEventsCount = await client.query(`
+          SELECT COUNT(*) as count
+          FROM events
+          WHERE scheduled_day = $1
+            AND scheduled_time_block = $2
+            AND room = $3
+            AND status = 'publicado'
+        `, [source.day, source.time, parseInt(source.room)]);
+
+        const eventsToMove = parseInt(sourceEventsCount.rows[0].count);
+
+        if (currentOccupancy + eventsToMove > 6) {
+          await client.query('ROLLBACK');
+          return res.status(409).json({
+            message: `La sala ${destinationRoom} no tiene suficiente capacidad. Ocupación actual: ${currentOccupancy}, intentando añadir: ${eventsToMove}, máximo: 6`,
+            currentOccupancy,
+            eventsToMove,
+            maxCapacity: 6
+          });
+        }
+
+        // 2. Ejecutar la consulta UPDATE principal
+        result = await client.query(`
+          UPDATE events
+          SET scheduled_day = $1,
+              scheduled_time_block = $2,
+              room = $3,
+              updated_at = NOW()
+          WHERE scheduled_day = $4
+            AND scheduled_time_block = $5
+            AND room = $6
+            AND status = 'publicado'
+          RETURNING id, title, scheduled_day, scheduled_time_block, room
+        `, [destination.day, destination.time, destinationRoom, source.day, source.time, parseInt(source.room)]);
+
+        break;
+
       default:
         await client.query('ROLLBACK');
         return res.status(400).json({ 
           message: 'Invalid operation',
           validOperations: [
-            'move_to_draft', 'publish_events', 'delete_events', 
-            'update_type', 'assign_day', 'assign_room', 'clear_schedule'
+            'move_to_draft', 'publish_events', 'delete_events',
+            'update_type', 'assign_day', 'assign_room', 'clear_schedule', 'move_slot'
           ]
         });
     }

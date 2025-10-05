@@ -23,6 +23,7 @@ class EnhancedCongressDashboard {
         room: 'all'
       },
       bulkMode: false,
+      multiSelectMode: false, // Modo de selección múltiple para drag & drop
       loading: false,
       isDragging: false // Para optimizar drag operations
     });
@@ -332,6 +333,11 @@ class EnhancedCongressDashboard {
       return;
     }
 
+    if (target.id === 'toggle-multiselect-btn' || target === this.elements.toggleMultiselectBtn) {
+      this.toggleMultiSelectMode();
+      return;
+    }
+
     if (target === this.elements.bulkModeBtn) {
       this.toggleBulkMode();
       return;
@@ -548,7 +554,7 @@ class EnhancedCongressDashboard {
     this.renderCurrentView();
   }
 
-  renderCurrentView() {
+  async renderCurrentView() {
     switch (this.state.currentView) {
       case 'dashboard':
         this.renderDashboard();
@@ -558,7 +564,12 @@ class EnhancedCongressDashboard {
         break;
       case 'search':
         this.renderSearchView();
-        this.debouncedSearch();
+        // Ejecutar búsqueda inmediatamente si no hay resultados
+        if (this.data.searchResults.length === 0) {
+          await this.performSearch();
+        } else {
+          this.renderSearchResults();
+        }
         break;
     }
   }
@@ -592,37 +603,37 @@ class EnhancedCongressDashboard {
 
   renderMetrics() {
     if (!this.elements.metricsGrid) return;
-    
+
     const { summary } = this.data.analytics;
-    
+
     const metricsTemplate = `
       <div class="metric-card">
         <div class="metric-content">
           <div class="metric-value">${summary.totalEvents || 0}</div>
-          <div class="metric-label">Total Events</div>
+          <div class="metric-label">Total de Eventos</div>
         </div>
       </div>
       <div class="metric-card">
         <div class="metric-content">
           <div class="metric-value">${summary.totalScheduled || 0}</div>
-          <div class="metric-label">Scheduled</div>
-          <div class="metric-trend">+${summary.completionRate || 0}%</div>
+          <div class="metric-label">Programados</div>
+          <div class="metric-trend">${summary.completionRate || 0}% completado</div>
         </div>
       </div>
       <div class="metric-card">
         <div class="metric-content">
           <div class="metric-value">${summary.totalDrafts || 0}</div>
-          <div class="metric-label">Drafts Pending</div>
+          <div class="metric-label">Pendientes</div>
         </div>
       </div>
       <div class="metric-card">
         <div class="metric-content">
           <div class="metric-value">${summary.overallUtilization || 0}%</div>
-          <div class="metric-label">Room Utilization</div>
+          <div class="metric-label">Ocupación de Salas</div>
         </div>
       </div>
     `;
-    
+
     this.elements.metricsGrid.innerHTML = metricsTemplate;
   }
 
@@ -634,11 +645,11 @@ class EnhancedCongressDashboard {
     
     const chartsHTML = `
       <div class="chart-container">
-        <h3>Events by Status</h3>
+        <h3>Por Estado</h3>
         <div class="progress-chart">
           ${(eventsByStatus || []).map(item => `
             <div class="progress-item">
-              <span class="progress-label">${item.status}</span>
+              <span class="progress-label">${item.status === 'publicado' ? 'Publicado' : 'Borrador'}</span>
               <div class="progress-bar">
                 <div class="progress-fill" style="width: ${(item.count / totalEvents) * 100}%"></div>
               </div>
@@ -647,21 +658,41 @@ class EnhancedCongressDashboard {
           `).join('')}
         </div>
       </div>
-      
+
       <div class="chart-container">
-        <h3>Events by Type</h3>
+        <h3>Por Tipo</h3>
         <div class="donut-chart">
-          ${(eventsByType || []).map((item, index) => `
-            <div class="donut-item">
-              <span class="donut-color" style="background-color: ${index === 0 ? 'var(--ponencia-color)' : 'var(--simposio-color)'}"></span>
-              <span>${item.event_type}: ${item.count}</span>
-            </div>
-          `).join('')}
+          ${(eventsByType || []).map((item) => {
+            let color, label;
+            switch(item.event_type) {
+              case 'ponencia':
+                color = 'var(--ponencia-color)';
+                label = 'Ponencia';
+                break;
+              case 'simposio':
+                color = 'var(--simposio-color)';
+                label = 'Simposio';
+                break;
+              case 'discusion':
+                color = 'var(--keynote-color)';
+                label = 'Discusión';
+                break;
+              default:
+                color = 'var(--gray-400)';
+                label = item.event_type;
+            }
+            return `
+              <div class="donut-item">
+                <span class="donut-color" style="background-color: ${color}"></span>
+                <span>${label}: ${item.count}</span>
+              </div>
+            `;
+          }).join('')}
         </div>
       </div>
-      
+
       <div class="chart-container">
-        <h3>Events by Day</h3>
+        <h3>Por Día</h3>
         <div class="bar-chart">
           ${(eventsByDay || []).map(item => {
             const maxCount = Math.max(...(eventsByDay || []).map(d => d.count));
@@ -682,20 +713,43 @@ class EnhancedCongressDashboard {
 
   renderRecentActivity() {
     if (!this.elements.chartsContainer || !this.data.analytics.recentActivity) return;
-    
+
     const { recentActivity } = this.data.analytics;
-    
+
+    // Helper function to format dates safely
+    const formatDate = (dateValue) => {
+      if (!dateValue || dateValue === '0' || dateValue === 0 || dateValue === null) {
+        return 'Fecha no disponible';
+      }
+
+      try {
+        const date = new Date(dateValue);
+        if (isNaN(date.getTime()) || date.getFullYear() < 1970) {
+          return 'Fecha no disponible';
+        }
+        return date.toLocaleString('es-CL', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (error) {
+        return 'Fecha no disponible';
+      }
+    };
+
     const activityHTML = `
       <div class="activity-container">
-        <h3>Recent Activity</h3>
+        <h3>Actividad Reciente</h3>
         <div class="activity-list">
           ${(recentActivity || []).map(event => `
             <div class="activity-item">
               <div class="activity-content">
-                <div class="activity-title">${event.title?.es || 'No title'}</div>
+                <div class="activity-title">${event.title?.es || 'Sin título'}</div>
                 <div class="activity-meta">
-                  <span class="activity-status status-${event.status}">${event.status}</span>
-                  <span class="activity-time">${new Date(event.updated_at).toLocaleString()}</span>
+                  <span class="activity-status status-${event.status}">${event.status === 'publicado' ? 'Publicado' : 'Borrador'}</span>
+                  <span class="activity-time">${formatDate(event.updated_at)}</span>
                 </div>
               </div>
             </div>
@@ -703,7 +757,7 @@ class EnhancedCongressDashboard {
         </div>
       </div>
     `;
-    
+
     const activityContainer = document.createElement('div');
     activityContainer.innerHTML = activityHTML;
     this.elements.chartsContainer.appendChild(activityContainer.firstElementChild);
@@ -720,14 +774,30 @@ class EnhancedCongressDashboard {
 
   renderDrafts() {
     if (!this.elements.draftListEl) return;
-    
+
     const draftCount = document.getElementById('draft-count');
     if (draftCount) {
       draftCount.textContent = this.data.drafts.length;
     }
-    
+
     const fragment = document.createDocumentFragment();
-    
+
+    // Añadir controles de selección múltiple si está activado el modo
+    if (this.state.multiSelectMode && this.data.drafts.length > 0) {
+      const controls = document.createElement('div');
+      controls.className = 'multi-select-controls';
+      controls.innerHTML = `
+        <button class="btn-select-all" onclick="dashboard.selectAllDrafts()">
+          Seleccionar Todos
+        </button>
+        <button class="btn-clear-selection" onclick="dashboard.clearSelection()">
+          Limpiar Selección
+        </button>
+        <span class="selection-count">${this.state.selectedEvents.size} seleccionados</span>
+      `;
+      fragment.appendChild(controls);
+    }
+
     if (this.data.drafts.length > 0) {
       this.data.drafts.forEach(event => {
         const card = this.createEventCard(event, 'full');
@@ -739,8 +809,78 @@ class EnhancedCongressDashboard {
       emptyState.innerHTML = '<p>No hay eventos pendientes</p>';
       fragment.appendChild(emptyState);
     }
-    
+
     this.elements.draftListEl.replaceChildren(fragment);
+  }
+
+  /**
+   * Seleccionar todos los eventos en borradores
+   *
+   * :returns: void
+   */
+  selectAllDrafts() {
+    this.data.drafts.forEach(event => {
+      this.state.selectedEvents.add(event.id);
+    });
+    this.renderScheduleView();
+  }
+
+  /**
+   * Limpiar la selección de eventos
+   *
+   * :returns: void
+   */
+  clearSelection() {
+    this.state.selectedEvents.clear();
+    this.renderScheduleView();
+  }
+
+  /**
+   * Actualizar controles de selección múltiple
+   *
+   * :returns: void
+   */
+  updateMultiSelectControls() {
+    const countElements = document.querySelectorAll('.selection-count');
+    countElements.forEach(el => {
+      el.textContent = `${this.state.selectedEvents.size} seleccionados`;
+    });
+  }
+
+  /**
+   * Alternar modo de selección múltiple
+   *
+   * :returns: void
+   */
+  toggleMultiSelectMode() {
+    this.state.multiSelectMode = !this.state.multiSelectMode;
+
+    // Limpiar selección al desactivar
+    if (!this.state.multiSelectMode) {
+      this.state.selectedEvents.clear();
+    }
+
+    // Actualizar botón
+    const btn = document.getElementById('toggle-multiselect-btn');
+    if (btn) {
+      btn.textContent = this.state.multiSelectMode ? 'Desactivar Selección' : 'Modo Selección';
+      btn.classList.toggle('active', this.state.multiSelectMode);
+    }
+
+    // Re-renderizar vista y reinicializar drag & drop
+    this.renderScheduleView();
+
+    // CRÍTICO: Reinicializar drag & drop con nueva configuración
+    setTimeout(() => {
+      this.initializeDragAndDrop();
+    }, 150);
+
+    this.showNotification(
+      this.state.multiSelectMode
+        ? 'Modo de selección múltiple activado - Marca los eventos y arrástralos'
+        : 'Modo de selección múltiple desactivado',
+      'info'
+    );
   }
 
   renderSchedule() {
@@ -901,24 +1041,34 @@ class EnhancedCongressDashboard {
     card.dataset.id = event.id;
     card.className = `event-card ${typeClass}`;
 
-    console.log('Event data for', event.id, ':', {
-      eje: event.eje,
-      ejeType: typeof event.eje
-    });
+    // Añadir clase si está seleccionada
+    if (this.state.selectedEvents.has(event.id)) {
+      card.classList.add('selected');
+    }
 
     if (type === 'mini') {
       card.classList.add('event-card-mini');
       card.setAttribute('data-tooltip', `${title}\n${authors}`);
-      
+
       const ejeNumber = this.extractEjeNumber(event);
-      
+
       card.innerHTML = `
+        ${this.state.multiSelectMode ? `
+          <label class="event-checkbox" onclick="event.stopPropagation()">
+            <input type="checkbox" ${this.state.selectedEvents.has(event.id) ? 'checked' : ''}>
+          </label>
+        ` : ''}
         <div class="event-id">${event.id}</div>
         ${ejeNumber ? `<div class="event-eje">Eje ${ejeNumber}</div>` : ''}
         ${event.turn_order !== null ? `<div class="turn-order">#${event.turn_order + 1}</div>` : ''}
       `;
     } else {
       card.innerHTML = `
+        ${this.state.multiSelectMode ? `
+          <label class="event-checkbox" onclick="event.stopPropagation()">
+            <input type="checkbox" ${this.state.selectedEvents.has(event.id) ? 'checked' : ''}>
+          </label>
+        ` : ''}
         <div class="event-header">
           <strong>${title}</strong>
           <span class="event-id-badge">${event.id}</span>
@@ -930,18 +1080,58 @@ class EnhancedCongressDashboard {
       `;
     }
 
+    // Event listener para el checkbox
+    if (this.state.multiSelectMode) {
+      const checkbox = card.querySelector('input[type="checkbox"]');
+      if (checkbox) {
+        checkbox.addEventListener('change', (e) => {
+          e.stopPropagation();
+          this.toggleEventCardSelection(event.id);
+        });
+      }
+    }
+
     return card;
   }
 
-  // Drag and drop SÚPER OPTIMIZADO
+  toggleEventCardSelection(eventId) {
+    if (this.state.selectedEvents.has(eventId)) {
+      this.state.selectedEvents.delete(eventId);
+    } else {
+      this.state.selectedEvents.add(eventId);
+    }
+
+    // Actualizar UI de la tarjeta
+    const cards = document.querySelectorAll(`[data-id="${eventId}"]`);
+    cards.forEach(card => {
+      const checkbox = card.querySelector('input[type="checkbox"]');
+      if (checkbox) {
+        checkbox.checked = this.state.selectedEvents.has(eventId);
+      }
+      card.classList.toggle('selected', this.state.selectedEvents.has(eventId));
+    });
+
+    console.log('📋 Eventos seleccionados:', Array.from(this.state.selectedEvents));
+    this.updateMultiSelectControls();
+  }
+
+  /**
+   * Inicializar sistema de arrastrar y soltar optimizado
+   * Soporta arrastrar múltiples elementos cuando el modo de selección está activo
+   *
+   * :returns: void
+   */
   initializeDragAndDrop() {
     this.sortableInstances.forEach(instance => instance?.destroy?.());
     this.sortableInstances = [];
-    
+
     const containers = [
-      this.elements.draftListEl, 
+      this.elements.draftListEl,
       ...document.querySelectorAll('.room-slot')
     ].filter(Boolean);
+
+    // Sistema de arrastre múltiple manual (más confiable que el plugin)
+    console.log('Sistema de arrastre múltiple manual activado');
 
     const sortableConfig = {
       group: 'shared',
@@ -950,22 +1140,59 @@ class EnhancedCongressDashboard {
       chosenClass: 'sortable-chosen',
       dragClass: 'sortable-drag',
       forceFallback: false,
-      
-      // OPTIMIZACIÓN CRÍTICA: Reducir validaciones durante el drag
+      // NO usar multiDrag nativo - implementación manual más robusta
+      // multiDrag: true,
+      // selectedClass: 'selected',
+      // multiDragKey: null,
+
+      /**
+       * Evento al iniciar el arrastre
+       */
       onStart: (evt) => {
         this.state.isDragging = true;
         document.body.classList.add('dragging-active');
+
+        // Guardar IDs seleccionados para arrastre múltiple manual
+        const draggedId = evt.item.dataset.id;
+
+        console.log('🎯 DEBUG onStart:');
+        console.log('  - multiSelectMode:', this.state.multiSelectMode);
+        console.log('  - selectedEvents.size:', this.state.selectedEvents.size);
+        console.log('  - selectedEvents:', Array.from(this.state.selectedEvents));
+        console.log('  - draggedId:', draggedId);
+        console.log('  - está en selección?:', this.state.selectedEvents.has(draggedId));
+
+        if (this.state.multiSelectMode && this.state.selectedEvents.size > 0 && this.state.selectedEvents.has(draggedId)) {
+          // Almacenar todos los IDs seleccionados para moverlos después
+          this.draggedEventIds = Array.from(this.state.selectedEvents);
+
+          // Añadir clase visual a todos los elementos seleccionados
+          this.draggedEventIds.forEach(id => {
+            const cards = document.querySelectorAll(`[data-id="${id}"]`);
+            cards.forEach(card => card.classList.add('dragging-multi'));
+          });
+
+          console.log(`🔄 Arrastrando ${this.draggedEventIds.length} eventos:`, this.draggedEventIds);
+        } else {
+          // Solo arrastrar el elemento actual
+          this.draggedEventIds = [draggedId];
+          console.log('🔄 Arrastrando 1 evento:', draggedId);
+        }
       },
-      
+
+      /**
+       * Validación durante el movimiento
+       */
       onMove: (evt) => {
         const targetContainer = evt.to;
         const maxCapacity = 6;
-        
+
         if (targetContainer.classList.contains('room-slot')) {
           const currentCount = targetContainer.querySelectorAll('.event-card').length;
-          
-          // SOLO mostrar warning si realmente está lleno, sin notificaciones
-          if (currentCount >= maxCapacity) {
+          const movingCount = this.draggedEventIds ? this.draggedEventIds.length : 1;
+
+          // Validar capacidad considerando múltiples elementos
+          if (currentCount + movingCount > maxCapacity) {
             targetContainer.classList.add('drop-invalid');
             return false;
           } else {
@@ -974,16 +1201,19 @@ class EnhancedCongressDashboard {
         }
         return true;
       },
-      
+
+      /**
+       * Evento al finalizar el arrastre
+       */
       onEnd: (evt) => {
         this.state.isDragging = false;
         document.body.classList.remove('dragging-active');
-        
+
         // Limpiar estilos de feedback
-        document.querySelectorAll('.drop-invalid').forEach(el => {
-          el.classList.remove('drop-invalid');
+        document.querySelectorAll('.drop-invalid, .dragging-multi').forEach(el => {
+          el.classList.remove('drop-invalid', 'dragging-multi');
         });
-        
+
         // Actualizar con throttling
         this.throttledHandleDrop(evt);
       },
@@ -991,8 +1221,13 @@ class EnhancedCongressDashboard {
 
     containers.forEach(container => {
       if (container && typeof Sortable !== 'undefined') {
-        const sortableInstance = new Sortable(container, sortableConfig);
-        this.sortableInstances.push(sortableInstance);
+        try {
+          const sortableInstance = new Sortable(container, sortableConfig);
+          this.sortableInstances.push(sortableInstance);
+          console.log('Sortable inicializado en:', container.className);
+        } catch (error) {
+          console.error('Error inicializando Sortable:', error);
+        }
       }
     });
   }
@@ -1016,37 +1251,76 @@ class EnhancedCongressDashboard {
     };
   }
 
+  /**
+   * Manejar el drop de uno o múltiples eventos
+   *
+   * :param evt: Evento de SortableJS
+   * :type evt: Object
+   * :returns: Promise<void>
+   */
   async handleDrop(evt) {
-    const { item, from, to, newDraggableIndex } = evt;
-    const eventId = item.dataset.id;
-    
-    if (!eventId) return;
-    
+    const { item, items, from, to, newDraggableIndex } = evt;
+
+    // Usar los IDs guardados durante onStart
+    let eventsToMove = this.draggedEventIds || [item.dataset.id];
+
+    // Filtrar IDs vacíos o inválidos
+    eventsToMove = eventsToMove.filter(Boolean);
+
+    console.log('🎯 DEBUG handleDrop:');
+    console.log('  - draggedEventIds:', this.draggedEventIds);
+    console.log('  - eventsToMove:', eventsToMove);
+    console.log('  - Cantidad a mover:', eventsToMove.length);
+
+    if (eventsToMove.length === 0) {
+      this.draggedEventIds = null;
+      return;
+    }
+
     this.state.loading = true;
-    
+
     try {
-      await this.updateEventPosition(eventId, to, newDraggableIndex, false);
-      
+      // Mover todos los eventos seleccionados
+      const movePromises = eventsToMove.map((eventId, index) => {
+        const targetIndex = newDraggableIndex + index;
+        return this.updateEventPosition(eventId, to, targetIndex, false);
+      });
+
+      await Promise.all(movePromises);
+
+      // Actualizar turn orders
       const updatePromises = [];
-      
+
       if (from !== to && from.classList.contains('room-slot')) {
         updatePromises.push(this.updateTurnOrdersForContainer(from));
       }
-      
+
       if (to.classList.contains('room-slot')) {
         updatePromises.push(this.updateTurnOrdersForContainer(to));
       }
-      
+
       await Promise.all(updatePromises);
-      
+
+      // Limpiar selección después del movimiento exitoso
+      if (this.state.multiSelectMode) {
+        this.state.selectedEvents.clear();
+      }
+
+      // Limpiar IDs arrastrados
+      this.draggedEventIds = null;
+
       await this.reloadData(['events']);
       this.renderScheduleView();
-      
-      // Solo mostrar notificación de éxito, sin spam
-      this.throttledShowNotification('Programación actualizada', 'success');
-      
+
+      const message = eventsToMove.length > 1
+        ? `${eventsToMove.length} eventos movidos exitosamente`
+        : 'Programación actualizada';
+
+      this.throttledShowNotification(message, 'success');
+
     } catch (error) {
-      this.handleError('Error updating schedule', error, false);
+      this.handleError('Error actualizando programación', error, false);
+      this.draggedEventIds = null;
       await this.reloadData(['events']);
       this.renderScheduleView();
     } finally {
@@ -1270,14 +1544,14 @@ class EnhancedCongressDashboard {
     }
   }
 
-  // Búsqueda y operaciones en lote
+  // Búsqueda optimizada con caché y normalización
   async performSearch() {
     if (this.searchController) {
       this.searchController.abort();
     }
-    
+
     this.searchController = new AbortController();
-    
+
     try {
       const searchParams = new URLSearchParams();
       Object.entries(this.state.filters).forEach(([key, value]) => {
@@ -1286,21 +1560,44 @@ class EnhancedCongressDashboard {
         }
       });
 
+      const cacheKey = searchParams.toString();
+
+      // Verificar cache primero
+      const cached = this.cache.get(`search:${cacheKey}`);
+      if (cached && Date.now() - cached.timestamp < 10000) { // 10 segundos de cache
+        this.data.searchResults = cached.data;
+        requestAnimationFrame(() => this.renderSearchResults());
+        return;
+      }
+
       const response = await fetch(`/api/admin/search?${searchParams}`, {
         headers: { 'Authorization': `Bearer ${this.authToken}` },
         signal: this.searchController.signal
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       this.data.searchResults = data.results || [];
-      
+
+      // Guardar en cache
+      this.cache.set(`search:${cacheKey}`, {
+        data: this.data.searchResults,
+        timestamp: Date.now()
+      });
+
+      // Renderizar resultados
+      requestAnimationFrame(() => {
+        this.renderSearchResults();
+      });
+
     } catch (error) {
       if (error.name !== 'AbortError') {
         this.handleError('Search error', error, false);
+        this.data.searchResults = [];
+        this.renderSearchResults();
       }
     }
   }

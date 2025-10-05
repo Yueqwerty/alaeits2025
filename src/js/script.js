@@ -223,39 +223,56 @@ class ALAEITSProgramManager {
             // Campos básicos
             id: this.safeString(event.id),
             titulo: this.safeString(event.titulo),
-            
+
             // Autores - manejo robusto
             autores: this.normalizeAuthors(event.autores),
-            
+
             // Mesa información
             mesaId: this.safeString(event.mesaId),
             mesaTitulo: this.safeString(event.mesaTitulo),
-            
+
             // Programación
             dia: this.safeString(event.dia),
             horario: this.safeString(event.horario),
             sala: this.safeString(event.sala),
-            
+
             // Metadata
             eje: this.safeString(event.eje),
             esSimposio: Boolean(event.esSimposio),
             turnOrder: this.safeNumber(event.turnOrder),
-            
+
             // Campos derivados
             typeClass: event.esSimposio ? 'is-simposio' : 'is-ponencia',
             searchText: '', // Se llenará después
+            searchTextNormalized: '', // Versión normalizada para búsqueda
         };
 
         // Crear texto de búsqueda
-        normalized.searchText = [
+        const searchRaw = [
             normalized.id,
             normalized.titulo,
             normalized.autores.join(' '),
             normalized.mesaTitulo,
             normalized.eje
-        ].join(' ').toLowerCase();
+        ].join(' ');
+
+        normalized.searchText = searchRaw.toLowerCase();
+        normalized.searchTextNormalized = this.normalizeSearchText(searchRaw);
 
         return normalized;
+    }
+
+    /**
+     * Normalizar texto para búsqueda (eliminar acentos, caracteres especiales)
+     */
+    normalizeSearchText(text) {
+        return text
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
+            .replace(/[^\w\s]/g, ' ') // Reemplazar caracteres especiales con espacios
+            .replace(/\s+/g, ' ') // Normalizar espacios múltiples
+            .trim();
     }
 
     /**
@@ -404,57 +421,61 @@ class ALAEITSProgramManager {
     }
 
     /**
-     * Búsqueda y filtrado
+     * Búsqueda y filtrado optimizado
      */
     performSearch() {
         const startTime = performance.now();
-        
+
         let filteredData = [...this.state.fullSchedule];
 
         // Filtro por día (excepto favoritos)
         if (this.state.currentDay !== 'favoritos') {
-            filteredData = filteredData.filter(event => 
+            filteredData = filteredData.filter(event =>
                 event.dia.toLowerCase() === this.state.currentDay.toLowerCase()
             );
         }
 
         // Filtro por favoritos
         if (this.state.currentDay === 'favoritos') {
-            filteredData = filteredData.filter(event => 
+            filteredData = filteredData.filter(event =>
                 this.state.favorites.has(event.id)
             );
         }
 
-        // Filtro de búsqueda
+        // Filtro de búsqueda mejorado con normalización
         if (this.state.filters.search) {
-            const searchTerm = this.state.filters.search.toLowerCase();
-            filteredData = filteredData.filter(event => 
-                event.searchText.includes(searchTerm)
-            );
+            const searchTerm = this.normalizeSearchText(this.state.filters.search);
+            const searchWords = searchTerm.split(' ').filter(Boolean);
+
+            filteredData = filteredData.filter(event => {
+                // Búsqueda por palabras completas o parciales
+                return searchWords.every(word =>
+                    event.searchTextNormalized.includes(word)
+                );
+            });
         }
 
-        // Filtros adicionales
-        ['type', 'sala', 'horario'].forEach(filterType => {
-            const filterValue = this.state.filters[filterType];
-            if (filterValue && filterValue !== 'all') {
-                filteredData = filteredData.filter(event => {
-                    switch (filterType) {
-                        case 'type':
-                            return filterValue === 'simposio' ? event.esSimposio : !event.esSimposio;
-                        case 'sala':
-                            return event.sala === filterValue;
-                        case 'horario':
-                            return event.horario === filterValue;
-                        default:
-                            return true;
-                    }
-                });
-            }
-        });
+        // Filtros adicionales optimizados
+        const { type, sala, horario } = this.state.filters;
+
+        if (type && type !== 'all') {
+            const isSimposio = type === 'simposio';
+            filteredData = filteredData.filter(event => event.esSimposio === isSimposio);
+        }
+
+        if (sala && sala !== 'all') {
+            filteredData = filteredData.filter(event => event.sala === sala);
+        }
+
+        if (horario && horario !== 'all') {
+            filteredData = filteredData.filter(event => event.horario === horario);
+        }
 
         this.state.filteredData = filteredData;
         this.metrics.searchTime = performance.now() - startTime;
-        
+
+        this.log(`Búsqueda completada: ${filteredData.length} resultados en ${this.metrics.searchTime.toFixed(2)}ms`);
+
         this.render();
     }
 
@@ -658,13 +679,31 @@ class ALAEITSProgramManager {
     }
 
     /**
-     * Highlighting de texto para búsqueda
+     * Highlighting de texto para búsqueda mejorado
      */
     highlightText(text, query) {
         if (!query || !text) return text;
-        
-        const regex = new RegExp(`(${this.escapeRegex(query)})`, 'gi');
-        return text.replace(regex, '<mark>$1</mark>');
+
+        // Dividir query en palabras individuales
+        const words = query.trim().split(/\s+/).filter(Boolean);
+
+        let highlightedText = text;
+        words.forEach(word => {
+            const escapedWord = this.escapeRegex(word);
+            // Crear regex que ignore acentos
+            const pattern = escapedWord
+                .replace(/[aáàäâ]/gi, '[aáàäâ]')
+                .replace(/[eéèëê]/gi, '[eéèëê]')
+                .replace(/[iíìïî]/gi, '[iíìïî]')
+                .replace(/[oóòöô]/gi, '[oóòöô]')
+                .replace(/[uúùüû]/gi, '[uúùüû]')
+                .replace(/[nñ]/gi, '[nñ]');
+
+            const regex = new RegExp(`(${pattern})`, 'gi');
+            highlightedText = highlightedText.replace(regex, '<mark class="search-highlight">$1</mark>');
+        });
+
+        return highlightedText;
     }
 
     escapeRegex(string) {
@@ -909,12 +948,6 @@ class ALAEITSProgramManager {
         }
     }
 
-    updateNoResultsState() {
-    if (!this.elements.noResults) return;
-
-    this.elements.noResults.classList.add('hidden');
-}
-
     hasActiveFilters() {
         return this.state.filters.search !== '' ||
                this.state.filters.type !== 'all' ||
@@ -1110,6 +1143,206 @@ class ALAEITSProgramManager {
     }
 
 /**
+     * Exportar modal de sala a PDF con diseño minimalista moderno
+     */
+    exportSalaModalToPDF(sala, dia, horario, salaEvents, diaVisible) {
+        try {
+            const firstEvent = salaEvents[0];
+
+            // Generar HTML para imprimir con diseño minimalista
+            let htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Programación de Mesa - ALAEITS 2025</title>
+                    <style>
+                        @page {
+                            margin: 2cm;
+                            size: A4;
+                        }
+                        * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
+                        }
+                        body {
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+                            font-size: 11pt;
+                            line-height: 1.5;
+                            color: #1a1a1a;
+                            background: white;
+                        }
+                        .container {
+                            max-width: 800px;
+                            margin: 0 auto;
+                        }
+                        .header {
+                            text-align: center;
+                            margin-bottom: 2.5rem;
+                            padding-bottom: 1.5rem;
+                            border-bottom: 1px solid #e5e5e5;
+                        }
+                        h1 {
+                            font-size: 20pt;
+                            font-weight: 600;
+                            color: #1a1a1a;
+                            margin-bottom: 0.75rem;
+                            letter-spacing: -0.02em;
+                        }
+                        .info {
+                            font-size: 11pt;
+                            color: #666;
+                            font-weight: 500;
+                            margin: 0.5rem 0;
+                        }
+                        .subtitle {
+                            font-size: 10pt;
+                            color: #999;
+                            margin-top: 0.5rem;
+                        }
+                        .timeline {
+                            margin-top: 2rem;
+                        }
+                        .timeline-item {
+                            margin-bottom: 1.5rem;
+                            padding: 1.25rem 1.5rem;
+                            background: #fafafa;
+                            border-radius: 6px;
+                            border-left: 3px solid #333;
+                            page-break-inside: avoid;
+                            position: relative;
+                        }
+                        .timeline-item.is-simposio {
+                            border-left-color: #666;
+                        }
+                        .timeline-item.is-ponencia {
+                            border-left-color: #999;
+                        }
+                        .turn-badge {
+                            position: absolute;
+                            top: 1.25rem;
+                            right: 1.5rem;
+                            background: #f0f0f0;
+                            color: #666;
+                            padding: 0.25rem 0.75rem;
+                            border-radius: 12px;
+                            font-size: 9pt;
+                            font-weight: 600;
+                        }
+                        .mesa-badge {
+                            display: inline-block;
+                            background: white;
+                            color: #666;
+                            border: 1px solid #e0e0e0;
+                            padding: 0.25rem 0.75rem;
+                            border-radius: 4px;
+                            font-size: 8.5pt;
+                            font-weight: 600;
+                            margin-bottom: 0.75rem;
+                            text-transform: uppercase;
+                            letter-spacing: 0.05em;
+                        }
+                        .event-title {
+                            font-weight: 600;
+                            color: #1a1a1a;
+                            font-size: 12pt;
+                            margin: 0.5rem 0;
+                            line-height: 1.4;
+                            padding-right: 3rem;
+                        }
+                        .event-authors {
+                            font-size: 10pt;
+                            color: #666;
+                            margin-top: 0.5rem;
+                            line-height: 1.5;
+                        }
+                        .footer {
+                            margin-top: 3rem;
+                            padding-top: 1.5rem;
+                            border-top: 1px solid #e5e5e5;
+                            text-align: center;
+                            font-size: 9pt;
+                            color: #999;
+                            line-height: 1.6;
+                        }
+                        .footer p {
+                            margin: 0.25rem 0;
+                        }
+                        @media print {
+                            body {
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                            }
+                            .timeline-item {
+                                break-inside: avoid;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>ALAEITS 2025</h1>
+                            <div class="info">${diaVisible} • ${firstEvent.horario} • Sala ${firstEvent.sala}</div>
+                            <div class="subtitle">Programación de la Mesa</div>
+                        </div>
+
+                        <div class="timeline">
+            `;
+
+            salaEvents.forEach((event) => {
+                const autores = event.autores && event.autores.length > 0
+                    ? event.autores.join(', ')
+                    : 'Sin autores';
+
+                htmlContent += `
+                    <div class="timeline-item ${event.typeClass}">
+                        <div class="turn-badge">Turno ${event.turnOrder + 1}</div>
+                        <div class="mesa-badge">${event.mesaId}</div>
+                        <div class="event-title">${event.titulo}</div>
+                        <div class="event-authors">${autores}</div>
+                    </div>
+                `;
+            });
+
+            htmlContent += `
+                        </div>
+
+                        <div class="footer">
+                            <p><strong>Crisis civilizatoria, luchas contra hegemónicas y proyectos emancipatorios</strong></p>
+                            <p>© 2025 Seminario ALAEITS · Universidad Central de Chile</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            // Abrir en nueva ventana para imprimir
+            const printWindow = window.open('', '_blank', 'width=800,height=900');
+            if (printWindow) {
+                printWindow.document.write(htmlContent);
+                printWindow.document.close();
+
+                // Esperar a que cargue y luego abrir diálogo de impresión
+                printWindow.onload = () => {
+                    setTimeout(() => {
+                        printWindow.print();
+                    }, 250);
+                };
+
+                this.showToast('Vista previa de PDF generada. Presione Ctrl+P o Cmd+P para guardar.', 'success');
+            } else {
+                this.showToast('No se pudo abrir la ventana de impresión. Verifique el bloqueador de ventanas emergentes.', 'error');
+            }
+
+        } catch (error) {
+            console.error('Error exportando PDF:', error);
+            this.showToast('Error al generar el PDF', 'error');
+        }
+    }
+
+/**
      * Mostrar modal con la línea de tiempo de la sala específica (VERSIÓN CORREGIDA)
      */
     showSalaDetails(sala, dia, horario) {
@@ -1152,8 +1385,11 @@ class ALAEITSProgramManager {
             <div class="mesa-modal-overlay" id="mesa-modal">
                 <div class="mesa-modal-content">
                     <div class="mesa-modal-header">
-                        <h3>Programación de la Mesa</h3>
-                        <p>${diaVisible} | ${firstEvent.horario} | Sala ${firstEvent.sala}</p>
+                        <div>
+                            <h3>Programación de la Mesa</h3>
+                            <p>${diaVisible} | ${firstEvent.horario} | Sala ${firstEvent.sala}</p>
+                        </div>
+                        <button id="export-sala-pdf" class="export-pdf-btn" title="Exportar a PDF">Exportar PDF</button>
                     </div>
                     <div class="mesa-modal-body">
                         <div class="timeline">
@@ -1188,6 +1424,15 @@ class ALAEITSProgramManager {
                 setTimeout(() => modal.remove(), 300);
             }
         });
+
+        // Event listener para exportar PDF
+        const exportBtn = document.getElementById('export-sala-pdf');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.exportSalaModalToPDF(sala, dia, horario, salaEvents, diaVisible);
+            });
+        }
     }
 } // End of class ALAEITSProgramManager
 

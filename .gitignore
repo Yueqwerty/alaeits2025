@@ -6,10 +6,23 @@
 # -------------------------------------------------------------------
 # Ignora archivos de metadata de macOS y Windows.
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini
 
-# Ignora configuraciones de editores como VS Code.
+# Ignora configuraciones de editores
 .vscode/
+.idea/
+.sublime-*
+*.swp
+*.swo
+*~
+.project
+.settings/
 
 
 # 2. Archivos de Logs
@@ -17,6 +30,10 @@ Thumbs.db
 # Ignora logs generados por npm o por la aplicación.
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
 
 
 # 3. Dependencias
@@ -24,6 +41,8 @@ npm-debug.log*
 # ¡La regla más importante! Nunca subir las dependencias del proyecto.
 # Estas se instalan con `npm install`.
 node_modules/
+jspm_packages/
+bower_components/
 
 
 # 4. Archivos generados por el Build
@@ -31,6 +50,14 @@ node_modules/
 # La carpeta 'dist' es generada por Tailwind/PostCSS a partir de 'src'.
 # Siempre debemos ignorarla y generarla en el servidor o localmente.
 dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.temp/
+tmp/
 
 
 # 5. Archivos de Entorno y Secretos
@@ -47,6 +74,16 @@ dist/
 # La carpeta .vercel contiene la configuración de enlace local a Vercel
 # que es específica de cada máquina.
 .vercel/
+.netlify/
+.firebase/
+
+# Archivos de coverage de pruebas
+coverage/
+*.lcov
+.nyc_output/
+
+# Archivos de TypeScript
+*.tsbuildinfo
 
 
 # 7. Archivos de Migración y Datos Sensibles
@@ -66,6 +103,29 @@ google*.html
 # Si los quieres guardar como referencia, puedes eliminar estas líneas.
 migrate.js
 hash-password.js
+
+
+# 9. Archivos Temporales y de Sistema
+# -------------------------------------------------------------------
+# Archivos temporales de sistema
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+.cache
+
+# Archivos de locks de package managers (opcional, según preferencia del equipo)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+
+# 10. Archivos de Claude Code y otras herramientas AI
+# -------------------------------------------------------------------
+.claude/
+
 
 # -------------------------------------------------------------------
 # Fin del archivo .gitignore

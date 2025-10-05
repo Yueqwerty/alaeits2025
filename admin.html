@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Centro de Comando - ALAEITS 2025</title>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <!-- Sortable.js -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <!-- Enlazamos a tu nuevo y excelente dashboard.css -->
     <link rel="stylesheet" href="src/css/dashboard.css">
 </head>
@@ -49,6 +50,7 @@
                         </div>
                         <div class="sidebar-actions">
                             <button id="sync-mdb-btn" class="btn btn-secondary">Sincronizar con MBD</button>
+                            <button id="toggle-multiselect-btn" class="btn btn-outline">Modo Selección</button>
                         </div>
                         <div id="draft-list" class="event-list"></div>
                     </aside>

@@ -938,6 +938,297 @@ html, body {
   box-shadow: 0 0 0 3px rgba(126, 189, 180, 0.3);
 }
 
+/* Badge sofisticado para arrastre múltiple */
+.multi-drag-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: linear-gradient(135deg, var(--accent), #6AACA3);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(126, 189, 180, 0.5);
+  z-index: 1000;
+  pointer-events: none;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+.multi-drag-badge svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.9;
+}
+
+/* Efecto de stack para tarjetas seleccionadas */
+.event-card.multi-drag-stacked {
+  opacity: 0.4;
+  transform:
+    translateX(calc(var(--stack-index) * -3px))
+    translateY(calc(var(--stack-index) * -3px))
+    scale(0.95);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  position: relative;
+  z-index: calc(10 - var(--stack-index));
+}
+
+.event-card.multi-drag-unstacking {
+  transform: translateX(0) translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* Tarjeta principal cuando arrastra múltiples */
+.event-card.multi-drag-main {
+  box-shadow:
+    0 10px 30px rgba(126, 189, 180, 0.4),
+    0 0 0 3px var(--accent-light) !important;
+  transform: scale(1.02) !important;
+  border-color: var(--accent) !important;
+  z-index: 9999 !important;
+}
+
+/* Animaciones */
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(126, 189, 180, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(126, 189, 180, 0.7);
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+/* Feedback visual mejorado para drop zones */
+.drop-valid {
+  background: rgba(126, 189, 180, 0.1) !important;
+  border-color: var(--accent) !important;
+  box-shadow:
+    inset 0 0 0 2px var(--accent),
+    0 0 20px rgba(126, 189, 180, 0.3) !important;
+  animation: dropPulse 1s ease-in-out infinite;
+}
+
+.drop-invalid {
+  background: rgba(201, 124, 124, 0.1) !important;
+  border-color: var(--danger) !important;
+  box-shadow:
+    inset 0 0 0 2px var(--danger),
+    0 0 20px rgba(201, 124, 124, 0.3) !important;
+  animation: dropShake 0.4s ease-in-out;
+}
+
+@keyframes dropPulse {
+  0%, 100% {
+    box-shadow:
+      inset 0 0 0 2px var(--accent),
+      0 0 20px rgba(126, 189, 180, 0.3);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 2px var(--accent),
+      0 0 30px rgba(126, 189, 180, 0.5);
+  }
+}
+
+@keyframes dropShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* Edición rápida en búsqueda */
+.search-result-card {
+  transition: all 0.3s ease;
+}
+
+.search-result-card.editing {
+  background: var(--gray-50);
+  border: 2px solid var(--accent);
+  box-shadow: 0 8px 24px rgba(126, 189, 180, 0.3);
+}
+
+.result-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--gray-200);
+}
+
+.btn-quick-edit {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-quick-edit:hover {
+  background: var(--accent);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.btn-quick-edit svg {
+  width: 16px;
+  height: 16px;
+}
+
+.quick-edit-form {
+  padding: var(--space-4);
+  background: white;
+  border-radius: var(--radius-lg);
+}
+
+.quick-edit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--accent);
+}
+
+.quick-edit-header h4 {
+  margin: 0;
+  color: var(--accent);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  color: var(--gray-600);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.btn-close:hover {
+  background: var(--gray-200);
+  color: var(--gray-900);
+}
+
+.quick-edit-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field-group label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.quick-edit-input,
+.quick-edit-textarea,
+.quick-edit-select {
+  padding: var(--space-3);
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  transition: all 0.2s ease;
+}
+
+.quick-edit-input:focus,
+.quick-edit-textarea:focus,
+.quick-edit-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(126, 189, 180, 0.2);
+}
+
+.quick-edit-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.id-edit-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.id-edit-wrapper input {
+  flex: 1;
+}
+
+.id-warning {
+  font-size: 1.25rem;
+  color: var(--warning);
+  cursor: help;
+  animation: warningPulse 2s ease-in-out infinite;
+}
+
+.field-hint {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  font-style: italic;
+}
+
+.quick-edit-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--gray-200);
+}
+
+@keyframes warningPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
 /* Sortable States */
 .sortable-ghost {
   opacity: 0.4;

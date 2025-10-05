@@ -391,6 +391,8 @@ class EnhancedCongressDashboard {
   }
 
   handleKeyboardShortcuts(e) {
+    if (!e.key) return; // Ignorar eventos sin tecla definida
+
     const shortcuts = {
       'ctrl+f': () => {
         e.preventDefault();
@@ -527,7 +529,10 @@ class EnhancedCongressDashboard {
       turn_order: isDraft ? null : turnOrder,
     };
 
-    return await this.updateEventAPI(eventId, updatedData);
+    console.log(`📤 Actualizando evento ${eventId}:`, updatedData);
+    const result = await this.updateEventAPI(eventId, updatedData);
+    console.log(`✅ Evento ${eventId} actualizado`);
+    return result;
   }
 
   // Sistema de renderizado optimizado
@@ -595,9 +600,9 @@ class EnhancedCongressDashboard {
   }
 
   renderDashboardWorker() {
-    console.log('Worker rendering not implemented, falling back to sync rendering');
+    // Fallback a renderizado síncrono (worker no implementado)
     this.renderMetrics();
-    this.renderCharts(); 
+    this.renderCharts();
     this.renderRecentActivity();
   }
 
@@ -1162,15 +1167,40 @@ class EnhancedCongressDashboard {
         console.log('  - draggedId:', draggedId);
         console.log('  - está en selección?:', this.state.selectedEvents.has(draggedId));
 
-        if (this.state.multiSelectMode && this.state.selectedEvents.size > 0 && this.state.selectedEvents.has(draggedId)) {
+        if (this.state.multiSelectMode && this.state.selectedEvents.size > 1 && this.state.selectedEvents.has(draggedId)) {
           // Almacenar todos los IDs seleccionados para moverlos después
           this.draggedEventIds = Array.from(this.state.selectedEvents);
 
-          // Añadir clase visual a todos los elementos seleccionados
+          // Crear efecto de stack visual
+          let stackIndex = 0;
           this.draggedEventIds.forEach(id => {
-            const cards = document.querySelectorAll(`[data-id="${id}"]`);
-            cards.forEach(card => card.classList.add('dragging-multi'));
+            if (id !== draggedId) {
+              const cards = document.querySelectorAll(`[data-id="${id}"]`);
+              cards.forEach(card => {
+                card.classList.add('multi-drag-stacked');
+                card.style.setProperty('--stack-index', stackIndex);
+                stackIndex++;
+              });
+            }
           });
+
+          // Añadir badge sofisticado con contador
+          const badge = document.createElement('div');
+          badge.className = 'multi-drag-badge';
+          badge.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="7" height="7" rx="1"/>
+            </svg>
+            <span>${this.draggedEventIds.length}</span>
+          `;
+          evt.item.appendChild(badge);
+          this.multidragBadge = badge;
+
+          // Añadir clase especial a la tarjeta principal
+          evt.item.classList.add('multi-drag-main');
 
           console.log(`🔄 Arrastrando ${this.draggedEventIds.length} eventos:`, this.draggedEventIds);
         } else {
@@ -1181,11 +1211,16 @@ class EnhancedCongressDashboard {
       },
 
       /**
-       * Validación durante el movimiento
+       * Validación durante el movimiento con feedback visual mejorado
        */
       onMove: (evt) => {
         const targetContainer = evt.to;
         const maxCapacity = 6;
+
+        // Limpiar todas las clases de validación
+        document.querySelectorAll('.drop-valid, .drop-invalid').forEach(el => {
+          el.classList.remove('drop-valid', 'drop-invalid');
+        });
 
         if (targetContainer.classList.contains('room-slot')) {
           const currentCount = targetContainer.querySelectorAll('.event-card').length;
@@ -1196,8 +1231,10 @@ class EnhancedCongressDashboard {
             targetContainer.classList.add('drop-invalid');
             return false;
           } else {
-            targetContainer.classList.remove('drop-invalid');
+            targetContainer.classList.add('drop-valid');
           }
+        } else {
+          targetContainer.classList.add('drop-valid');
         }
         return true;
       },
@@ -1208,6 +1245,29 @@ class EnhancedCongressDashboard {
       onEnd: (evt) => {
         this.state.isDragging = false;
         document.body.classList.remove('dragging-active');
+
+        // Remover badge de cantidad con animación
+        if (this.multidragBadge) {
+          this.multidragBadge.style.animation = 'fadeOut 0.2s ease';
+          setTimeout(() => {
+            this.multidragBadge?.remove();
+            this.multidragBadge = null;
+          }, 200);
+        }
+
+        // Limpiar clases de stack con animación
+        document.querySelectorAll('.multi-drag-stacked').forEach(el => {
+          el.style.transition = 'all 0.3s ease';
+          el.classList.add('multi-drag-unstacking');
+          setTimeout(() => {
+            el.classList.remove('multi-drag-stacked', 'multi-drag-unstacking');
+            el.style.removeProperty('--stack-index');
+            el.style.transition = '';
+          }, 300);
+        });
+
+        // Remover clase principal
+        evt.item.classList.remove('multi-drag-main');
 
         // Limpiar estilos de feedback
         document.querySelectorAll('.drop-invalid, .dragging-multi').forEach(el => {
@@ -1281,30 +1341,40 @@ class EnhancedCongressDashboard {
 
     try {
       // Mover todos los eventos seleccionados
+      console.log('🚀 Iniciando movimiento de', eventsToMove.length, 'eventos');
+
       const movePromises = eventsToMove.map((eventId, index) => {
         const targetIndex = newDraggableIndex + index;
+        console.log(`  → Moviendo ${eventId} a índice ${targetIndex}`);
         return this.updateEventPosition(eventId, to, targetIndex, false);
       });
 
-      await Promise.all(movePromises);
+      console.log('⏳ Esperando a que se completen todas las actualizaciones...');
+      const results = await Promise.all(movePromises);
+      console.log('✅ Todas las actualizaciones completadas:', results);
 
-      // Actualizar turn orders
-      const updatePromises = [];
+      // SOLO actualizar turn orders si es movimiento de 1 evento
+      // Para múltiples eventos, ya se asignaron los turn_order correctos arriba
+      if (eventsToMove.length === 1) {
+        const updatePromises = [];
 
-      if (from !== to && from.classList.contains('room-slot')) {
-        updatePromises.push(this.updateTurnOrdersForContainer(from));
+        if (from !== to && from.classList.contains('room-slot')) {
+          updatePromises.push(this.updateTurnOrdersForContainer(from));
+        }
+
+        if (to.classList.contains('room-slot')) {
+          updatePromises.push(this.updateTurnOrdersForContainer(to));
+        }
+
+        await Promise.all(updatePromises);
+      } else {
+        console.log('⏭️ Salteando updateTurnOrders para movimiento múltiple (ya asignados correctamente)');
       }
 
-      if (to.classList.contains('room-slot')) {
-        updatePromises.push(this.updateTurnOrdersForContainer(to));
-      }
-
-      await Promise.all(updatePromises);
-
-      // Limpiar selección después del movimiento exitoso
-      if (this.state.multiSelectMode) {
-        this.state.selectedEvents.clear();
-      }
+      // NO limpiar selección automáticamente - dejar que el usuario deseleccione manualmente
+      // if (this.state.multiSelectMode) {
+      //   this.state.selectedEvents.clear();
+      // }
 
       // Limpiar IDs arrastrados
       this.draggedEventIds = null;
@@ -1313,10 +1383,16 @@ class EnhancedCongressDashboard {
       this.renderScheduleView();
 
       const message = eventsToMove.length > 1
-        ? `${eventsToMove.length} eventos movidos exitosamente`
+        ? `✅ ${eventsToMove.length} eventos movidos exitosamente`
         : 'Programación actualizada';
 
       this.throttledShowNotification(message, 'success');
+
+      // Limpiar selección solo si movimos múltiples eventos
+      if (eventsToMove.length > 1 && this.state.multiSelectMode) {
+        console.log('🧹 Limpiando selección después de movimiento múltiple exitoso');
+        this.state.selectedEvents.clear();
+      }
 
     } catch (error) {
       this.handleError('Error actualizando programación', error, false);
@@ -1689,31 +1765,44 @@ class EnhancedCongressDashboard {
     const title = event.title?.es || 'Sin Título';
     const authors = event.authors?.es || 'Sin Autores';
     const typeClass = event.event_type === 'simposio' ? 'simposio' : '';
+    const eventJSON = encodeURIComponent(JSON.stringify(event));
 
     return `
-      <div class="search-result-card ${typeClass}" data-id="${event.id}">
+      <div class="search-result-card ${typeClass}" data-id="${event.id}" data-event='${eventJSON}'>
         ${this.state.bulkMode ? `
           <label class="checkbox-container">
             <input type="checkbox" ${this.state.selectedEvents.has(event.id) ? 'checked' : ''}>
             <span class="checkmark"></span>
           </label>
         ` : ''}
-        
+
         <div class="result-content">
           <div class="result-header">
-            <strong>${title}</strong>
+            <div class="result-title-section">
+              <strong class="result-title" data-field="title">${title}</strong>
+            </div>
             <div class="result-badges">
-              <span class="badge badge-${event.status}">${event.status}</span>
-              <span class="badge badge-${event.event_type}">${event.event_type}</span>
-              <span class="badge badge-id">${event.id}</span>
+              <span class="badge badge-${event.status} editable-badge" data-field="status">${event.status}</span>
+              <span class="badge badge-${event.event_type} editable-badge" data-field="event_type">${event.event_type}</span>
+              <span class="badge badge-id editable-badge" data-field="id">${event.id}</span>
             </div>
           </div>
-          <p class="result-authors">${authors}</p>
+          <p class="result-authors" data-field="authors">${authors}</p>
           ${event.scheduled_day ? `
             <div class="result-schedule">
               ${event.scheduled_day} | ${event.scheduled_time_block || 'TBD'} | Sala ${event.room || 'TBD'}
             </div>
           ` : ''}
+
+          <div class="result-actions">
+            <button class="btn-quick-edit" onclick="dashboard.enableQuickEdit('${event.id}')" title="Edición rápida">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              Editar
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -1747,9 +1836,154 @@ class EnhancedCongressDashboard {
     }
   }
 
+  /**
+   * Habilitar edición rápida inline para un evento
+   *
+   * :param eventId: ID del evento a editar
+   * :type eventId: string
+   * :returns: void
+   */
+  enableQuickEdit(eventId) {
+    const card = document.querySelector(`.search-result-card[data-id="${eventId}"]`);
+    if (!card) return;
+
+    const eventData = JSON.parse(decodeURIComponent(card.dataset.event));
+
+    // Guardar estado original
+    card.dataset.originalHtml = card.innerHTML;
+    card.classList.add('editing');
+
+    const title = eventData.title?.es || '';
+    const authors = eventData.authors?.es || '';
+
+    card.innerHTML = `
+      <div class="quick-edit-form">
+        <div class="quick-edit-header">
+          <h4>Edición Rápida</h4>
+          <button class="btn-close" onclick="dashboard.cancelQuickEdit('${eventId}')" title="Cancelar">×</button>
+        </div>
+
+        <div class="quick-edit-fields">
+          <div class="field-group">
+            <label>ID del Evento</label>
+            <div class="id-edit-wrapper">
+              <input type="text" class="quick-edit-input" data-field="id" value="${eventData.id}" />
+              <span class="id-warning" title="Cambiar el ID puede causar problemas. Usar con precaución.">⚠️</span>
+            </div>
+            <small class="field-hint">Cambiar el ID puede romper referencias</small>
+          </div>
+
+          <div class="field-group">
+            <label>Título</label>
+            <input type="text" class="quick-edit-input" data-field="title" value="${title}" required />
+          </div>
+
+          <div class="field-group">
+            <label>Autores</label>
+            <textarea class="quick-edit-textarea" data-field="authors" rows="2" required>${authors}</textarea>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label>Tipo</label>
+              <select class="quick-edit-select" data-field="event_type">
+                <option value="ponencia" ${eventData.event_type === 'ponencia' ? 'selected' : ''}>Ponencia</option>
+                <option value="simposio" ${eventData.event_type === 'simposio' ? 'selected' : ''}>Simposio</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label>Estado</label>
+              <select class="quick-edit-select" data-field="status">
+                <option value="borrador" ${eventData.status === 'borrador' ? 'selected' : ''}>Borrador</option>
+                <option value="publicado" ${eventData.status === 'publicado' ? 'selected' : ''}>Publicado</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-edit-actions">
+          <button class="btn btn-secondary" onclick="dashboard.cancelQuickEdit('${eventId}')">Cancelar</button>
+          <button class="btn btn-primary" onclick="dashboard.saveQuickEdit('${eventId}')">Guardar Cambios</button>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Cancelar edición rápida
+   */
+  cancelQuickEdit(eventId) {
+    const card = document.querySelector(`.search-result-card[data-id="${eventId}"]`);
+    if (!card || !card.dataset.originalHtml) return;
+
+    card.innerHTML = card.dataset.originalHtml;
+    card.classList.remove('editing');
+    delete card.dataset.originalHtml;
+  }
+
+  /**
+   * Guardar cambios de edición rápida
+   */
+  async saveQuickEdit(eventId) {
+    const card = document.querySelector(`.search-result-card[data-id="${eventId}"]`);
+    if (!card) return;
+
+    // Obtener valores de los campos
+    const newId = card.querySelector('[data-field="id"]').value.trim();
+    const title = card.querySelector('[data-field="title"]').value.trim();
+    const authors = card.querySelector('[data-field="authors"]').value.trim();
+    const eventType = card.querySelector('[data-field="event_type"]').value;
+    const status = card.querySelector('[data-field="status"]').value;
+
+    // Validación
+    if (!newId || !title || !authors) {
+      this.showNotification('Todos los campos son obligatorios', 'error');
+      return;
+    }
+
+    // Advertencia si cambió el ID
+    if (newId !== eventId) {
+      const confirmChange = confirm(
+        `⚠️ ADVERTENCIA: Estás cambiando el ID del evento.\n\n` +
+        `ID anterior: ${eventId}\n` +
+        `ID nuevo: ${newId}\n\n` +
+        `Esto puede causar problemas si el ID está referenciado en otros sistemas.\n\n` +
+        `¿Estás seguro de continuar?`
+      );
+
+      if (!confirmChange) return;
+    }
+
+    this.state.loading = true;
+
+    try {
+      const updatedData = {
+        id: newId,
+        title: { es: title },
+        authors: { es: authors },
+        event_type: eventType,
+        status: status
+      };
+
+      await this.updateEventAPI(eventId, updatedData);
+
+      this.showNotification('✅ Evento actualizado exitosamente', 'success');
+
+      // Recargar búsqueda para reflejar cambios
+      await this.performSearch();
+
+    } catch (error) {
+      this.handleError('Error actualizando evento', error);
+      this.cancelQuickEdit(eventId);
+    } finally {
+      this.state.loading = false;
+    }
+  }
+
   toggleSelectAll() {
     const isAllSelected = this.state.selectedEvents.size === this.data.searchResults.length;
-    
+
     if (isAllSelected) {
       this.state.selectedEvents.clear();
     } else {
@@ -1883,44 +2117,89 @@ class EnhancedCongressDashboard {
     this.showNotification(message, type);
   }, 1000);
 
-  showNotification(message, type = 'info') {
+  showNotification(message, type = 'info', duration = 4000) {
     // Throttle notificaciones para evitar spam
     const now = Date.now();
     const key = `${message}-${type}`;
-    
+
     if (this.notificationThrottle.has(key)) {
       const lastShown = this.notificationThrottle.get(key);
-      if (now - lastShown < 2000) { // 2 segundos de throttling
+      if (now - lastShown < 2000) {
         return;
       }
     }
-    
+
     this.notificationThrottle.set(key, now);
-    
-    let notification = this.elementPool.notifications.pop();
-    
-    if (!notification) {
-      notification = document.createElement('div');
+
+    // Crear contenedor de notificaciones si no existe
+    let container = document.getElementById('toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toast-container';
+      container.className = 'toast-container';
+      document.body.appendChild(container);
     }
-    
-    notification.className = `notification ${type}`;
-    notification.innerHTML = `<span class="notification-message">${message}</span>`;
-    
-    document.body.appendChild(notification);
-    
+
+    // Iconos SVG para cada tipo
+    const icons = {
+      success: `<svg class="toast-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>`,
+      error: `<svg class="toast-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+      </svg>`,
+      warning: `<svg class="toast-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+      </svg>`,
+      info: `<svg class="toast-icon" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+      </svg>`
+    };
+
+    // Crear notificación toast
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+      <div class="toast-content">
+        <div class="toast-icon-wrapper">${icons[type] || icons.info}</div>
+        <div class="toast-message">${message}</div>
+        <button class="toast-close" aria-label="Cerrar">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
+      <div class="toast-progress"></div>
+    `;
+
+    // Agregar al contenedor
+    container.appendChild(toast);
+
+    // Animación de entrada
     requestAnimationFrame(() => {
-      notification.classList.add('show');
+      toast.classList.add('toast-show');
     });
 
-    setTimeout(() => {
-      notification.classList.remove('show');
+    // Barra de progreso
+    const progressBar = toast.querySelector('.toast-progress');
+    progressBar.style.animation = `toastProgress ${duration}ms linear forwards`;
+
+    // Botón de cerrar
+    const closeBtn = toast.querySelector('.toast-close');
+    const removeToast = () => {
+      toast.classList.remove('toast-show');
+      toast.classList.add('toast-hide');
       setTimeout(() => {
-        if (notification.parentNode) {
-          notification.parentNode.removeChild(notification);
-          this.returnToPool('notifications', notification);
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
         }
       }, 300);
-    }, 4000);
+    };
+
+    closeBtn.addEventListener('click', removeToast);
+
+    // Auto-cerrar
+    setTimeout(removeToast, duration);
   }
 
   getPooledElement(type, template) {

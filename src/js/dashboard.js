@@ -583,10 +583,43 @@ class EnhancedCongressDashboard {
     requestAnimationFrame(callback);
   }
 
+  // Skeleton Loaders para mejor UX
+  showSkeletonMetrics() {
+    if (!this.elements.metricsGrid) return;
+
+    const skeletons = `
+      ${Array(4).fill(0).map(() => `
+        <div class="skeleton-metric">
+          <div class="skeleton skeleton-metric-value"></div>
+          <div class="skeleton skeleton-metric-label"></div>
+        </div>
+      `).join('')}
+    `;
+
+    this.elements.metricsGrid.innerHTML = skeletons;
+  }
+
+  showSkeletonSearchResults(count = 5) {
+    if (!this.elements.searchResults) return;
+
+    const skeletons = `
+      ${Array(count).fill(0).map(() => `
+        <div class="skeleton-search-card">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text"></div>
+          <div class="skeleton skeleton-text"></div>
+          <div class="skeleton skeleton-text"></div>
+        </div>
+      `).join('')}
+    `;
+
+    this.elements.searchResults.innerHTML = skeletons;
+  }
+
   // Dashboard rendering optimizado
   renderDashboard() {
     if (!this.data.analytics) {
-      this.showNotification('Cargando datos del dashboard...', 'info');
+      this.showSkeletonMetrics();
       return;
     }
 

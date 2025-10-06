@@ -535,10 +535,10 @@ class EnhancedCongressDashboard {
     return result;
   }
 
-  // Sistema de renderizado optimizado
+  // Sistema de renderizado optimizado con animaciones
   switchView(viewName) {
     if (this.state.currentView === viewName) return;
-    
+
     this.batchDOMUpdate(() => {
       const navItems = this.elements.navItems;
       if (navItems && navItems.length) {
@@ -549,14 +549,32 @@ class EnhancedCongressDashboard {
 
       const viewContainers = this.elements.viewContainers;
       if (viewContainers && viewContainers.length) {
-        Array.from(viewContainers).forEach(container => {
-          container.classList.toggle('active', container.id === `${viewName}-view`);
-        });
+        // Fade out vista actual
+        const currentView = Array.from(viewContainers).find(c => c.classList.contains('active'));
+        if (currentView) {
+          currentView.classList.add('view-fade-out');
+        }
+
+        // Esperar animación y cambiar vista
+        setTimeout(() => {
+          Array.from(viewContainers).forEach(container => {
+            const isActive = container.id === `${viewName}-view`;
+            container.classList.toggle('active', isActive);
+            container.classList.remove('view-fade-out');
+
+            if (isActive) {
+              container.classList.add('view-fade-in');
+              setTimeout(() => container.classList.remove('view-fade-in'), 300);
+            }
+          });
+        }, 150);
       }
     });
 
     this.state.currentView = viewName;
-    this.renderCurrentView();
+
+    // Renderizar después de la animación
+    setTimeout(() => this.renderCurrentView(), 150);
   }
 
   async renderCurrentView() {
@@ -639,40 +657,81 @@ class EnhancedCongressDashboard {
     this.renderRecentActivity();
   }
 
+  // Animación de contador para métricas
+  animateCounter(element, target, duration = 1000, suffix = '') {
+    const start = 0;
+    const increment = target / (duration / 16);
+    let current = start;
+
+    const updateCounter = () => {
+      current += increment;
+      if (current < target) {
+        element.textContent = Math.floor(current) + suffix;
+        requestAnimationFrame(updateCounter);
+      } else {
+        element.textContent = target + suffix;
+      }
+    };
+
+    requestAnimationFrame(updateCounter);
+  }
+
   renderMetrics() {
     if (!this.elements.metricsGrid) return;
 
     const { summary } = this.data.analytics;
 
     const metricsTemplate = `
-      <div class="metric-card">
+      <div class="metric-card metric-animate">
         <div class="metric-content">
-          <div class="metric-value">${summary.totalEvents || 0}</div>
+          <div class="metric-value" data-value="${summary.totalEvents || 0}">0</div>
           <div class="metric-label">Total de Eventos</div>
         </div>
       </div>
-      <div class="metric-card">
+      <div class="metric-card metric-animate">
         <div class="metric-content">
-          <div class="metric-value">${summary.totalScheduled || 0}</div>
+          <div class="metric-value" data-value="${summary.totalScheduled || 0}">0</div>
           <div class="metric-label">Programados</div>
           <div class="metric-trend">${summary.completionRate || 0}% completado</div>
         </div>
       </div>
-      <div class="metric-card">
+      <div class="metric-card metric-animate">
         <div class="metric-content">
-          <div class="metric-value">${summary.totalDrafts || 0}</div>
+          <div class="metric-value" data-value="${summary.totalDrafts || 0}">0</div>
           <div class="metric-label">Pendientes</div>
         </div>
       </div>
-      <div class="metric-card">
+      <div class="metric-card metric-animate">
         <div class="metric-content">
-          <div class="metric-value">${summary.overallUtilization || 0}%</div>
+          <div class="metric-value" data-value="${summary.overallUtilization || 0}">0</div>
           <div class="metric-label">Ocupación de Salas</div>
         </div>
       </div>
     `;
 
     this.elements.metricsGrid.innerHTML = metricsTemplate;
+
+    // Animar contadores después del renderizado
+    requestAnimationFrame(() => {
+      const metricValues = this.elements.metricsGrid.querySelectorAll('.metric-value[data-value]');
+      metricValues.forEach((element, index) => {
+        const target = parseInt(element.dataset.value);
+        const suffix = element.closest('.metric-card:last-child') ? '%' : '';
+
+        // Delay escalonado para efecto cascada
+        setTimeout(() => {
+          this.animateCounter(element, target, 800, suffix);
+        }, index * 100);
+      });
+
+      // Activar animación de entrada de las tarjetas
+      const cards = this.elements.metricsGrid.querySelectorAll('.metric-card');
+      cards.forEach((card, index) => {
+        setTimeout(() => {
+          card.classList.add('metric-card-visible');
+        }, index * 100);
+      });
+    });
   }
 
   renderCharts() {
@@ -1630,15 +1689,87 @@ class EnhancedCongressDashboard {
     return true;
   }
 
-  confirmDelete(eventId) {
-    return confirm(
-      `¿Estás seguro de que quieres eliminar el evento ${eventId}?\n\n` +
-      'Esta acción es irreversible y eliminará permanentemente:\n' +
-      '• El evento y toda su información\n' +
-      '• Su posición en la programación\n' +
-      '• Todos los datos asociados\n\n' +
-      '¿Continuar con la eliminación?'
-    );
+  // Modal de confirmación elegante
+  showConfirmModal(options = {}) {
+    return new Promise((resolve) => {
+      const {
+        title = '¿Estás seguro?',
+        message = 'Esta acción no se puede deshacer.',
+        confirmText = 'Confirmar',
+        cancelText = 'Cancelar',
+        type = 'warning' // warning, danger, info
+      } = options;
+
+      // Crear modal
+      const modalOverlay = document.createElement('div');
+      modalOverlay.className = 'confirm-modal-overlay';
+      modalOverlay.innerHTML = `
+        <div class="confirm-modal confirm-modal-${type}">
+          <div class="confirm-modal-icon">
+            ${type === 'danger' ? `
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+              </svg>
+            ` : `
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+              </svg>
+            `}
+          </div>
+          <div class="confirm-modal-content">
+            <h3 class="confirm-modal-title">${title}</h3>
+            <p class="confirm-modal-message">${message}</p>
+          </div>
+          <div class="confirm-modal-actions">
+            <button class="btn btn-outline confirm-modal-cancel">${cancelText}</button>
+            <button class="btn btn-${type === 'danger' ? 'danger' : 'primary'} confirm-modal-confirm">${confirmText}</button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modalOverlay);
+
+      // Animación de entrada
+      requestAnimationFrame(() => {
+        modalOverlay.classList.add('confirm-modal-show');
+      });
+
+      // Manejadores
+      const removeModal = (result) => {
+        modalOverlay.classList.remove('confirm-modal-show');
+        setTimeout(() => {
+          if (modalOverlay.parentNode) {
+            modalOverlay.parentNode.removeChild(modalOverlay);
+          }
+          resolve(result);
+        }, 200);
+      };
+
+      modalOverlay.querySelector('.confirm-modal-cancel').onclick = () => removeModal(false);
+      modalOverlay.querySelector('.confirm-modal-confirm').onclick = () => removeModal(true);
+      modalOverlay.onclick = (e) => {
+        if (e.target === modalOverlay) removeModal(false);
+      };
+
+      // ESC para cancelar
+      const escHandler = (e) => {
+        if (e.key === 'Escape') {
+          document.removeEventListener('keydown', escHandler);
+          removeModal(false);
+        }
+      };
+      document.addEventListener('keydown', escHandler);
+    });
+  }
+
+  async confirmDelete(eventId) {
+    return await this.showConfirmModal({
+      title: 'Eliminar Evento',
+      message: `¿Estás seguro de que quieres eliminar el evento ${eventId}?\n\nEsta acción es irreversible y eliminará toda la información del evento.`,
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar',
+      type: 'danger'
+    });
   }
 
   closeEventModal() {
@@ -1660,6 +1791,9 @@ class EnhancedCongressDashboard {
     }
 
     this.searchController = new AbortController();
+
+    // Mostrar skeleton mientras carga
+    this.showSkeletonSearchResults();
 
     try {
       const searchParams = new URLSearchParams();

@@ -51,6 +51,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -59,6 +63,8 @@ html, body {
   background-color: var(--gray-50);
   color: var(--gray-900);
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #app {
@@ -137,13 +143,38 @@ html, body {
   display: none;
   height: calc(100vh - 70px);
   overflow: auto;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .view-container.active {
   display: block;
+  opacity: 1;
+  transform: translateY(0);
 }
 
-/* Buttons - Bento Style */
+.view-fade-out {
+  opacity: 0 !important;
+  transform: translateY(-10px) !important;
+}
+
+.view-fade-in {
+  animation: viewFadeIn 0.3s ease forwards;
+}
+
+@keyframes viewFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Buttons - Bento Style with Micro-interactions */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -155,12 +186,42 @@ html, body {
   text-decoration: none;
   cursor: pointer;
   border: none;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn:active {
+  transform: translateY(0);
 }
 
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 .btn-primary {
@@ -253,6 +314,25 @@ html, body {
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+}
+
+.metric-card-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  animation: metricCardSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes metricCardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .metric-card::before {
@@ -746,7 +826,7 @@ html, body {
   background: var(--primary-light);
 }
 
-/* Event Cards - Bento Style */
+/* Event Cards - Bento Style with Enhanced Interactions */
 .event-card {
   background: white;
   border-radius: var(--radius-lg);
@@ -755,17 +835,34 @@ html, body {
   box-shadow: var(--shadow-sm);
   border: 2px solid var(--gray-200);
   cursor: grab;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.event-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, transparent 0%, rgba(212, 165, 116, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .event-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px) scale(1.01);
   border-color: var(--primary);
+}
+
+.event-card:hover::after {
+  opacity: 1;
 }
 
 .event-card:active {
   cursor: grabbing;
+  transform: translateY(-1px) scale(0.99);
 }
 
 .event-card.simposio {
@@ -1290,14 +1387,19 @@ html, body {
   border-radius: 10px;
   font-size: 0.9375rem;
   background: white;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 400;
+}
+
+.search-input:hover {
+  border-color: var(--gray-600);
 }
 
 .search-input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-light);
+  box-shadow: 0 0 0 4px var(--primary-light), 0 4px 12px rgba(212, 165, 116, 0.2);
+  transform: translateY(-1px);
 }
 
 .search-filters {
@@ -1352,7 +1454,7 @@ html, body {
   gap: var(--space-3);
 }
 
-/* Search Result Cards - Bento Style */
+/* Search Result Cards - Bento Style with Enhanced Interactions */
 .search-result-card {
   background: white;
   border: 2px solid var(--gray-200);
@@ -1361,14 +1463,30 @@ html, body {
   display: flex;
   align-items: flex-start;
   gap: var(--space-3);
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.search-result-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(126, 189, 180, 0.03) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .search-result-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
   border-color: var(--primary);
+}
+
+.search-result-card:hover::before {
+  opacity: 1;
 }
 
 .search-result-card.simposio {
@@ -1980,6 +2098,129 @@ html, body {
   }
   to {
     transform: scaleX(0);
+  }
+}
+
+/* Confirm Modal - Elegant Confirmations */
+.confirm-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10002;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.confirm-modal-show {
+  opacity: 1;
+}
+
+.confirm-modal-show .confirm-modal {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.confirm-modal {
+  background: white;
+  border-radius: var(--radius-xl);
+  max-width: 440px;
+  width: 90%;
+  padding: var(--space-8);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  transform: scale(0.9);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.confirm-modal-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  animation: confirmIconPulse 2s ease-in-out infinite;
+}
+
+.confirm-modal-warning .confirm-modal-icon {
+  background: var(--warning-light);
+  color: var(--warning);
+}
+
+.confirm-modal-danger .confirm-modal-icon {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+.confirm-modal-info .confirm-modal-icon {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.confirm-modal-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.confirm-modal-content {
+  text-align: center;
+}
+
+.confirm-modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0 0 var(--space-3) 0;
+}
+
+.confirm-modal-message {
+  font-size: 0.9375rem;
+  color: var(--gray-600);
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.confirm-modal-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+}
+
+.confirm-modal-actions .btn {
+  flex: 1;
+  justify-content: center;
+  padding: var(--space-3) var(--space-6);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.confirm-modal-actions .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.confirm-modal-actions .btn:active {
+  transform: translateY(0);
+}
+
+@keyframes confirmIconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
   }
 }
 

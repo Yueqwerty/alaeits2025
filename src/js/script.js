@@ -1396,7 +1396,7 @@ class ALAEITSProgramManager {
                             ${salaEvents.map((event) => `
                                 <div class="timeline-item ${event.typeClass}" data-turn="${event.turnOrder + 1}">
                                     <div class="timeline-content">
-                                        <div class="timeline-mesa-badge">${event.mesaId}</div>
+                                        <div class="timeline-mesa-badge">${event.id}</div>
                                         <h4>${event.titulo}</h4>
                                         <p class="timeline-authors">Por: ${event.autores.join(', ') || 'Sin autores'}</p>
                                     </div>

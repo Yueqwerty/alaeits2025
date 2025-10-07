@@ -1230,7 +1230,7 @@ class ALAEITSProgramManager {
                             font-size: 9pt;
                             font-weight: 600;
                         }
-                        .mesa-badge {
+                        .ponencia-badge {
                             display: inline-block;
                             background: white;
                             color: #666;
@@ -1299,7 +1299,7 @@ class ALAEITSProgramManager {
                 htmlContent += `
                     <div class="timeline-item ${event.typeClass}">
                         <div class="turn-badge">Turno ${event.turnOrder + 1}</div>
-                        <div class="mesa-badge">${event.mesaId}</div>
+                        <div class="ponencia-badge">${event.id}</div>
                         <div class="event-title">${event.titulo}</div>
                         <div class="event-authors">${autores}</div>
                     </div>
@@ -1396,7 +1396,7 @@ class ALAEITSProgramManager {
                             ${salaEvents.map((event) => `
                                 <div class="timeline-item ${event.typeClass}" data-turn="${event.turnOrder + 1}">
                                     <div class="timeline-content">
-                                        <div class="timeline-mesa-badge">${event.id}</div>
+                                        <div class="timeline-ponencia-badge">${event.id}</div>
                                         <h4>${event.titulo}</h4>
                                         <p class="timeline-authors">Por: ${event.autores.join(', ') || 'Sin autores'}</p>
                                     </div>

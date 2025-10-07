@@ -1055,7 +1055,7 @@ mark {
     margin-top: 0.5rem;
 }
 
-.timeline-mesa-badge {
+.timeline-ponencia-badge {
     display: inline-block;
     background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
     color: white;

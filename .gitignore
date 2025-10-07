@@ -59,11 +59,8 @@ out/
 .temp/
 tmp/
 
-
-# 5. Archivos de Entorno y Secretos
-# -------------------------------------------------------------------
-# ¡CRÍTICO PARA LA SEGURIDAD! Nunca subir archivos que contengan
-# claves de API, contraseñas o URLs de bases de datos.
+.TODO.md
+TODO.md
 .env
 .env.local
 .env.*.local

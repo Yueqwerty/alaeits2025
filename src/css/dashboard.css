@@ -694,12 +694,14 @@ html, body {
 }
 
 .event-eje {
-  font-size: 0.6em;
-  color: var(--gray-600);
-  font-weight: 500;
+  font-size: 0.8em;
+  color: var(--gray-900);
+  font-weight: 700;
   text-align: center;
   margin-top: 2px;
   line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .event-card-mini .event-eje {

@@ -3,12 +3,9 @@ require('dotenv').config({ path: '../../.env.local' });
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
 
-// --- CONFIGURACIÓN ---
-// ¡IMPORTANTE! Reemplaza estas URLs con las URLs de exportación CSV de tus hojas de MBD.
 const URL_MBD_PONENCIAS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPWPcv_xytqMvzC-zRhcdSg7WAU2skCTJ24CjfgpQRDeyayd7O6k-WWdPF5Z9vU8s5FA5ZCCQdxMJu/pub?gid=408175250&single=true&output=csv";
 const URL_MBD_SIMPOSIOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSPWPcv_xytqMvzC-zRhcdSg7WAU2skCTJ24CjfgpQRDeyayd7O6k-WWdPF5Z9vU8s5FA5ZCCQdxMJu/pub?gid=1740533037&single=true&output=csv";
 const PRIMARY_LANG = 'es';
-// --------------------
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
@@ -30,7 +27,7 @@ module.exports = async (req, res) => {
     const token = authHeader.split(' ')[1];
     jwt.verify(token, process.env.JWT_SECRET);
 
-    console.log('🤖 Iniciando sincronización manual con la MBD...');
+    console.log('Iniciando sincronización manual con la MBD...');
 
     // 2. Obtener datos de las hojas con mejor manejo de errores
     const [ponenciasRes, simposiosRes] = await Promise.all([
@@ -71,11 +68,13 @@ module.exports = async (req, res) => {
                 id: id,
                 type: row.Tipo_Trabajo?.toLowerCase().includes('simposio') ? 'simposio' : 'ponencia',
                 title: { [PRIMARY_LANG]: row.Titulo_Trabajo || 'Sin título' },
-                eje: { [PRIMARY_LANG]: row.Eje_Tematico || 'Sin eje temático' },
+                eje: { [PRIMARY_LANG]: (row.Eje_Tematico || 'Sin eje temático') },
                 authors: new Set(),
+                emails: new Set(), // Nuevo conjunto para almacenar los correos electrónicos
             });
         }
         if (row.Nombre_Autor) allWorksMBD.get(id).authors.add(row.Nombre_Autor.trim());
+        if (row.Email_Autor) allWorksMBD.get(id).emails.add(row.Email_Autor.trim());
     });
 
     console.log(`   -> Total trabajos procesados desde MBD: ${allWorksMBD.size}`);
@@ -102,14 +101,15 @@ module.exports = async (req, res) => {
         await client.query('BEGIN');
         for (const work of newWorksToInsert) {
           const query = `
-            INSERT INTO events (id, event_type, title, authors, eje, status)
-            VALUES ($1, $2, $3, $4, $5, 'borrador') ON CONFLICT (id) DO NOTHING;`;
+            INSERT INTO events (id, event_type, title, authors, emails, eje, status)
+            VALUES ($1, $2, $3, $4, $5, $6, 'borrador') ON CONFLICT (id) DO NOTHING;`;
           
           await client.query(query, [
-            work.id, 
-            work.type, 
+            work.id,
+            work.type,
             work.title,
-            { [PRIMARY_LANG]: Array.from(work.authors).join(', ') }, 
+            { [PRIMARY_LANG]: Array.from(work.authors).join(', ') },
+            { [PRIMARY_LANG]: Array.from(work.emails).join(', ') },
             work.eje
           ]);
         }

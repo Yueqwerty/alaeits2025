@@ -302,6 +302,11 @@ class ALAEITSProgramManager {
         return String(value).trim();
     }
 
+    extractEjeNumber(event) {
+        // Usar la función del diccionario global
+        return getEjeNumber(event);
+    }
+
     safeNumber(value) {
         if (value === null || value === undefined) return null;
         const num = Number(value);
@@ -664,7 +669,6 @@ class ALAEITSProgramManager {
                 <p class="card-moderator"><span class="font-bold">Modera:</span> ${moderadorName}</p>
                 <p class="card-authors">${autores}</p>
                 <div class="card-tags">
-                    ${event.eje ? `<div class="card-eje">${event.eje}</div>` : ''}
                     ${event.turnOrder !== null ? `<div class="card-turn-order">Turno: ${event.turnOrder + 1}</div>` : ''}
                 </div>
             </div>
@@ -1302,7 +1306,7 @@ class ALAEITSProgramManager {
                         <div class="ponencia-badge">${event.id}</div>
                         <div class="event-title">${event.titulo}</div>
                         <div class="event-authors">${autores}</div>
-                    </div>
+</div>
                 `;
             });
 
@@ -1399,7 +1403,7 @@ class ALAEITSProgramManager {
                                         <div class="timeline-ponencia-badge">${event.id}</div>
                                         <h4>${event.titulo}</h4>
                                         <p class="timeline-authors">Por: ${event.autores.join(', ') || 'Sin autores'}</p>
-                                    </div>
+</div>
                                 </div>
                             `).join('')}
                         </div>

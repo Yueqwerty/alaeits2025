@@ -59,7 +59,6 @@ out/
 .temp/
 tmp/
 
-.TODO.md
 TODO.md
 .env
 .env.local
@@ -74,6 +73,13 @@ TODO.md
 .netlify/
 .firebase/
 
+# Configuración de email para notificaciones
+email-config.js
+notifications-config.json
+
+# Archivos de migración SQL y scripts de base de datos
+api/db/*.sql
+
 # Archivos de coverage de pruebas
 coverage/
 *.lcov
@@ -83,12 +89,18 @@ coverage/
 *.tsbuildinfo
 
 
-# 7. Archivos de Migración y Datos Sensibles
+# 7. Archivos de Migración, Datos Sensibles y Backups
 # -------------------------------------------------------------------
 # La carpeta _migration_data contiene los CSVs con los datos iniciales.
 # A menudo se ignora para no exponer listas de correos, nombres, etc.
 # Si tus CSV no contienen datos sensibles, puedes eliminar esta línea.
 _migration_data/
+
+# Archivos de backup generados por scripts
+backups/
+*.json.backup
+*.backup.json
+*-backup-*.json
 
 
 # 8. Archivos de Verificación y Scripts de Un Solo Uso
@@ -100,6 +112,8 @@ google*.html
 # Si los quieres guardar como referencia, puedes eliminar estas líneas.
 migrate.js
 hash-password.js
+fix-ejes-script.js
+update-existing-emails.js
 
 
 # 9. Archivos Temporales y de Sistema

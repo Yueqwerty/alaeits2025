@@ -1112,21 +1112,21 @@ class EnhancedCongressDashboard {
     });
   }
     extractEjeNumber(event) {
-      if (event.eje && event.eje.es && typeof event.eje.es === 'string') {
-        const match = event.eje.es.match(/EJE\s*(\d+)/i);
-        if (match) return match[1];
-      }
-      
+      // Primero intentar con la función global del diccionario
+      const ejeNum = getEjeNumber(event);
+      if (ejeNum) return ejeNum;
+
+      // Casos específicos para el dashboard si no se encuentra en el eje principal
       if (event.mesa_title && event.mesa_title.es && typeof event.mesa_title.es === 'string') {
         const match = event.mesa_title.es.match(/EJE\s*(\d+)/i);
         if (match) return match[1];
       }
-      
+
       if (event.title && event.title.es && typeof event.title.es === 'string') {
         const match = event.title.es.match(/EJE\s*(\d+)/i);
         if (match) return match[1];
       }
-      
+
       return null;
     }
   createEventCard(event, type) {
@@ -1156,7 +1156,7 @@ class EnhancedCongressDashboard {
           </label>
         ` : ''}
         <div class="event-id">${event.id}</div>
-        ${ejeNumber ? `<div class="event-eje">Eje ${ejeNumber}</div>` : ''}
+        ${ejeNumber ? `<div class="event-eje" style="font-size: 1em; color: black; font-weight: 800; text-transform: uppercase;">EJE ${ejeNumber}</div>` : ''}
         ${event.turn_order !== null ? `<div class="turn-order">#${event.turn_order + 1}</div>` : ''}
       `;
     } else {

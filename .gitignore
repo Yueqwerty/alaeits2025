@@ -101,7 +101,7 @@ backups/
 *.json.backup
 *.backup.json
 *-backup-*.json
-
+.SIMPOSIOS-MIGRACION-REPORT.md
 
 # 8. Archivos de Verificación y Scripts de Un Solo Uso
 # -------------------------------------------------------------------

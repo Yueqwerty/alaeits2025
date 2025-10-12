@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
 
     fs.writeFileSync(backupPath, JSON.stringify(events, null, 2));
 
-    console.log(`   ✅ Backup completado: ${backupPath}`);
+    console.log(`   Backup completado: ${backupPath}`);
 
     return res.status(200).json({
       message: `Backup completado. ${events.length} eventos guardados.`,
@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error durante el backup:', error);
+    console.error('Error durante el backup:', error);
 
     let errorMessage = 'Error interno del servidor.';
     let statusCode = 500;

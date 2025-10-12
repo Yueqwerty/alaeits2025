@@ -68,13 +68,13 @@ class ALAEITSProgramManager {
         try {
             await this.waitForDOM();
             this.cacheElements();
-            this.ensureToastContainer(); // ✅ CORREGIDO - Agregados paréntesis
+            this.ensureToastContainer(); // CORREGIDO - Agregados paréntesis
             this.loadFavorites();
             this.setupEventListeners();
             
             await this.loadData();
             
-            // ✅ MOVER ESTA LÍNEA ANTES DE setupInitialView
+            // MOVER ESTA LÍNEA ANTES DE setupInitialView
             this.state.initialized = true;
             
             this.setupInitialView();
@@ -928,7 +928,7 @@ class ALAEITSProgramManager {
         const hasResults = this.state.filteredData.length > 0;
         const hasActiveFilters = this.hasActiveFilters();
 
-        // ✅ CRÍTICO: No mostrar #no-results en vista de favoritos
+        // CRÍTICO: No mostrar #no-results en vista de favoritos
         if (this.state.currentDay === 'favoritos') {
             this.elements.noResults.classList.add('hidden');
             return;

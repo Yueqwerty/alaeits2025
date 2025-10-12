@@ -19,6 +19,8 @@
                 <nav class="main-nav">
                     <a href="#" class="nav-item active" data-view="dashboard">Dashboard</a>
                     <a href="#" class="nav-item" data-view="schedule">Planificación</a>
+                    <a href="#" class="nav-item" data-view="validation">Validación de Salas</a>
+                    <a href="#" class="nav-item" data-view="conflicts">Resolver Conflictos</a>
                     <a href="#" class="nav-item" data-view="search">Búsqueda</a>
                 </nav>
             </div>
@@ -70,7 +72,88 @@
                 </div>
             </div>
 
-            <!-- VISTA #3: BÚSQUEDA Y OPERACIONES EN LOTE -->
+            <!-- VISTA #3: VALIDACIÓN DE DISPONIBILIDAD DE SALAS -->
+            <div id="validation-view" class="view-container">
+                <div class="validation-layout">
+                    <!-- Panel de Conflictos -->
+                    <aside class="conflicts-panel">
+                        <div class="conflicts-header">
+                            <h2>⚠️ Análisis de Conflictos</h2>
+                            <span id="conflicts-count" class="badge badge-danger">0</span>
+                        </div>
+                        <div id="conflicts-summary" class="conflicts-summary"></div>
+                    </aside>
+
+                    <!-- Área principal con grilla -->
+                    <div class="validation-main">
+                        <header class="validation-header">
+                            <div class="validation-title">
+                                <h2>Validación de Disponibilidad de Salas Físicas</h2>
+                                <p class="subtitle">Verifica qué eventos coinciden con los horarios de disponibilidad de salas</p>
+                                <!-- Contador de ponencias y simposios -->
+                                <div class="event-counters">
+                                    <div class="counter-group">
+                                        <div class="counter">
+                                            <span id="total-ponencias-dia" class="counter-number">0</span>
+                                            <span class="counter-label">Total Ponencias del Día</span>
+                                        </div>
+                                        <div class="counter">
+                                            <span id="total-eventos-validacion" class="counter-number">0</span>
+                                            <span class="counter-label">Total en Validación</span>
+                                        </div>
+                                    </div>
+                                    <div class="counter-group">
+                                        <div class="counter">
+                                            <span id="ponencias-count" class="counter-number">0</span>
+                                            <span class="counter-label">Mesas de Ponencias</span>
+                                        </div>
+                                        <div class="counter">
+                                            <span id="ponencias-conflict-count" class="counter-number counter-conflict">0</span>
+                                            <span class="counter-label">Con Conflictos</span>
+                                        </div>
+                                    </div>
+                                    <div class="counter-group">
+                                        <div class="counter">
+                                            <span id="simposios-count" class="counter-number">0</span>
+                                            <span class="counter-label">Simposios</span>
+                                        </div>
+                                        <div class="counter">
+                                            <span id="simposios-conflict-count" class="counter-number counter-conflict">0</span>
+                                            <span class="counter-label">Con Conflictos</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="validation-controls">
+                                <div class="filters">
+                                    <label for="validation-day-filter">Día:</label>
+                                    <select id="validation-day-filter">
+                                        <option value="14/10">Martes 14 de Octubre</option>
+                                        <option value="15/10">Miércoles 15 de Octubre</option>
+                                    </select>
+                                </div>
+                                <div class="legend">
+                                    <span class="legend-item">
+                                        <span class="legend-color" style="background: #d1fae5;"></span>
+                                        Compatible
+                                    </span>
+                                    <span class="legend-item">
+                                        <span class="legend-color" style="background: #fee2e2;"></span>
+                                        Conflicto
+                                    </span>
+                                    <span class="legend-item">
+                                        <span class="legend-color" style="background: #f3f4f6;"></span>
+                                        No disponible
+                                    </span>
+                                </div>
+                            </div>
+                        </header>
+                        <div id="validation-grid" class="validation-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA #4: BÚSQUEDA Y OPERACIONES EN LOTE -->
             <div id="search-view" class="view-container">
                  <div class="search-layout">
                     <header class="search-header">
@@ -117,6 +200,6 @@
     <!-- Diccionario de ejes temáticos -->
     <script src="src/js/ejes-dict.js"></script>
     <script src="src/js/auth.js" defer></script>
-    <script src="src/js/dashboard.js"></script>
+    <script type="module" src="src/js/dashboard.js"></script>
 </body>
 </html>

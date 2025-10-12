@@ -2394,6 +2394,607 @@ html, body {
   opacity: 1;
 }
 
+/* ============================================================
+ * VALIDACIÓN DE SALAS - Vista de Análisis
+ * ============================================================ */
+
+.validation-layout {
+  display: flex;
+  height: 100%;
+  background: var(--gray-50);
+}
+
+/* Contadores de eventos */
+.event-counters {
+  display: flex;
+  gap: var(--space-6);
+  margin-top: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.counter-group {
+  display: flex;
+  gap: var(--space-4);
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+}
+
+.counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.counter-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.counter-conflict {
+  color: var(--danger);
+}
+
+.counter-label {
+  font-size: 0.75rem;
+  color: var(--gray-700);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Panel de conflictos (sidebar) */
+.conflicts-panel {
+  width: 340px;
+  background: white;
+  border-right: 1px solid var(--gray-200);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.conflicts-header {
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+}
+
+.conflicts-header h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--gray-900);
+}
+
+.badge-danger {
+  background: var(--danger);
+  color: white;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.conflicts-summary {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+.conflict-item {
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  background: white;
+  border: 2px solid var(--danger-light);
+  border-radius: var(--radius-lg);
+  transition: all 0.2s;
+}
+
+.conflict-item:hover {
+  border-color: var(--danger);
+  box-shadow: var(--shadow-md);
+}
+
+.conflict-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--danger);
+  margin-bottom: var(--space-2);
+}
+
+.conflict-details {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  line-height: 1.5;
+}
+
+.conflict-events-list {
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--gray-200);
+}
+
+.conflict-event-id {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  background: var(--gray-100);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin: 2px;
+}
+
+/* Área principal de validación */
+.validation-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.validation-header {
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.validation-title h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.validation-title .subtitle {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin: 0;
+}
+
+.validation-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.validation-controls .filters {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.validation-controls .filters label {
+  font-weight: 600;
+  color: var(--gray-700);
+  font-size: 0.875rem;
+}
+
+.validation-controls .filters select {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: white;
+  color: var(--gray-700);
+  min-width: 180px;
+}
+
+.legend {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  color: var(--gray-700);
+  font-weight: 500;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid var(--gray-300);
+}
+
+/* Grilla de validación */
+.validation-grid {
+  flex: 1;
+  overflow: auto;
+  padding: var(--space-6);
+}
+
+.validation-table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.validation-table thead th {
+  padding: var(--space-3);
+  background: var(--gray-100);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--gray-200);
+  text-align: center;
+}
+
+.validation-table .sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background: white;
+  border-right: 2px solid var(--gray-300);
+}
+
+.validation-table thead .sticky-col {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 700;
+  z-index: 11;
+}
+
+.room-header {
+  font-weight: 600;
+  padding: var(--space-4) var(--space-3);
+}
+
+.validation-table-header {
+  display: table-row;
+  background: var(--gray-100);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.validation-header-cell {
+  display: table-cell;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--gray-200);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--gray-900);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+}
+
+.validation-header-cell.room-cell {
+  width: 120px;
+  background: var(--primary-light);
+  color: var(--primary);
+  position: sticky;
+  left: 0;
+  z-index: 11;
+}
+
+.validation-header-cell.time-cell {
+  min-width: 200px;
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.validation-table-row {
+  display: table-row;
+  transition: background 0.2s;
+}
+
+.validation-table-row:hover {
+  background: var(--gray-50);
+}
+
+.validation-table-row:nth-child(even) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.validation-table-row:nth-child(even):hover {
+  background: var(--gray-50);
+}
+
+.validation-room-cell {
+  display: table-cell;
+  padding: var(--space-3);
+  border: 1px solid var(--gray-200);
+  text-align: center;
+  vertical-align: middle;
+  width: 120px;
+  background: white;
+  position: sticky;
+  left: 0;
+  z-index: 5;
+}
+
+.room-number {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: var(--space-1);
+}
+
+.room-names {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--space-1);
+}
+
+.room-names small {
+  font-size: 0.625rem;
+  color: var(--gray-600);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.validation-room-badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  background: var(--primary);
+  color: white;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: var(--space-1);
+}
+
+.room-type-tag {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  background: var(--warning-light);
+  color: var(--warning);
+  border-radius: 6px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: var(--space-1);
+}
+
+.validation-time-cell {
+  display: table-cell;
+  padding: var(--space-3);
+  border: 1px solid var(--gray-200);
+  min-width: 200px;
+  min-height: 100px;
+  vertical-align: top;
+  position: relative;
+  transition: all 0.2s;
+}
+
+/* Estados de la celda */
+.validation-time-cell.available {
+  background: #d1fae5;
+  border-color: #10b981;
+}
+
+.validation-time-cell.conflict {
+  background: #fee2e2;
+  border-color: var(--danger);
+  animation: conflictPulse 2s ease-in-out infinite;
+}
+
+.validation-time-cell.unavailable {
+  background: #f3f4f6;
+  cursor: not-allowed;
+}
+
+@keyframes conflictPulse {
+  0%, 100% {
+    box-shadow: inset 0 0 0 2px var(--danger);
+  }
+  50% {
+    box-shadow: inset 0 0 0 3px var(--danger), 0 0 10px rgba(201, 124, 124, 0.3);
+  }
+}
+
+/* Información de sala física */
+.physical-room-badge {
+  display: inline-block;
+  padding: var(--space-2) var(--space-3);
+  background: white;
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: var(--space-2);
+}
+
+.room-capacity-info {
+  font-size: 0.7rem;
+  color: var(--gray-600);
+  font-weight: 500;
+  margin-left: var(--space-1);
+}
+
+/* Lista de eventos en la celda */
+.cell-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.cell-event-item {
+  padding: var(--space-2);
+  background: white;
+  border: 1px solid var(--gray-300);
+  border-radius: 6px;
+  font-size: 0.7rem;
+  transition: all 0.2s;
+}
+
+.cell-event-item:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.cell-event-item.conflict-event {
+  border-color: var(--danger);
+  background: #fef2f2;
+}
+
+.cell-event-id {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--gray-900);
+  display: block;
+  margin-bottom: var(--space-1);
+}
+
+.cell-event-type {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  color: var(--gray-600);
+  font-weight: 600;
+}
+
+/* Etiqueta de "No disponible" */
+.unavailable-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  font-style: italic;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Badge de conflicto en celda */
+.conflict-badge {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  background: var(--danger);
+  color: white;
+  padding: var(--space-1) var(--space-2);
+  border-radius: 6px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  animation: conflictBadgePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes conflictBadgePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Badge de sala activa (muestra turno y horario) */
+.active-room-badge {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2);
+  background: linear-gradient(135deg, var(--primary-light), var(--accent-light));
+  border-radius: 6px;
+  margin-bottom: var(--space-2);
+  border: 1px solid var(--primary);
+}
+
+.room-physical-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.room-time-range {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--gray-600);
+  text-align: center;
+  font-family: var(--font-mono);
+}
+
+/* Indicadores de estado de celda */
+.cell-status {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--danger);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cell-status-gray {
+  font-size: 1rem;
+  color: var(--gray-400);
+  text-align: center;
+}
+
+.cell-status-ok {
+  font-size: 1rem;
+  color: var(--accent);
+  text-align: center;
+  font-weight: 700;
+}
+
+.cell-events {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  margin-top: var(--space-2);
+}
+
+/* Estado sin conflictos */
+.no-conflicts-message {
+  padding: var(--space-8);
+  text-align: center;
+}
+
+.no-conflicts-icon {
+  font-size: 4rem;
+  margin-bottom: var(--space-4);
+}
+
+.no-conflicts-message h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.no-conflicts-message p {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin: 0;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .header-left {
@@ -2562,4 +3163,69 @@ html, body {
 
 .sidebar-actions button {
   width: 100%;
+}
+
+/* Mini Event Badges for Validation View */
+.mini-event-badge {
+  background: white;
+  border: 1px solid var(--gray-300);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 0.75rem;
+  margin-bottom: 3px;
+  display: inline-block;
+}
+
+.mini-event-badge.conflict {
+  background: #fee2e2;
+  border-color: var(--danger);
+}
+
+.mini-event-badge.available {
+  background: #d1fae5;
+  border-color: #10b981;
+}
+
+.mini-event-badge.simposio {
+  background: var(--warning-light);
+  border-color: var(--warning);
+}
+
+.mini-event-badge.mesa-group {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 8px;
+}
+
+.mini-event-badge.mesa-group .event-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.mini-event-badge.mesa-group .mesa-title {
+  font-size: 0.65rem;
+  font-weight: 600;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mini-event-badge .event-id {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
 }

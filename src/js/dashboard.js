@@ -1,16 +1,8 @@
-// Importar módulo de mapeo de salas
-import { roomMap, getActiveRoom, isSimposioRoom } from './detailed-room-map.js';
-
 class EnhancedCongressDashboard {
   constructor() {
     // Configuración inicial
     this.authToken = sessionStorage.getItem('authToken');
     this.isAuthenticated = sessionStorage.getItem('isAdminAuthenticated');
-
-    // Mapeo de salas para validación
-    this.roomMap = roomMap;
-    this.getActiveRoom = getActiveRoom;
-    this.isSimposioRoom = isSimposioRoom;
     
     // Estado de la aplicación con proxies para reactividad
     this.data = this.createReactiveData({
@@ -138,11 +130,7 @@ class EnhancedCongressDashboard {
       eventModal: '#event-modal',
       eventModalContent: '#event-modal-content',
       loadingOverlay: '#loading-overlay',
-      syncMdbBtn: '#sync-mdb-btn',
-      validationGrid: '#validation-grid',
-      validationDayFilter: '#validation-day-filter',
-      conflictsCount: '#conflicts-count',
-      conflictsSummary: '#conflicts-summary'
+      syncMdbBtn: '#sync-mdb-btn'
     };
 
     Object.entries(selectors).forEach(([key, selector]) => {
@@ -179,6 +167,8 @@ class EnhancedCongressDashboard {
       salas: 30
     });
   }
+
+
 
   async init() {
     const startTime = performance.now();
@@ -379,11 +369,6 @@ class EnhancedCongressDashboard {
       return;
     }
 
-    if (target === this.elements.validationDayFilter) {
-      this.scheduleRender(() => this.renderValidationView());
-      return;
-    }
-
     if (target.closest('#search-filters')) {
       this.state.filters[target.name] = target.value;
       this.debouncedSearch();
@@ -546,9 +531,9 @@ class EnhancedCongressDashboard {
       turn_order: isDraft ? null : turnOrder,
     };
 
-    console.log(`Actualizando evento ${eventId}:`, updatedData);
+    console.log(`📤 Actualizando evento ${eventId}:`, updatedData);
     const result = await this.updateEventAPI(eventId, updatedData);
-    console.log(`Evento ${eventId} actualizado`);
+    console.log(`✅ Evento ${eventId} actualizado`);
     return result;
   }
 
@@ -601,9 +586,6 @@ class EnhancedCongressDashboard {
         break;
       case 'schedule':
         this.renderScheduleView();
-        break;
-      case 'validation':
-        this.renderValidationView();
         break;
       case 'search':
         this.renderSearchView();
@@ -1228,7 +1210,7 @@ class EnhancedCongressDashboard {
       card.classList.toggle('selected', this.state.selectedEvents.has(eventId));
     });
 
-    console.log('Eventos seleccionados:', Array.from(this.state.selectedEvents));
+    console.log('📋 Eventos seleccionados:', Array.from(this.state.selectedEvents));
     this.updateMultiSelectControls();
   }
 
@@ -1272,7 +1254,7 @@ class EnhancedCongressDashboard {
         // Guardar IDs seleccionados para arrastre múltiple manual
         const draggedId = evt.item.dataset.id;
 
-        console.log('DEBUG onStart:');
+        console.log('  DEBUG onStart:');
         console.log('  - multiSelectMode:', this.state.multiSelectMode);
         console.log('  - selectedEvents.size:', this.state.selectedEvents.size);
         console.log('  - selectedEvents:', Array.from(this.state.selectedEvents));
@@ -1314,11 +1296,11 @@ class EnhancedCongressDashboard {
           // Añadir clase especial a la tarjeta principal
           evt.item.classList.add('multi-drag-main');
 
-          console.log(`Arrastrando ${this.draggedEventIds.length} eventos:`, this.draggedEventIds);
+          console.log(`🔄 Arrastrando ${this.draggedEventIds.length} eventos:`, this.draggedEventIds);
         } else {
           // Solo arrastrar el elemento actual
           this.draggedEventIds = [draggedId];
-          console.log('Arrastrando 1 evento:', draggedId);
+          console.log('🔄 Arrastrando 1 evento:', draggedId);
         }
       },
 
@@ -1439,7 +1421,7 @@ class EnhancedCongressDashboard {
     // Filtrar IDs vacíos o inválidos
     eventsToMove = eventsToMove.filter(Boolean);
 
-    console.log('DEBUG handleDrop:');
+    console.log('🎯 DEBUG handleDrop:');
     console.log('  - draggedEventIds:', this.draggedEventIds);
     console.log('  - eventsToMove:', eventsToMove);
     console.log('  - Cantidad a mover:', eventsToMove.length);
@@ -1453,7 +1435,7 @@ class EnhancedCongressDashboard {
 
     try {
       // Mover todos los eventos seleccionados
-      console.log('Iniciando movimiento de', eventsToMove.length, 'eventos');
+      console.log('🚀 Iniciando movimiento de', eventsToMove.length, 'eventos');
 
       const movePromises = eventsToMove.map((eventId, index) => {
         const targetIndex = newDraggableIndex + index;
@@ -1461,9 +1443,9 @@ class EnhancedCongressDashboard {
         return this.updateEventPosition(eventId, to, targetIndex, false);
       });
 
-      console.log('Esperando a que se completen todas las actualizaciones...');
+      console.log('⏳ Esperando a que se completen todas las actualizaciones...');
       const results = await Promise.all(movePromises);
-      console.log('Todas las actualizaciones completadas:', results);
+      console.log('✅ Todas las actualizaciones completadas:', results);
 
       // SOLO actualizar turn orders si es movimiento de 1 evento
       // Para múltiples eventos, ya se asignaron los turn_order correctos arriba
@@ -1480,7 +1462,7 @@ class EnhancedCongressDashboard {
 
         await Promise.all(updatePromises);
       } else {
-        console.log('Salteando updateTurnOrders para movimiento múltiple (ya asignados correctamente)');
+        console.log('⏭️ Salteando updateTurnOrders para movimiento múltiple (ya asignados correctamente)');
       }
 
       // NO limpiar selección automáticamente - dejar que el usuario deseleccione manualmente
@@ -1495,14 +1477,14 @@ class EnhancedCongressDashboard {
       this.renderScheduleView();
 
       const message = eventsToMove.length > 1
-        ? `${eventsToMove.length} eventos movidos exitosamente`
+        ? `✅ ${eventsToMove.length} eventos movidos exitosamente`
         : 'Programación actualizada';
 
       this.throttledShowNotification(message, 'success');
 
       // Limpiar selección solo si movimos múltiples eventos
       if (eventsToMove.length > 1 && this.state.multiSelectMode) {
-        console.log('Limpiando selección después de movimiento múltiple exitoso');
+        console.log('🧹 Limpiando selección después de movimiento múltiple exitoso');
         this.state.selectedEvents.clear();
       }
 
@@ -1709,7 +1691,6 @@ class EnhancedCongressDashboard {
     return true;
   }
 
-  // Modal de confirmación elegante
   showConfirmModal(options = {}) {
     return new Promise((resolve) => {
       const {
@@ -1720,7 +1701,6 @@ class EnhancedCongressDashboard {
         type = 'warning' // warning, danger, info
       } = options;
 
-      // Crear modal
       const modalOverlay = document.createElement('div');
       modalOverlay.className = 'confirm-modal-overlay';
       modalOverlay.innerHTML = `
@@ -1995,412 +1975,6 @@ class EnhancedCongressDashboard {
     `;
   }
 
-  /**
-   * Renderizar vista de validación de disponibilidad de salas
-   * Analiza todos los eventos publicados y verifica si sus salas están disponibles
-   * en los horarios programados según las restricciones del roomMap
-   */
-  renderValidationView() {
-    if (!this.elements.validationGrid || !this.elements.validationDayFilter) return;
-
-    const selectedDay = this.elements.validationDayFilter.value;
-
-    // Obtener bloques de horarios para el día seleccionado
-    let timeBlocks;
-    let dayKey;
-
-    if (selectedDay === '14/10') {
-      dayKey = 'martes 14 de octubre';
-      timeBlocks = this.scheduleBlocks['martes 14 de octubre'];
-    } else if (selectedDay === '15/10') {
-      dayKey = 'miércoles 15 de octubre';
-      timeBlocks = this.scheduleBlocks['miércoles 15 de octubre'];
-    }
-
-    if (!timeBlocks) return;
-
-    // Analizar conflictos
-    const conflicts = this.analyzeConflicts(dayKey);
-
-    // Obtener eventos para el día seleccionado
-    const eventsForDay = this.data.published.filter(e => e.scheduled_day === dayKey);
-
-    // Contar ponencias y simposios
-    const ponencias = eventsForDay.filter(e => e.event_type === 'ponencia');
-    const simposios = eventsForDay.filter(e => e.event_type === 'simposio');
-
-    // Agrupar ponencias por mesa
-    const mesasMap = new Map();
-    ponencias.forEach(ponencia => {
-      const mesaTitle = ponencia.mesa_title?.es || '';
-      if (mesaTitle) {
-        if (!mesasMap.has(mesaTitle)) {
-          mesasMap.set(mesaTitle, []);
-        }
-        mesasMap.get(mesaTitle).push(ponencia);
-      }
-    });
-
-    // Contar mesas (agrupaciones de ponencias)
-    const mesasCount = mesasMap.size + ponencias.filter(p => !p.mesa_title?.es).length;
-
-    // Contar conflictos por tipo
-    const ponenciasConflictos = conflicts.filter(c => c.eventType === 'ponencia');
-    const simposiosConflictos = conflicts.filter(c => c.eventType === 'simposio');
-
-    // Contar mesas con conflictos (al menos una ponencia con conflicto)
-    const mesasConflictos = new Set();
-    ponenciasConflictos.forEach(conflict => {
-      const event = ponencias.find(p => p.id === conflict.eventId);
-      if (event) {
-        const mesaTitle = event.mesa_title?.es || event.id; // Si no tiene mesa_title, usa el ID
-        mesasConflictos.add(mesaTitle);
-      }
-    });
-
-    // Actualizar contadores en la UI (verificando que existan los elementos)
-    const totalPonenciasDia = document.getElementById('total-ponencias-dia');
-    const totalEventosValidacion = document.getElementById('total-eventos-validacion');
-    const ponenciasCount = document.getElementById('ponencias-count');
-    const ponenciasConflictCount = document.getElementById('ponencias-conflict-count');
-    const simposiosCount = document.getElementById('simposios-count');
-    const simposiosConflictCount = document.getElementById('simposios-conflict-count');
-
-    // Actualizar nuevos contadores
-    if (totalPonenciasDia) totalPonenciasDia.textContent = ponencias.length;
-    if (totalEventosValidacion) totalEventosValidacion.textContent = eventsForDay.length;
-
-    // Actualizar contadores: mostrar número de mesas en lugar de número de ponencias individuales
-    if (ponenciasCount) ponenciasCount.textContent = mesasCount;
-    if (ponenciasConflictCount) ponenciasConflictCount.textContent = mesasConflictos.size;
-    if (simposiosCount) simposiosCount.textContent = simposios.length;
-    if (simposiosConflictCount) simposiosConflictCount.textContent = simposiosConflictos.length;
-
-    // Actualizar contador de conflictos
-    if (this.elements.conflictsCount) {
-      this.elements.conflictsCount.textContent = conflicts.length;
-    }
-
-    // Renderizar panel de resumen de conflictos
-    this.renderConflictsSummary(conflicts);
-
-    // Crear la grilla de validación
-    const gridHTML = `
-      <table class="validation-table">
-        <thead>
-          <tr>
-            <th class="sticky-col">Sala</th>
-            ${timeBlocks.map(block => `<th>${block}</th>`).join('')}
-          </tr>
-        </thead>
-        <tbody>
-          ${Array.from({ length: 32 }, (_, i) => i + 1).map(roomNum => {
-            return `
-              <tr>
-                <td class="sticky-col room-header">
-                  ${this.getRoomLabel(roomNum, selectedDay)}
-                </td>
-                ${timeBlocks.map(timeBlock => {
-                  return this.renderValidationCell(roomNum, dayKey, timeBlock, selectedDay, conflicts);
-                }).join('')}
-              </tr>
-            `;
-          }).join('')}
-        </tbody>
-      </table>
-    `;
-
-    this.elements.validationGrid.innerHTML = gridHTML;
-  }
-
-  /**
-   * Agrupa ponencias por mesa basándose en la mesa_title o títulos similares
-   * Los simposios se mantienen como eventos individuales
-   */
-  groupEventsByMesa(events) {
-    // NO agrupar - devolver cada evento individualmente
-    return events.map(event => ({
-      title: event.title?.es || 'Sin título',
-      events: [event],
-      isIndividual: true
-    }));
-  }
-
-  /**
-   * Renderiza los grupos de eventos para las celdas de validación
-   */
-  renderEventGroups(eventGroups, status) {
-    return eventGroups.map(group => {
-      const event = group.events[0];
-      return `
-        <div class="mini-event-badge ${status} ${event.event_type === 'simposio' ? 'simposio' : 'ponencia-badge'}">
-          <span class="event-id">${event.id}</span>
-        </div>
-      `;
-    }).join('');
-  }
-
-  renderValidationCell(roomNum, dayKey, timeBlock, selectedDay, conflicts) {
-    // Verificar si la sala está disponible en este bloque
-    const activeRoom = this.getActiveRoom(roomNum, selectedDay, timeBlock);
-    const isAvailable = activeRoom !== null;
-
-    // Obtener eventos en esta sala/bloque
-    const eventsInSlot = this.data.published.filter(e =>
-      e.scheduled_day === dayKey &&
-      e.scheduled_time_block === timeBlock &&
-      e.room == roomNum
-    );
-
-    // Determinar estado de la celda
-    let cellClass = 'validation-time-cell';
-    let cellContent = '';
-
-    if (!isAvailable) {
-      // Sala no disponible en este horario
-      cellClass += ' unavailable';
-
-      if (eventsInSlot.length > 0) {
-        // Hay eventos programados pero la sala NO está disponible = CONFLICTO
-        cellClass += ' conflict';
-
-        // Agrupar eventos por mesa para mostrarlos agrupados
-        const eventGroups = this.groupEventsByMesa(eventsInSlot);
-
-        cellContent = `
-          <div class="cell-status">No disponible</div>
-          <div class="cell-events">
-            ${this.renderEventGroups(eventGroups, 'conflict')}
-          </div>
-        `;
-      } else {
-        // No hay eventos y no está disponible = OK
-        cellContent = '<div class="cell-status-gray">—</div>';
-      }
-    } else {
-      // Sala SÍ disponible - mostrar información del turno activo
-      cellClass += ' available';
-
-      // Mostrar nombre de la sala física activa
-      const roomInfo = `
-        <div class="active-room-badge">
-          <span class="room-physical-name">${activeRoom.nombre}</span>
-          <span class="room-time-range">${activeRoom.inicio}-${activeRoom.fin}</span>
-        </div>
-      `;
-
-      if (eventsInSlot.length > 0) {
-        // Hay eventos y la sala está disponible = COMPATIBLE
-        // Agrupar eventos por mesa para mostrarlos agrupados
-        const eventGroups = this.groupEventsByMesa(eventsInSlot);
-
-        cellContent = `
-          ${roomInfo}
-          <div class="cell-events">
-            ${this.renderEventGroups(eventGroups, 'available')}
-          </div>
-        `;
-      } else {
-        // No hay eventos pero está disponible = VACÍO
-        cellClass += ' empty';
-        cellContent = `
-          ${roomInfo}
-          <div class="cell-status-ok">✓</div>
-        `;
-      }
-    }
-
-    return `<td class="${cellClass}">${cellContent}</td>`;
-  }
-
-  /**
-   * Obtener etiqueta de sala con nombre físico
-   */
-  getRoomLabel(roomNum, selectedDay) {
-    const dayRooms = this.roomMap[selectedDay];
-    if (!dayRooms || !dayRooms[roomNum]) {
-      return `<div class="room-number">${roomNum}</div>`;
-    }
-
-    // Obtener nombres de salas físicas (puede haber múltiples turnos)
-    const roomNames = dayRooms[roomNum].map(r => r.nombre).filter(Boolean);
-
-    if (roomNames.length > 0) {
-      const namesHtml = roomNames.map(name => `<small>${name}</small>`).join(' ');
-      return `
-        <div class="room-number">${roomNum}</div>
-        <div class="room-names">${namesHtml}</div>
-      `;
-    }
-
-    return `<div class="room-number">${roomNum}</div>`;
-  }
-
-  /**
-   * Analizar conflictos de disponibilidad
-   * Retorna array de eventos que:
-   * 1. Están programados en horarios donde su sala NO está disponible
-   * 2. Simposios que no están en salas U- (22-32)
-   * 3. Ponencias (mesas) que están en salas U- reservadas para simposios
-   */
-  analyzeConflicts(dayKey) {
-    const conflicts = [];
-
-    // Iterar sobre todos los eventos publicados del día
-    const eventsForDay = this.data.published.filter(e => e.scheduled_day === dayKey);
-
-    // Determinar el día en formato de roomMap (14/10 o 15/10)
-    let dayCode;
-    if (dayKey === 'martes 14 de octubre') {
-      dayCode = '14/10';
-    } else if (dayKey === 'miércoles 15 de octubre') {
-      dayCode = '15/10';
-    }
-
-    // Crear mapa de salas/bloques con simposios
-    const simposioSlots = new Set();
-    eventsForDay.forEach(event => {
-      if (event.event_type === 'simposio' && event.room && event.scheduled_time_block) {
-        simposioSlots.add(`${event.room}-${event.scheduled_time_block}`);
-      }
-    });
-
-    eventsForDay.forEach(event => {
-      if (!event.room || !event.scheduled_time_block) return;
-
-      const slotKey = `${event.room}-${event.scheduled_time_block}`;
-
-      // Verificar si la sala está disponible en ese horario
-      const activeRoom = this.getActiveRoom(event.room, dayCode, event.scheduled_time_block);
-
-      if (activeRoom === null) {
-        // La sala NO está disponible en ese horario = CONFLICTO
-        conflicts.push({
-          eventId: event.id,
-          eventTitle: event.title?.es || 'Sin título',
-          eventType: event.event_type,
-          room: event.room,
-          day: dayKey,
-          timeBlock: event.scheduled_time_block,
-          reason: 'Sala no disponible en este horario'
-        });
-      }
-
-      // Verificar que los simposios estén en salas U-
-      if (event.event_type === 'simposio') {
-        const isURoom = this.isSimposioRoom(event.room, dayCode);
-        if (!isURoom) {
-          // Mensaje específico por día
-          const salasMensaje = dayCode === '14/10' ? '22-32' : '16-26';
-          // Simposio en sala no U- = CONFLICTO
-          conflicts.push({
-            eventId: event.id,
-            eventTitle: event.title?.es || 'Sin título',
-            eventType: event.event_type,
-            room: event.room,
-            day: dayKey,
-            timeBlock: event.scheduled_time_block,
-            reason: `Los simposios deben estar en salas U- (salas ${salasMensaje})`
-          });
-        }
-      }
-
-      // NUEVO: Verificar que ponencias NO compartan sala con simposios
-      if (event.event_type === 'ponencia' && simposioSlots.has(slotKey)) {
-        conflicts.push({
-          eventId: event.id,
-          eventTitle: event.title?.es || 'Sin título',
-          eventType: event.event_type,
-          room: event.room,
-          day: dayKey,
-          timeBlock: event.scheduled_time_block,
-          reason: 'Los simposios deben ir solos - no pueden compartir sala con ponencias'
-        });
-      }
-
-      // Verificar que las ponencias (mesas) no estén en salas de simposios (basado en rango)
-      if (event.event_type === 'ponencia') {
-        const isURoom = this.isSimposioRoom(event.room, dayCode);
-        if (isURoom) {
-          // Mensaje específico por día
-          const salasMensaje = dayCode === '14/10' ? '22-32' : '16-26';
-          // Ponencia en sala U- = CONFLICTO
-          conflicts.push({
-            eventId: event.id,
-            eventTitle: event.title?.es || 'Sin título',
-            eventType: event.event_type,
-            room: event.room,
-            day: dayKey,
-            timeBlock: event.scheduled_time_block,
-            reason: `Las mesas de ponencias no deben usar salas U- (salas ${salasMensaje})`
-          });
-        }
-      }
-    });
-
-    return conflicts;
-  }
-
-  /**
-   * Renderizar panel de resumen de conflictos
-   */
-  renderConflictsSummary(conflicts) {
-    if (!this.elements.conflictsSummary) return;
-
-    if (conflicts.length === 0) {
-      this.elements.conflictsSummary.innerHTML = `
-        <div class="no-conflicts">
-          <p>No se detectaron conflictos</p>
-          <p class="subtitle">Todos los eventos están programados en horarios compatibles con la disponibilidad de sus salas.</p>
-        </div>
-      `;
-      return;
-    }
-
-    // Agrupar conflictos por sala
-    const conflictsByRoom = {};
-    conflicts.forEach(conflict => {
-      if (!conflictsByRoom[conflict.room]) {
-        conflictsByRoom[conflict.room] = [];
-      }
-      conflictsByRoom[conflict.room].push(conflict);
-    });
-
-    const summaryHTML = `
-      <div class="conflicts-list">
-        ${Object.entries(conflictsByRoom).map(([room, roomConflicts]) => `
-          <div class="conflict-group">
-            <div class="conflict-group-header">
-              <strong>Sala ${room}</strong>
-              <span class="conflict-count">${roomConflicts.length} ${roomConflicts.length === 1 ? 'conflicto' : 'conflictos'}</span>
-            </div>
-            <div class="conflict-items">
-              ${roomConflicts.map(c => `
-                <div class="conflict-item" data-event-id="${c.eventId}">
-                  <div class="conflict-item-header">
-                    <span class="event-id-badge">${c.eventId}</span>
-                    <span class="event-type-badge">${c.eventType}</span>
-                  </div>
-                  <div class="conflict-item-body">
-                    <p class="conflict-title">${c.eventTitle}</p>
-                    <p class="conflict-details">
-                      <span>${c.timeBlock}</span>
-                    </p>
-                  </div>
-                  <div class="conflict-reason">
-                    ${c.reason}
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
-
-    this.elements.conflictsSummary.innerHTML = summaryHTML;
-  }
-
   toggleBulkMode() {
     this.state.bulkMode = !this.state.bulkMode;
     this.state.selectedEvents.clear();
@@ -2461,7 +2035,7 @@ class EnhancedCongressDashboard {
             <label>ID del Evento</label>
             <div class="id-edit-wrapper">
               <input type="text" class="quick-edit-input" data-field="id" value="${eventData.id}" />
-              <span class="id-warning" title="Cambiar el ID puede causar problemas. Usar con precaución."></span>
+              <span class="id-warning" title="Cambiar el ID puede causar problemas. Usar con precaución.">⚠️</span>
             </div>
             <small class="field-hint">Cambiar el ID puede romper referencias</small>
           </div>
@@ -2538,7 +2112,7 @@ class EnhancedCongressDashboard {
     // Advertencia si cambió el ID
     if (newId !== eventId) {
       const confirmChange = confirm(
-        `ADVERTENCIA: Estás cambiando el ID del evento.\n\n` +
+        `⚠️ ADVERTENCIA: Estás cambiando el ID del evento.\n\n` +
         `ID anterior: ${eventId}\n` +
         `ID nuevo: ${newId}\n\n` +
         `Esto puede causar problemas si el ID está referenciado en otros sistemas.\n\n` +
@@ -2561,7 +2135,7 @@ class EnhancedCongressDashboard {
 
       await this.updateEventAPI(eventId, updatedData);
 
-      this.showNotification('Evento actualizado exitosamente', 'success');
+      this.showNotification('✅ Evento actualizado exitosamente', 'success');
 
       // Recargar búsqueda para reflejar cambios
       await this.performSearch();
@@ -3079,7 +2653,7 @@ class EnhancedCongressDashboard {
     }
   }
 
-  // FUNCIÓN CORREGIDA handleSyncMdb
+  // ✅ FUNCIÓN CORREGIDA handleSyncMdb
   async handleSyncMdb() {
     if (!confirm('Esto buscará nuevos eventos en la hoja de cálculo MBD y los añadirá a la lista de pendientes. ¿Continuar?')) {
         return;
@@ -3115,10 +2689,10 @@ class EnhancedCongressDashboard {
             this.showNotification('Sincronización completada: No se encontraron nuevos eventos', 'info');
         }
 
-        // CORRECCIÓN: Usar los métodos correctos
+        // ✅ CORRECCIÓN: Usar los métodos correctos
         if (result.addedCount > 0) {
-            await this.reloadData(['events', 'analytics']); // Método correcto
-            this.renderCurrentView();                       // Método correcto
+            await this.reloadData(['events', 'analytics']); // ✅ Método correcto
+            this.renderCurrentView();                       // ✅ Método correcto
         }
 
     } catch (error) {

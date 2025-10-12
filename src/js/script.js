@@ -666,7 +666,7 @@ class ALAEITSProgramManager {
                 </button>
                 <div class="card-header">MESA: ${event.mesaId} / ID: ${event.id}</div>
                 <h3 class="card-title">${titulo}</h3>
-                <p class="card-moderator"><span class="font-bold">Modera:</span> ${moderadorName}</p>
+                <p class="card-moderator"><span class="font-bold">Presenta:</span> ${moderadorName}</p>
                 <p class="card-authors">${autores}</p>
                 <div class="card-tags">
                     ${event.turnOrder !== null ? `<div class="card-turn-order">Turno: ${event.turnOrder + 1}</div>` : ''}

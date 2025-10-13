@@ -1598,7 +1598,11 @@ class EnhancedCongressDashboard {
 
     if (mappedDay && event.scheduled_time_block) {
       const activeRoom = this.getActiveRoom(String(event.room), mappedDay, event.scheduled_time_block);
-      return activeRoom ? `Sala ${event.room} - ${activeRoom.nombre}` : `Sala ${event.room}`;
+      if (activeRoom) {
+        const suffix = activeRoom.nombre.startsWith('U-') ? 'UTM' : 'UCC';
+        return `Sala ${event.room} - ${activeRoom.nombre} - ${suffix}`;
+      }
+      return `Sala ${event.room}`;
     }
 
     return `Sala ${event.room}`;

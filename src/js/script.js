@@ -689,7 +689,12 @@ class ALAEITSProgramManager {
 
             if (mappedDay && event.horario) {
                 const activeRoom = getActiveRoom(String(event.sala), mappedDay, event.horario);
-                salaVisible = activeRoom ? `SALA ${event.sala} - ${activeRoom.nombre}` : `SALA ${event.sala}`;
+                if (activeRoom) {
+                    const suffix = activeRoom.nombre.startsWith('U-') ? 'UTM' : 'UCC';
+                    salaVisible = `SALA ${event.sala} - ${activeRoom.nombre} - ${suffix}`;
+                } else {
+                    salaVisible = `SALA ${event.sala}`;
+                }
             } else {
                 salaVisible = `SALA ${event.sala}`;
             }
@@ -1215,7 +1220,12 @@ class ALAEITSProgramManager {
 
             if (mappedDay && firstEvent.horario) {
                 const activeRoom = getActiveRoom(String(firstEvent.sala), mappedDay, firstEvent.horario);
-                salaDisplay = activeRoom ? `Sala ${firstEvent.sala} - ${activeRoom.nombre}` : `Sala ${firstEvent.sala}`;
+                if (activeRoom) {
+                    const suffix = activeRoom.nombre.startsWith('U-') ? 'UTM' : 'UCC';
+                    salaDisplay = `Sala ${firstEvent.sala} - ${activeRoom.nombre} - ${suffix}`;
+                } else {
+                    salaDisplay = `Sala ${firstEvent.sala}`;
+                }
             }
 
             // Generar HTML para imprimir con diseño minimalista
@@ -1456,7 +1466,12 @@ class ALAEITSProgramManager {
 
         if (mappedDay && firstEvent.horario) {
             const activeRoom = getActiveRoom(String(firstEvent.sala), mappedDay, firstEvent.horario);
-            salaDisplay = activeRoom ? `Sala ${firstEvent.sala} - ${activeRoom.nombre}` : `Sala ${firstEvent.sala}`;
+            if (activeRoom) {
+                const suffix = activeRoom.nombre.startsWith('U-') ? 'UTM' : 'UCC';
+                salaDisplay = `Sala ${firstEvent.sala} - ${activeRoom.nombre} - ${suffix}`;
+            } else {
+                salaDisplay = `Sala ${firstEvent.sala}`;
+            }
         }
 
         // Construcción del HTML del modal

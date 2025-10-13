@@ -800,6 +800,11 @@ html, body {
   box-shadow: var(--shadow-sm);
 }
 
+.room-slot.invalid-time-slot {
+  background: #ff4444 !important;
+  border-color: #cc0000 !important;
+}
+
 .room-slot::before {
   content: attr(data-room-label);
   position: absolute;

@@ -1064,6 +1064,17 @@ class EnhancedCongressDashboard {
   createRoomSlot(day, time, roomNum) {
     const roomSlot = document.createElement('div');
     roomSlot.className = 'room-slot';
+
+    // Validar compatibilidad de horarios
+    const dayMap = { 'martes 14 de octubre': '14/10', 'miércoles 15 de octubre': '15/10' };
+    const mappedDay = dayMap[day];
+    if (mappedDay) {
+      const activeRoom = this.getActiveRoom(String(roomNum), mappedDay, time);
+      if (!activeRoom) {
+        roomSlot.classList.add('invalid-time-slot');
+      }
+    }
+
     roomSlot.dataset.day = day;
     roomSlot.dataset.time = time;
     roomSlot.dataset.room = roomNum;

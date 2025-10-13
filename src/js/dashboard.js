@@ -176,7 +176,7 @@ class EnhancedCongressDashboard {
         '08:30 - 10:10', '10:20 - 12:00', 
         '12:10 - 13:50', '14:00 - 15:30'
       ]),
-      salas: 30
+      salas: 32
     });
   }
 
@@ -605,6 +605,9 @@ class EnhancedCongressDashboard {
       case 'validation':
         this.renderValidationView();
         break;
+      case 'conflicts':
+        await this.renderConflictsResolverView();
+        break;
       case 'search':
         this.renderSearchView();
         // Ejecutar búsqueda inmediatamente si no hay resultados
@@ -904,10 +907,10 @@ class EnhancedCongressDashboard {
       const controls = document.createElement('div');
       controls.className = 'multi-select-controls';
       controls.innerHTML = `
-        <button class="btn-select-all" onclick="dashboard.selectAllDrafts()">
+        <button class="btn-select-all" onclick="window.dashboard.selectAllDrafts()">
           Seleccionar Todos
         </button>
-        <button class="btn-clear-selection" onclick="dashboard.clearSelection()">
+        <button class="btn-clear-selection" onclick="window.dashboard.clearSelection()">
           Limpiar Selección
         </button>
         <span class="selection-count">${this.state.selectedEvents.size} seleccionados</span>
@@ -1561,7 +1564,7 @@ class EnhancedCongressDashboard {
         </div>
         
         <div class="modal-footer">
-          <button type="button" class="btn btn-danger" onclick="dashboard.handleDelete('${event.id}')">
+          <button type="button" class="btn btn-danger" onclick="window.dashboard.handleDelete('${event.id}')">
             Eliminar Evento
           </button>
           <button type="submit" class="btn btn-primary">
@@ -1982,7 +1985,7 @@ class EnhancedCongressDashboard {
           ` : ''}
 
           <div class="result-actions">
-            <button class="btn-quick-edit" onclick="dashboard.enableQuickEdit('${event.id}')" title="Edición rápida">
+            <button class="btn-quick-edit" onclick="window.dashboard.enableQuickEdit('${event.id}')" title="Edición rápida">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -2401,6 +2404,400 @@ class EnhancedCongressDashboard {
     this.elements.conflictsSummary.innerHTML = summaryHTML;
   }
 
+  // ==================== CONFLICTS RESOLVER METHODS ====================
+
+  async renderConflictsResolverView() {
+    const container = document.getElementById('conflicts-analysis');
+    if (!container) return;
+
+    // Configurar botón de análisis
+    const analyzeBtn = document.getElementById('analyze-conflicts-btn');
+    if (analyzeBtn) {
+      analyzeBtn.onclick = () => this.analyzeConflictsForResolver();
+    }
+
+    // Mostrar estado inicial si no hay propuestas
+    if (!this.data.conflictProposals || this.data.conflictProposals.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state initial-analysis-prompt">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+          </svg>
+          <h3>Listo para el análisis</h3>
+          <p>Presiona el botón para iniciar la detección de conflictos.</p>
+        </div>
+      `;
+    } else {
+      this.renderConflictsResults();
+    }
+  }
+
+  async analyzeConflictsForResolver() {
+    const container = document.getElementById('conflicts-analysis');
+    if (!container) return;
+
+    try {
+      // Mostrar loading
+      container.innerHTML = `
+        <div class="empty-state initial-analysis-prompt">
+          <div class="spinner"></div>
+          <h3>Analizando conflictos...</h3>
+          <p>Aplicando algoritmo inteligente de 3 prioridades</p>
+        </div>
+      `;
+
+      const response = await fetch('/api/admin/conflicts-endpoint?action=analyze');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const result = await response.json();
+      this.data.conflictProposals = result.proposals || [];
+      this.data.conflictSummary = result.summary || {};
+
+      this.renderConflictsResults();
+    } catch (error) {
+      console.error('Error al analizar conflictos:', error);
+      container.innerHTML = `
+        <div class="empty-state error-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+          <h3>Error al analizar</h3>
+          <p>${error.message}</p>
+          <button onclick="window.dashboard.analyzeConflictsForResolver()" class="btn btn-primary">
+            Reintentar
+          </button>
+        </div>
+      `;
+    }
+  }
+
+  renderConflictsResults() {
+    const container = document.getElementById('conflicts-analysis');
+    if (!container) return;
+
+    const proposals = this.data.conflictProposals || [];
+    const summary = this.data.conflictSummary || {};
+
+    // Si no hay conflictos
+    if (proposals.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state no-conflicts">
+          <div class="no-conflicts-icon">✅</div>
+          <h3>¡Excelente! No hay conflictos.</h3>
+          <p>Todos los eventos programados son compatibles entre sí.</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Agrupar por tipo
+    const mesasProposals = proposals.filter(p => p.type === 'MOVE_MESA');
+    const singleProposals = proposals.filter(p => p.type === 'MOVE_SINGLE');
+    const unsolvableProposals = proposals.filter(p => p.type === 'UNSOLVABLE');
+
+    const summaryHTML = `
+      <div class="conflicts-summary-header">
+        <h3>Resumen del Análisis</h3>
+        <div class="summary-stats">
+          <div class="stat-card">
+            <span class="stat-number">${summary.totalProposals || 0}</span>
+            <span class="stat-label">Total Propuestas</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">${summary.mesasCompletas || 0}</span>
+            <span class="stat-label">Mesas Completas</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number">${summary.ponenciasIndividuales || 0}</span>
+            <span class="stat-label">Individuales</span>
+          </div>
+          <div class="stat-card stat-warning">
+            <span class="stat-number">${summary.insolubles || 0}</span>
+            <span class="stat-label">Sin Solución</span>
+          </div>
+        </div>
+        ${proposals.some(p => p.type !== 'UNSOLVABLE') ? `
+          <button onclick="window.dashboard.applyAllProposals()" class="btn btn-success btn-large">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Aplicar Todas las Soluciones
+          </button>
+        ` : ''}
+      </div>
+    `;
+
+    const proposalsHTML = `
+      ${mesasProposals.length > 0 ? `
+        <div class="proposals-section">
+          <h4>Mesas Completas a Mover (Prioridad #0)</h4>
+          <p class="section-description">Estas mesas completas se moverán juntas a un nuevo slot vacío</p>
+          <div class="proposals-grid">
+            ${mesasProposals.map(p => this.renderProposalCard(p)).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${singleProposals.length > 0 ? `
+        <div class="proposals-section">
+          <h4>Ponencias Individuales (Prioridades #1 y #2)</h4>
+          <p class="section-description">Estas ponencias se moverán individualmente para optimizar el espacio</p>
+          <div class="proposals-grid">
+            ${singleProposals.map(p => this.renderProposalCard(p)).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${unsolvableProposals.length > 0 ? `
+        <div class="proposals-section">
+          <h4>Eventos Sin Solución</h4>
+          <p class="section-description">Estos eventos requieren intervención manual</p>
+          <div class="proposals-grid">
+            ${unsolvableProposals.map(p => this.renderProposalCard(p)).join('')}
+          </div>
+        </div>
+      ` : ''}
+    `;
+
+    container.innerHTML = summaryHTML + proposalsHTML;
+  }
+
+  renderProposalCard(proposal) {
+    if (proposal.type === 'MOVE_MESA') {
+      return `
+        <div class="proposal-card proposal-mesa">
+          <div class="proposal-header">
+            <div class="proposal-badge mesa-badge">Mesa Completa</div>
+            <div class="proposal-size">${proposal.mesaSize} ponencias</div>
+          </div>
+          <div class="proposal-body">
+            <div class="proposal-movement">
+              <div class="location-from">
+                <strong>Sala ${proposal.currentRoom}</strong>
+                <span>${proposal.currentTimeBlock}</span>
+              </div>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+              <div class="location-to">
+                <strong>Sala ${proposal.proposedRoom}</strong>
+                <span>${proposal.proposedTimeBlock}</span>
+              </div>
+            </div>
+            <div class="proposal-reason">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              ${proposal.reason}
+            </div>
+            <div class="proposal-ids">
+              <strong>IDs:</strong> ${proposal.eventIds.join(', ')}
+            </div>
+          </div>
+          <div class="proposal-actions">
+            <button onclick="window.dashboard.applySingleProposal(${proposal.eventIds[0]})" class="btn btn-primary">
+              Aplicar Mesa Completa
+            </button>
+          </div>
+        </div>
+      `;
+    } else if (proposal.type === 'MOVE_SINGLE') {
+      const priorityLabel = proposal.priority === 1 ? 'Rellenar Mesa' : 'Nueva Mesa';
+      const priorityClass = proposal.priority === 1 ? 'priority-1' : 'priority-2';
+
+      return `
+        <div class="proposal-card proposal-single ${priorityClass}">
+          <div class="proposal-header">
+            <div class="proposal-badge single-badge">Individual</div>
+            <div class="proposal-priority">${priorityLabel}</div>
+          </div>
+          <div class="proposal-body">
+            <div class="proposal-title">${this.truncateText(proposal.title, 60)}</div>
+            <div class="proposal-id">ID: ${proposal.eventId}</div>
+            <div class="proposal-movement">
+              <div class="location-from">
+                <strong>Sala ${proposal.currentRoom}</strong>
+                <span>${proposal.timeBlock}</span>
+              </div>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+              <div class="location-to">
+                <strong>Sala ${proposal.proposedRoom}</strong>
+                <span>${proposal.timeBlock}</span>
+              </div>
+            </div>
+            <div class="proposal-reason">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              ${proposal.reason}
+            </div>
+          </div>
+          <div class="proposal-actions">
+            <button onclick="window.dashboard.applySingleProposal(${proposal.eventId})" class="btn btn-primary">
+              Aplicar Cambio
+            </button>
+          </div>
+        </div>
+      `;
+    } else if (proposal.type === 'UNSOLVABLE') {
+      return `
+        <div class="proposal-card proposal-unsolvable">
+          <div class="proposal-header">
+            <div class="proposal-badge unsolvable-badge">Sin Solución</div>
+          </div>
+          <div class="proposal-body">
+            <div class="proposal-title">${this.truncateText(proposal.title, 60)}</div>
+            <div class="proposal-id">ID: ${proposal.eventId}</div>
+            <div class="proposal-location">
+              <strong>Sala ${proposal.currentRoom}</strong>
+              <span>${proposal.timeBlock}</span>
+            </div>
+            <div class="proposal-reason unsolvable-reason">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+              ${proposal.reason}
+            </div>
+          </div>
+          <div class="proposal-actions">
+            <button onclick="window.dashboard.openEventDetails(${proposal.eventId})" class="btn btn-outline">
+              Ver Detalles
+            </button>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  async applySingleProposal(eventIdOrFirst) {
+    const proposals = this.data.conflictProposals || [];
+
+    // Buscar la propuesta (puede ser por eventId individual o el primer ID de una mesa)
+    const proposal = proposals.find(p =>
+      (p.type === 'MOVE_SINGLE' && p.eventId === eventIdOrFirst) ||
+      (p.type === 'MOVE_MESA' && p.eventIds[0] === eventIdOrFirst)
+    );
+
+    if (!proposal) {
+      this.showNotification('Propuesta no encontrada', 'error');
+      return;
+    }
+
+    if (proposal.type === 'UNSOLVABLE') {
+      this.showNotification('Este evento no tiene solución automática', 'warning');
+      return;
+    }
+
+    try {
+      this.showLoading(true);
+
+      const response = await fetch('/api/admin/conflicts-endpoint?action=apply-proposal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ proposal })
+      });
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const result = await response.json();
+
+      if (result.success) {
+        const affectedCount = result.type === 'MOVE_MESA' ? result.affectedEvents : 1;
+        this.showNotification(
+          `Movimiento aplicado exitosamente (${affectedCount} evento${affectedCount > 1 ? 's' : ''})`,
+          'success'
+        );
+
+        // Remover la propuesta aplicada de la lista
+        this.data.conflictProposals = proposals.filter(p => p !== proposal);
+
+        // Recargar datos y re-renderizar
+        await this.reloadData(['events', 'analytics']);
+        this.renderConflictsResults();
+      } else {
+        throw new Error(result.message || 'Error al aplicar movimiento');
+      }
+    } catch (error) {
+      console.error('Error al aplicar propuesta:', error);
+      this.showNotification(`Error: ${error.message}`, 'error');
+    } finally {
+      this.showLoading(false);
+    }
+  }
+
+  async applyAllProposals() {
+    const proposals = this.data.conflictProposals || [];
+    const solvableProposals = proposals.filter(p => p.type !== 'UNSOLVABLE');
+
+    if (solvableProposals.length === 0) {
+      this.showNotification('No hay propuestas para aplicar', 'warning');
+      return;
+    }
+
+    const confirmed = confirm(
+      `¿Aplicar todas las ${solvableProposals.length} soluciones propuestas?\n\n` +
+      `Esto moverá eventos en la base de datos. Esta acción no se puede deshacer fácilmente.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      this.showLoading(true);
+
+      const response = await fetch('/api/admin/conflicts-endpoint?action=apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ proposals: solvableProposals })
+      });
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const result = await response.json();
+
+      if (result.success) {
+        this.showNotification(
+          `Se aplicaron ${result.applied} propuestas exitosamente, ` +
+          `afectando ${result.totalEventsAffected} eventos`,
+          'success'
+        );
+
+        // Limpiar propuestas
+        this.data.conflictProposals = [];
+        this.data.conflictSummary = {};
+
+        // Recargar y re-analizar
+        await this.reloadData(['events', 'analytics']);
+        await this.analyzeConflictsForResolver();
+      } else {
+        throw new Error(result.message || 'Error al aplicar movimientos');
+      }
+    } catch (error) {
+      console.error('Error al aplicar todas las propuestas:', error);
+      this.showNotification(`Error: ${error.message}`, 'error');
+    } finally {
+      this.showLoading(false);
+    }
+  }
+
+  truncateText(text, maxLength) {
+    if (!text) return '';
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+  }
+
+  // ==================== END CONFLICTS RESOLVER METHODS ====================
+
   toggleBulkMode() {
     this.state.bulkMode = !this.state.bulkMode;
     this.state.selectedEvents.clear();
@@ -2453,7 +2850,7 @@ class EnhancedCongressDashboard {
       <div class="quick-edit-form">
         <div class="quick-edit-header">
           <h4>Edición Rápida</h4>
-          <button class="btn-close" onclick="dashboard.cancelQuickEdit('${eventId}')" title="Cancelar">×</button>
+          <button class="btn-close" onclick="window.dashboard.cancelQuickEdit('${eventId}')" title="Cancelar">×</button>
         </div>
 
         <div class="quick-edit-fields">
@@ -2496,8 +2893,8 @@ class EnhancedCongressDashboard {
         </div>
 
         <div class="quick-edit-actions">
-          <button class="btn btn-secondary" onclick="dashboard.cancelQuickEdit('${eventId}')">Cancelar</button>
-          <button class="btn btn-primary" onclick="dashboard.saveQuickEdit('${eventId}')">Guardar Cambios</button>
+          <button class="btn btn-secondary" onclick="window.dashboard.cancelQuickEdit('${eventId}')">Cancelar</button>
+          <button class="btn btn-primary" onclick="window.dashboard.saveQuickEdit('${eventId}')">Guardar Cambios</button>
         </div>
       </div>
     `;
@@ -2901,7 +3298,7 @@ class EnhancedCongressDashboard {
           </div>
           <div class="modal-footer">
             <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancelar</button>
-            <button class="btn btn-primary" onclick="dashboard.executeMoveSlot('${sourceDay}', '${sourceTime}', ${sourceRoom})" disabled id="move-confirm-btn">Mover Mesa</button>
+            <button class="btn btn-primary" onclick="window.dashboard.executeMoveSlot('${sourceDay}', '${sourceTime}', ${sourceRoom})" disabled id="move-confirm-btn">Mover Mesa</button>
           </div>
         </div>
       </div>
@@ -3140,6 +3537,7 @@ let dashboard;
 document.addEventListener('DOMContentLoaded', () => {
   try {
     dashboard = new EnhancedCongressDashboard();
+    window.dashboard = dashboard; // Exponer globalmente para onclick handlers
   } catch (error) {
     console.error('Failed to initialize dashboard:', error);
     

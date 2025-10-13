@@ -1,5 +1,5 @@
 require('dotenv').config({ path: '.env.local' });
-const { proposeMovements, applyMovement, applyAllMovements } = require('./propose-movements');
+const { proposeMovements, applyProposal, applyMovement, applyAllMovements } = require('./propose-movements');
 
 /**
  * Handler principal para el endpoint de conflictos
@@ -41,7 +41,7 @@ async function handler(req, res) {
       return;
     }
 
-    // POST /api/admin/conflicts-endpoint?action=apply-single
+    // POST /api/admin/conflicts-endpoint?action=apply-single (legacy, mantener para compatibilidad)
     if (req.method === 'POST' && action === 'apply-single') {
       const body = await getBody(req);
       const { eventId, newRoom } = body;
@@ -52,6 +52,21 @@ async function handler(req, res) {
       }
 
       const result = await applyMovement(eventId, newRoom);
+      res.status(200).json(result);
+      return;
+    }
+
+    // POST /api/admin/conflicts-endpoint?action=apply-proposal (nuevo: soporta MOVE_MESA y MOVE_SINGLE)
+    if (req.method === 'POST' && action === 'apply-proposal') {
+      const body = await getBody(req);
+      const { proposal } = body;
+
+      if (!proposal) {
+        res.status(400).json({ error: 'proposal object is required' });
+        return;
+      }
+
+      const result = await applyProposal(proposal);
       res.status(200).json(result);
       return;
     }

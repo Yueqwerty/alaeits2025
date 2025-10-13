@@ -476,6 +476,47 @@ class ALAEITSProgramManager {
             filteredData = filteredData.filter(event => event.horario === horario);
         }
 
+        // Si hay búsqueda activa y no hay resultados en el día actual, buscar en otros días
+        if (this.state.filters.search && filteredData.length === 0 && this.state.currentDay !== 'favoritos') {
+            const otherDays = Object.keys(this.config.diasConfig).filter(day => day !== this.state.currentDay);
+
+            for (const day of otherDays) {
+                let dayData = this.state.fullSchedule.filter(event =>
+                    event.dia.toLowerCase() === day.toLowerCase()
+                );
+
+                // Aplicar filtro de búsqueda
+                const searchTerm = this.normalizeSearchText(this.state.filters.search);
+                const searchWords = searchTerm.split(' ').filter(Boolean);
+                dayData = dayData.filter(event => {
+                    return searchWords.every(word =>
+                        event.searchTextNormalized.includes(word)
+                    );
+                });
+
+                // Aplicar otros filtros
+                if (type && type !== 'all') {
+                    const isSimposio = type === 'simposio';
+                    dayData = dayData.filter(event => event.esSimposio === isSimposio);
+                }
+                if (sala && sala !== 'all') {
+                    dayData = dayData.filter(event => event.sala === sala);
+                }
+                if (horario && horario !== 'all') {
+                    dayData = dayData.filter(event => event.horario === horario);
+                }
+
+                // Si encontramos resultados en otro día, cambiar a ese día
+                if (dayData.length > 0) {
+                    this.state.currentDay = day;
+                    filteredData = dayData;
+                    this.setActiveTab(day);
+                    this.showToast(`Resultados encontrados en ${this.config.diasConfig[day].nombreVisible}`, 'info');
+                    break;
+                }
+            }
+        }
+
         this.state.filteredData = filteredData;
         this.metrics.searchTime = performance.now() - startTime;
 
@@ -639,7 +680,21 @@ class ALAEITSProgramManager {
         // Información de visualización
         const diaVisible = this.config.diasConfig[event.dia]?.nombreVisible || event.dia || '--';
         const horarioVisible = event.horario || '--';
-        const salaVisible = event.sala ? `SALA ${event.sala}` : '--';
+
+        // Obtener nombre físico de la sala
+        let salaVisible = '--';
+        if (event.sala) {
+            const dayMap = { 'martes 14 de octubre': '14/10', 'miércoles 15 de octubre': '15/10' };
+            const mappedDay = dayMap[event.dia];
+
+            if (mappedDay && event.horario) {
+                const activeRoom = getActiveRoom(String(event.sala), mappedDay, event.horario);
+                salaVisible = activeRoom ? `SALA ${event.sala} - ${activeRoom.nombre}` : `SALA ${event.sala}`;
+            } else {
+                salaVisible = `SALA ${event.sala}`;
+            }
+        }
+
         const moderadorName = event.autores[0] || 'N/A';
         const autoresTexto = event.autores.join(', ') || 'Sin autores';
 
@@ -1153,6 +1208,16 @@ class ALAEITSProgramManager {
         try {
             const firstEvent = salaEvents[0];
 
+            // Obtener nombre físico de la sala
+            const dayMap = { 'martes 14 de octubre': '14/10', 'miércoles 15 de octubre': '15/10' };
+            const mappedDay = dayMap[firstEvent.dia];
+            let salaDisplay = `Sala ${firstEvent.sala}`;
+
+            if (mappedDay && firstEvent.horario) {
+                const activeRoom = getActiveRoom(String(firstEvent.sala), mappedDay, firstEvent.horario);
+                salaDisplay = activeRoom ? `Sala ${firstEvent.sala} - ${activeRoom.nombre}` : `Sala ${firstEvent.sala}`;
+            }
+
             // Generar HTML para imprimir con diseño minimalista
             let htmlContent = `
                 <!DOCTYPE html>
@@ -1288,7 +1353,7 @@ class ALAEITSProgramManager {
                     <div class="container">
                         <div class="header">
                             <h1>ALAEITS 2025</h1>
-                            <div class="info">${diaVisible} • ${firstEvent.horario} • Sala ${firstEvent.sala}</div>
+                            <div class="info">${diaVisible} • ${firstEvent.horario} • ${salaDisplay}</div>
                             <div class="subtitle">Programación de la Mesa</div>
                         </div>
 
@@ -1384,6 +1449,16 @@ class ALAEITSProgramManager {
         const firstEvent = salaEvents[0];
         const diaVisible = this.config.diasConfig[firstEvent.dia]?.nombreVisible || firstEvent.dia;
 
+        // Obtener nombre físico de la sala
+        const dayMap = { 'martes 14 de octubre': '14/10', 'miércoles 15 de octubre': '15/10' };
+        const mappedDay = dayMap[firstEvent.dia];
+        let salaDisplay = `Sala ${firstEvent.sala}`;
+
+        if (mappedDay && firstEvent.horario) {
+            const activeRoom = getActiveRoom(String(firstEvent.sala), mappedDay, firstEvent.horario);
+            salaDisplay = activeRoom ? `Sala ${firstEvent.sala} - ${activeRoom.nombre}` : `Sala ${firstEvent.sala}`;
+        }
+
         // Construcción del HTML del modal
         const modalHTML = `
             <div class="mesa-modal-overlay" id="mesa-modal">
@@ -1391,7 +1466,7 @@ class ALAEITSProgramManager {
                     <div class="mesa-modal-header">
                         <div>
                             <h3>Programación de la Mesa</h3>
-                            <p>${diaVisible} | ${firstEvent.horario} | Sala ${firstEvent.sala}</p>
+                            <p>${diaVisible} | ${firstEvent.horario} | ${salaDisplay}</p>
                         </div>
                         <button id="export-sala-pdf" class="export-pdf-btn" title="Exportar a PDF">Exportar PDF</button>
                     </div>

@@ -17,7 +17,7 @@
  * Nota: Las salas 22-32 (martes) y 16-26 (miércoles) con prefijo U- están reservadas para simposios
  */
 
-export const roomMap = {
+const roomMap = {
   "14/10": {
     "1": [
       { nombre: "Aula A", inicio: "08:15", fin: "14:05", capacity: 6 },
@@ -215,7 +215,7 @@ export const roomMap = {
   }
 };
 
-export function getActiveRoom(roomId, day, timeBlock) {
+function getActiveRoom(roomId, day, timeBlock) {
   const dayMap = roomMap[day];
   if (!dayMap || !dayMap[roomId]) return null;
 
@@ -249,7 +249,7 @@ export function getActiveRoom(roomId, day, timeBlock) {
   return null;
 }
 
-export function isSimposioRoom(roomId, day) {
+function isSimposioRoom(roomId, day) {
   const roomNum = parseInt(roomId);
 
   if (day === '14/10') {
@@ -269,3 +269,8 @@ export function isSimposioRoom(roomId, day) {
 
   return false;
 }
+
+// Exponer funciones globalmente para uso sin módulos
+window.roomMap = roomMap;
+window.getActiveRoom = getActiveRoom;
+window.isSimposioRoom = isSimposioRoom;

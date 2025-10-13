@@ -1590,6 +1590,20 @@ class EnhancedCongressDashboard {
     }
   }
 
+  getRoomDisplay(event) {
+    if (!event.room) return 'No asignada';
+
+    const dayMap = { 'martes 14 de octubre': '14/10', 'miércoles 15 de octubre': '15/10' };
+    const mappedDay = dayMap[event.scheduled_day];
+
+    if (mappedDay && event.scheduled_time_block) {
+      const activeRoom = this.getActiveRoom(String(event.room), mappedDay, event.scheduled_time_block);
+      return activeRoom ? `Sala ${event.room} - ${activeRoom.nombre}` : `Sala ${event.room}`;
+    }
+
+    return `Sala ${event.room}`;
+  }
+
   renderEventReadOnlyFields(event) {
     return `
       <div class="detail-item">
@@ -1604,7 +1618,7 @@ class EnhancedCongressDashboard {
         <label>Estado</label>
         <span class="badge badge-${event.status}">${event.status}</span>
       </div>
-      
+
       ${event.scheduled_day ? `
         <div class="detail-item">
           <label>Día Programado</label>
@@ -1616,7 +1630,7 @@ class EnhancedCongressDashboard {
         </div>
         <div class="detail-item">
           <label>Sala</label>
-          <span>${event.room || 'No asignada'}</span>
+          <span>${this.getRoomDisplay(event)}</span>
         </div>
         <div class="detail-item">
           <label>Turno</label>

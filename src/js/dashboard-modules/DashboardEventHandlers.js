@@ -184,7 +184,6 @@ export const DashboardEventHandlers = {
   /**
    * Manejador de atajos de teclado
    * Atajos disponibles:
-   * - Ctrl+F: Abrir búsqueda
    * - Ctrl+A: Seleccionar todo (en modo bulk)
    * - Ctrl+S: Actualizar schedule
    * - Escape: Cerrar modales / salir de modo bulk
@@ -196,13 +195,6 @@ export const DashboardEventHandlers = {
     if (!e.key) return; // Ignorar eventos sin tecla definida
 
     const shortcuts = {
-      'ctrl+f': () => {
-        e.preventDefault();
-        if (this.elements.searchInput) {
-          this.switchView('search');
-          setTimeout(() => this.elements.searchInput.focus(), 100);
-        }
-      },
       'ctrl+a': () => {
         if (this.state.bulkMode && this.state.currentView === 'search') {
           e.preventDefault();
@@ -235,7 +227,7 @@ export const DashboardEventHandlers = {
     ].filter(Boolean).join('+');
 
     const handler = shortcuts[key];
-    if (handler && (!e.ctrlKey || ['ctrl+f', 'ctrl+a', 'ctrl+s'].includes(key))) {
+    if (handler && (!e.ctrlKey || ['ctrl+a', 'ctrl+s'].includes(key))) {
       handler();
     }
   },

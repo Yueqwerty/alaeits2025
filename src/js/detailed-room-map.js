@@ -29,21 +29,16 @@ const roomMap = {
     ],
     "3": [
       { nombre: "D-202", inicio: "08:15", fin: "12:35", capacity: 6 },
-      { nombre: "SALA PM", inicio: "12:10", fin: "13:50", capacity: 6 },
       { nombre: "B-312", inicio: "15:00", fin: "18:30", capacity: 6 }
     ],
     "4": [
-      { nombre: "D-105", inicio: "08:15", fin: "12:35", capacity: 6 },
-      { nombre: "SALA PM", inicio: "12:10", fin: "13:50", capacity: 6 },
-      { nombre: "SALA PM", inicio: "15:00", fin: "18:30", capacity: 6 }
+      { nombre: "D-105", inicio: "08:15", fin: "12:35", capacity: 6 }
     ],
     "5": [
       { nombre: "D-209", inicio: "08:15", fin: "19:30", capacity: 6 }
     ],
     "6": [
       { nombre: "D-207 am", inicio: "08:15", fin: "11:05", capacity: 6 },
-      { nombre: "SALA PM", inicio: "10:20", fin: "12:00", capacity: 6 },
-      { nombre: "SALA PM", inicio: "12:10", fin: "13:50", capacity: 6 },
       { nombre: "D-207 pm", inicio: "14:15", fin: "18:35", capacity: 6 }
     ],
     "7": [
@@ -54,7 +49,6 @@ const roomMap = {
     ],
     "9": [
       { nombre: "D-308", inicio: "08:30", fin: "12:30", capacity: 6 },
-      { nombre: "SALA PM", inicio: "12:10", fin: "13:50", capacity: 6 },
       { nombre: "B-404", inicio: "15:00", fin: "18:30", capacity: 6 }
     ],
     "10": [

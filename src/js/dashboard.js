@@ -1068,7 +1068,14 @@ class EnhancedCongressDashboard {
     roomSlot.dataset.day = day;
     roomSlot.dataset.time = time;
     roomSlot.dataset.room = roomNum;
-    roomSlot.setAttribute('data-room-label', `Room ${roomNum}`);
+
+    // Obtener nombre físico de la sala
+    const roomLabel = this.getRoomDisplay({
+      room: roomNum,
+      scheduled_day: day,
+      scheduled_time_block: time
+    });
+    roomSlot.setAttribute('data-room-label', roomLabel);
 
     const eventsInSlot = this.data.published
       .filter(e => 
@@ -1596,8 +1603,7 @@ class EnhancedCongressDashboard {
     if (mappedDay && event.scheduled_time_block) {
       const activeRoom = this.getActiveRoom(String(event.room), mappedDay, event.scheduled_time_block);
       if (activeRoom) {
-        const suffix = activeRoom.nombre.startsWith('U-') ? 'UTM' : 'UCC';
-        return `Sala ${event.room} - ${activeRoom.nombre} - ${suffix}`;
+        return `Sala ${event.room} - ${activeRoom.nombre}`;
       }
       return `Sala ${event.room}`;
     }

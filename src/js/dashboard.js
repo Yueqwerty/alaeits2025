@@ -1070,7 +1070,7 @@ class EnhancedCongressDashboard {
     const mappedDay = dayMap[day];
     if (mappedDay) {
       const activeRoom = this.getActiveRoom(String(roomNum), mappedDay, time);
-      if (!activeRoom) {
+      if (!activeRoom || activeRoom.nombre === 'SALA PM') {
         roomSlot.classList.add('invalid-time-slot');
       }
     }

@@ -2331,25 +2331,6 @@ class EnhancedCongressDashboard {
           reason: 'Los simposios deben ir solos - no pueden compartir sala con ponencias'
         });
       }
-
-      // Verificar que las ponencias (mesas) no estén en salas de simposios (basado en rango)
-      if (event.event_type === 'ponencia') {
-        const isURoom = this.isSimposioRoom(event.room, dayCode);
-        if (isURoom) {
-          // Mensaje específico por día
-          const salasMensaje = dayCode === '14/10' ? '22-32' : '16-26';
-          // Ponencia en sala U- = CONFLICTO
-          conflicts.push({
-            eventId: event.id,
-            eventTitle: event.title?.es || 'Sin título',
-            eventType: event.event_type,
-            room: event.room,
-            day: dayKey,
-            timeBlock: event.scheduled_time_block,
-            reason: `Las mesas de ponencias no deben usar salas U- (salas ${salasMensaje})`
-          });
-        }
-      }
     });
 
     return conflicts;

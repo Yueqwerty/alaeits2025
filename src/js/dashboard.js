@@ -1,6 +1,3 @@
-// Importar módulo de mapeo de salas
-import { roomMap, getActiveRoom, isSimposioRoom } from './detailed-room-map.js';
-
 class EnhancedCongressDashboard {
   constructor() {
     // Configuración inicial

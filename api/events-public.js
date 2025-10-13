@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     console.log('POSTGRES_URL available:', !!process.env.POSTGRES_URL);
     
     const events = await sql`
-      SELECT 
+      SELECT
         id,
         event_type,
         title,
@@ -30,12 +30,13 @@ export default async function handler(req, res) {
         turn_order,
         status,
         updated_at
-      FROM events 
+      FROM events
       WHERE status = 'publicado'
-      ORDER BY 
-        scheduled_day, 
-        scheduled_time_block, 
-        room, 
+        AND event_type != 'discusion'
+      ORDER BY
+        scheduled_day,
+        scheduled_time_block,
+        room,
         turn_order NULLS LAST
     `;
 

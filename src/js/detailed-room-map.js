@@ -58,7 +58,7 @@ const roomMap = {
       { nombre: "B-404", inicio: "15:00", fin: "18:30", capacity: 6 }
     ],
     "10": [
-      { nombre: "C-102", inicio: "08:15", fin: "19:30", capacity: 6 }
+      { nombre: "C-102", inicio: "08:15", fin: "14:00", capacity: 6 }
     ],
     "11": [
       { nombre: "B-406", inicio: "08:15", fin: "17:05", capacity: 6 },

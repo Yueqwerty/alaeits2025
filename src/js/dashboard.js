@@ -1,8 +1,16 @@
+// Importar módulo de mapeo de salas
+import { roomMap, getActiveRoom, isSimposioRoom } from './detailed-room-map.js';
+
 class EnhancedCongressDashboard {
   constructor() {
     // Configuración inicial
     this.authToken = sessionStorage.getItem('authToken');
     this.isAuthenticated = sessionStorage.getItem('isAdminAuthenticated');
+
+    // Mapeo de salas para validación
+    this.roomMap = roomMap;
+    this.getActiveRoom = getActiveRoom;
+    this.isSimposioRoom = isSimposioRoom;
     
     // Estado de la aplicación con proxies para reactividad
     this.data = this.createReactiveData({
@@ -130,7 +138,11 @@ class EnhancedCongressDashboard {
       eventModal: '#event-modal',
       eventModalContent: '#event-modal-content',
       loadingOverlay: '#loading-overlay',
-      syncMdbBtn: '#sync-mdb-btn'
+      syncMdbBtn: '#sync-mdb-btn',
+      validationGrid: '#validation-grid',
+      validationDayFilter: '#validation-day-filter',
+      conflictsCount: '#conflicts-count',
+      conflictsSummary: '#conflicts-summary'
     };
 
     Object.entries(selectors).forEach(([key, selector]) => {
@@ -167,8 +179,6 @@ class EnhancedCongressDashboard {
       salas: 32
     });
   }
-
-
 
   async init() {
     const startTime = performance.now();
@@ -369,6 +379,11 @@ class EnhancedCongressDashboard {
       return;
     }
 
+    if (target === this.elements.validationDayFilter) {
+      this.scheduleRender(() => this.renderValidationView());
+      return;
+    }
+
     if (target.closest('#search-filters')) {
       this.state.filters[target.name] = target.value;
       this.debouncedSearch();
@@ -531,9 +546,9 @@ class EnhancedCongressDashboard {
       turn_order: isDraft ? null : turnOrder,
     };
 
-    console.log(`📤 Actualizando evento ${eventId}:`, updatedData);
+    console.log(`Actualizando evento ${eventId}:`, updatedData);
     const result = await this.updateEventAPI(eventId, updatedData);
-    console.log(`✅ Evento ${eventId} actualizado`);
+    console.log(`Evento ${eventId} actualizado`);
     return result;
   }
 
@@ -587,15 +602,12 @@ class EnhancedCongressDashboard {
       case 'schedule':
         this.renderScheduleView();
         break;
-<<<<<<< HEAD
       case 'validation':
         this.renderValidationView();
         break;
       case 'conflicts':
         await this.renderConflictsResolverView();
         break;
-=======
->>>>>>> 3d58a577bafc1f8526506f6e1d8ececeb707d40a
       case 'search':
         this.renderSearchView();
         // Ejecutar búsqueda inmediatamente si no hay resultados
@@ -1219,7 +1231,7 @@ class EnhancedCongressDashboard {
       card.classList.toggle('selected', this.state.selectedEvents.has(eventId));
     });
 
-    console.log('📋 Eventos seleccionados:', Array.from(this.state.selectedEvents));
+    console.log('Eventos seleccionados:', Array.from(this.state.selectedEvents));
     this.updateMultiSelectControls();
   }
 
@@ -1263,7 +1275,7 @@ class EnhancedCongressDashboard {
         // Guardar IDs seleccionados para arrastre múltiple manual
         const draggedId = evt.item.dataset.id;
 
-        console.log('  DEBUG onStart:');
+        console.log('DEBUG onStart:');
         console.log('  - multiSelectMode:', this.state.multiSelectMode);
         console.log('  - selectedEvents.size:', this.state.selectedEvents.size);
         console.log('  - selectedEvents:', Array.from(this.state.selectedEvents));
@@ -1305,11 +1317,11 @@ class EnhancedCongressDashboard {
           // Añadir clase especial a la tarjeta principal
           evt.item.classList.add('multi-drag-main');
 
-          console.log(`🔄 Arrastrando ${this.draggedEventIds.length} eventos:`, this.draggedEventIds);
+          console.log(`Arrastrando ${this.draggedEventIds.length} eventos:`, this.draggedEventIds);
         } else {
           // Solo arrastrar el elemento actual
           this.draggedEventIds = [draggedId];
-          console.log('🔄 Arrastrando 1 evento:', draggedId);
+          console.log('Arrastrando 1 evento:', draggedId);
         }
       },
 
@@ -1430,7 +1442,7 @@ class EnhancedCongressDashboard {
     // Filtrar IDs vacíos o inválidos
     eventsToMove = eventsToMove.filter(Boolean);
 
-    console.log('🎯 DEBUG handleDrop:');
+    console.log('DEBUG handleDrop:');
     console.log('  - draggedEventIds:', this.draggedEventIds);
     console.log('  - eventsToMove:', eventsToMove);
     console.log('  - Cantidad a mover:', eventsToMove.length);
@@ -1444,7 +1456,7 @@ class EnhancedCongressDashboard {
 
     try {
       // Mover todos los eventos seleccionados
-      console.log('🚀 Iniciando movimiento de', eventsToMove.length, 'eventos');
+      console.log('Iniciando movimiento de', eventsToMove.length, 'eventos');
 
       const movePromises = eventsToMove.map((eventId, index) => {
         const targetIndex = newDraggableIndex + index;
@@ -1452,9 +1464,9 @@ class EnhancedCongressDashboard {
         return this.updateEventPosition(eventId, to, targetIndex, false);
       });
 
-      console.log('⏳ Esperando a que se completen todas las actualizaciones...');
+      console.log('Esperando a que se completen todas las actualizaciones...');
       const results = await Promise.all(movePromises);
-      console.log('✅ Todas las actualizaciones completadas:', results);
+      console.log('Todas las actualizaciones completadas:', results);
 
       // SOLO actualizar turn orders si es movimiento de 1 evento
       // Para múltiples eventos, ya se asignaron los turn_order correctos arriba
@@ -1471,7 +1483,7 @@ class EnhancedCongressDashboard {
 
         await Promise.all(updatePromises);
       } else {
-        console.log('⏭️ Salteando updateTurnOrders para movimiento múltiple (ya asignados correctamente)');
+        console.log('Salteando updateTurnOrders para movimiento múltiple (ya asignados correctamente)');
       }
 
       // NO limpiar selección automáticamente - dejar que el usuario deseleccione manualmente
@@ -1486,14 +1498,14 @@ class EnhancedCongressDashboard {
       this.renderScheduleView();
 
       const message = eventsToMove.length > 1
-        ? `✅ ${eventsToMove.length} eventos movidos exitosamente`
+        ? `${eventsToMove.length} eventos movidos exitosamente`
         : 'Programación actualizada';
 
       this.throttledShowNotification(message, 'success');
 
       // Limpiar selección solo si movimos múltiples eventos
       if (eventsToMove.length > 1 && this.state.multiSelectMode) {
-        console.log('🧹 Limpiando selección después de movimiento múltiple exitoso');
+        console.log('Limpiando selección después de movimiento múltiple exitoso');
         this.state.selectedEvents.clear();
       }
 
@@ -1700,6 +1712,7 @@ class EnhancedCongressDashboard {
     return true;
   }
 
+  // Modal de confirmación elegante
   showConfirmModal(options = {}) {
     return new Promise((resolve) => {
       const {
@@ -1710,6 +1723,7 @@ class EnhancedCongressDashboard {
         type = 'warning' // warning, danger, info
       } = options;
 
+      // Crear modal
       const modalOverlay = document.createElement('div');
       modalOverlay.className = 'confirm-modal-overlay';
       modalOverlay.innerHTML = `
@@ -1984,7 +1998,6 @@ class EnhancedCongressDashboard {
     `;
   }
 
-<<<<<<< HEAD
   /**
    * Renderizar vista de validación de disponibilidad de salas
    * Analiza todos los eventos publicados y verifica si sus salas están disponibles
@@ -2785,8 +2798,6 @@ class EnhancedCongressDashboard {
 
   // ==================== END CONFLICTS RESOLVER METHODS ====================
 
-=======
->>>>>>> 3d58a577bafc1f8526506f6e1d8ececeb707d40a
   toggleBulkMode() {
     this.state.bulkMode = !this.state.bulkMode;
     this.state.selectedEvents.clear();
@@ -2847,7 +2858,7 @@ class EnhancedCongressDashboard {
             <label>ID del Evento</label>
             <div class="id-edit-wrapper">
               <input type="text" class="quick-edit-input" data-field="id" value="${eventData.id}" />
-              <span class="id-warning" title="Cambiar el ID puede causar problemas. Usar con precaución.">⚠️</span>
+              <span class="id-warning" title="Cambiar el ID puede causar problemas. Usar con precaución."></span>
             </div>
             <small class="field-hint">Cambiar el ID puede romper referencias</small>
           </div>
@@ -2924,7 +2935,7 @@ class EnhancedCongressDashboard {
     // Advertencia si cambió el ID
     if (newId !== eventId) {
       const confirmChange = confirm(
-        `⚠️ ADVERTENCIA: Estás cambiando el ID del evento.\n\n` +
+        `ADVERTENCIA: Estás cambiando el ID del evento.\n\n` +
         `ID anterior: ${eventId}\n` +
         `ID nuevo: ${newId}\n\n` +
         `Esto puede causar problemas si el ID está referenciado en otros sistemas.\n\n` +
@@ -2947,7 +2958,7 @@ class EnhancedCongressDashboard {
 
       await this.updateEventAPI(eventId, updatedData);
 
-      this.showNotification('✅ Evento actualizado exitosamente', 'success');
+      this.showNotification('Evento actualizado exitosamente', 'success');
 
       // Recargar búsqueda para reflejar cambios
       await this.performSearch();
@@ -3465,7 +3476,7 @@ class EnhancedCongressDashboard {
     }
   }
 
-  // ✅ FUNCIÓN CORREGIDA handleSyncMdb
+  // FUNCIÓN CORREGIDA handleSyncMdb
   async handleSyncMdb() {
     if (!confirm('Esto buscará nuevos eventos en la hoja de cálculo MBD y los añadirá a la lista de pendientes. ¿Continuar?')) {
         return;
@@ -3501,10 +3512,10 @@ class EnhancedCongressDashboard {
             this.showNotification('Sincronización completada: No se encontraron nuevos eventos', 'info');
         }
 
-        // ✅ CORRECCIÓN: Usar los métodos correctos
+        // CORRECCIÓN: Usar los métodos correctos
         if (result.addedCount > 0) {
-            await this.reloadData(['events', 'analytics']); // ✅ Método correcto
-            this.renderCurrentView();                       // ✅ Método correcto
+            await this.reloadData(['events', 'analytics']); // Método correcto
+            this.renderCurrentView();                       // Método correcto
         }
 
     } catch (error) {

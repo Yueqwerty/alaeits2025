@@ -690,7 +690,7 @@ class ALAEITSProgramManager {
             if (mappedDay && event.horario) {
                 const activeRoom = getActiveRoom(String(event.sala), mappedDay, event.horario);
                 if (activeRoom) {
-                    const suffix = activeRoom.nombre.startsWith('U-') ? 'UTM' : 'UCC';
+                    const suffix = activeRoom.nombre.startsWith('U-') ? 'UTEM' : 'UCEN';
                     salaVisible = `SALA ${event.sala} - ${activeRoom.nombre} - ${suffix}`;
                 } else {
                     salaVisible = `SALA ${event.sala}`;
@@ -1221,7 +1221,7 @@ class ALAEITSProgramManager {
             if (mappedDay && firstEvent.horario) {
                 const activeRoom = getActiveRoom(String(firstEvent.sala), mappedDay, firstEvent.horario);
                 if (activeRoom) {
-                    const suffix = activeRoom.nombre.startsWith('U-') ? 'UTM' : 'UCC';
+                    const suffix = activeRoom.nombre.startsWith('U-') ? 'UTEM' : 'UCEN';
                     salaDisplay = `Sala ${firstEvent.sala} - ${activeRoom.nombre} - ${suffix}`;
                 } else {
                     salaDisplay = `Sala ${firstEvent.sala}`;
@@ -1467,7 +1467,7 @@ class ALAEITSProgramManager {
         if (mappedDay && firstEvent.horario) {
             const activeRoom = getActiveRoom(String(firstEvent.sala), mappedDay, firstEvent.horario);
             if (activeRoom) {
-                const suffix = activeRoom.nombre.startsWith('U-') ? 'UTM' : 'UCC';
+                const suffix = activeRoom.nombre.startsWith('U-') ? 'UTEM' : 'UCEN';
                 salaDisplay = `Sala ${firstEvent.sala} - ${activeRoom.nombre} - ${suffix}`;
             } else {
                 salaDisplay = `Sala ${firstEvent.sala}`;

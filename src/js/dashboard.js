@@ -425,10 +425,7 @@ class EnhancedCongressDashboard {
         if (this.state.bulkMode) {
           this.toggleBulkMode();
         }
-      },
-      '1': () => this.switchView('dashboard'),
-      '2': () => this.switchView('schedule'),
-      '3': () => this.switchView('search')
+      }
     };
 
     const key = [

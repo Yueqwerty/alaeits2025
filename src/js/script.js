@@ -156,10 +156,14 @@ class ALAEITSProgramManager {
                 }
                 this.abortController = new AbortController();
 
-                const response = await fetch(this.config.apiEndpoint, {
+                // Agregar timestamp para cache busting
+                const cacheBustUrl = `${this.config.apiEndpoint}?_t=${Date.now()}`;
+
+                const response = await fetch(cacheBustUrl, {
                     headers: {
-                        'Cache-Control': 'no-cache',
-                        'Pragma': 'no-cache'
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
                     },
                     signal: this.abortController.signal
                 });

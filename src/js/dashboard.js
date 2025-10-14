@@ -1298,11 +1298,22 @@ class EnhancedCongressDashboard {
 
     const sortableConfig = {
       group: 'shared',
-      animation: 150,
+      animation: 250,
+      easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
       ghostClass: 'sortable-ghost',
       chosenClass: 'sortable-chosen',
       dragClass: 'sortable-drag',
       forceFallback: false,
+      fallbackTolerance: 3,
+      delay: 50,
+      delayOnTouchOnly: true,
+      touchStartThreshold: 3,
+      swapThreshold: 0.65,
+      invertSwap: true,
+      direction: 'vertical',
+      scrollSensitivity: 60,
+      scrollSpeed: 20,
+      bubbleScroll: true,
       // NO usar multiDrag nativo - implementación manual más robusta
       // multiDrag: true,
       // selectedClass: 'selected',

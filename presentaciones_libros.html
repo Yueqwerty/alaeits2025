@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentaciones de Libros - ALAEITS 2025</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="src/assets/images/favicon.ico">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Montserrat', 'sans-serif'] },
+                    colors: {
+                        'primary': '#C8102E',
+                        'secondary': '#0033A0',
+                        'background': '#FDF9F3',
+                        'text-dark': '#002147',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="src/css/style.css">
+
+    <style>
+        .bloque {
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #C8102E;
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(200, 16, 46, 0.4);
+            transition: all 0.3s;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            background: #A00D24;
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="font-sans bg-background">
+
+    <header class="main-header">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="logo">ALAEITS 2025</a>
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="nav-link">Volver al Programa</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="min-h-screen">
+        <section class="py-16">
+            <div class="container mx-auto px-6">
+                <h1 class="text-4xl md:text-5xl font-bold text-primary text-center mb-4">Presentaciones de Libros</h1>
+                <p class="text-center text-xl text-text-dark mb-8">XXIV Seminario Internacional ALAEITS 2025</p>
+
+                <div class="max-w-2xl mx-auto mb-12">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="🔍 Buscar por título, autor o sala..."
+                        class="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-full focus:border-primary focus:outline-none transition-all">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <div class="text-4xl font-bold text-primary mb-2" id="totalPresentaciones">0</div>
+                        <div class="text-gray-600">Presentaciones</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <div class="text-4xl font-bold text-secondary mb-2">2</div>
+                        <div class="text-gray-600">Días</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <div class="text-4xl font-bold text-primary mb-2" id="totalBloques">0</div>
+                        <div class="text-gray-600">Bloques</div>
+                    </div>
+                </div>
+
+                <div class="max-w-7xl mx-auto">
+                    <!-- MARTES 14 -->
+                    <div class="day-section mb-16" data-day="martes">
+                        <h2 class="text-3xl font-bold text-white bg-gradient-to-r from-primary to-red-600 rounded-lg p-6 mb-8 shadow-lg">
+                            📅 MARTES 14 DE OCTUBRE
+                        </h2>
+
+                        <div class="bloque mb-8" data-bloque="1">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 1</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">08:30–10:10</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">La Movilización en los Márgenes Urbanos: Ciudadanía y Política Clientelar en el Chile Post Dictadura</td>
+                                            <td class="p-4 text-gray-700">Simón Escoffier</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Crisis del capital y la regresión conservadora: impactos políticos, sociales y territoriales</td>
+                                            <td class="p-4 text-gray-700">Alejandra Pastorini</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="2">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 2</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">08:30–10:10</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Feminismos, giro afectivo y pensar situado: aproximaciones desde la formación, la investigación y la intervención en Trabajo Social</td>
+                                            <td class="p-4 text-gray-700">Maria Eugenia Hermida</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">La Formación en Trabajo Social en Entre Ríos. Un estudio sobre su surgimiento y las Estrategias de intervención</td>
+                                            <td class="p-4 text-gray-700">Rosana Pieruzzini</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="9">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 9</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">08:30–10:10</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Trabajo Social en Ejercicio Libre</td>
+                                            <td class="p-4 text-gray-700">ALICIA JESUS AGUIRRE ABURTO</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Trabajo y Trabajadores Sociales. La construccion de la experiencia de trabajo de profesionales de Trabajo Social en Colombia.</td>
+                                            <td class="p-4 text-gray-700">Claudia Bermúdez Peña</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">SERVIÇO SOCIAL EM EMPRESA: aproximações na história e do trabalho de Assistentes Sociais em uma empresa energética</td>
+                                            <td class="p-4 text-gray-700">Viviane Arcanjo de Oliveira</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="4">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 4</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">10:20–12:00</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Libro "SAÚDE NA FRONTEIRA: territorialidades e intersetorialidades nas estratégias de cuidado e educação em saúde"</td>
+                                            <td class="p-4 text-gray-700">Luciane Pinho de Almeida</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Saúde do Trabalhador e Serviço Social: por onde estamos caminhando?</td>
+                                            <td class="p-4 text-gray-700">Monica Olivar</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Salud mental en tiempos de crisis</td>
+                                            <td class="p-4 text-gray-700">Alejandro Castro</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="5">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 5</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">10:20–12:00</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Militarização da Educação Básica e o Neoconservadorismo no Brasil – inflexões na garantia do direito à Educação</td>
+                                            <td class="p-4 text-gray-700">Erivã Garcia Velasco</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Experiencias docentes en tiempos de crisis: Testimonios desde carreras de Trabajo Social en Chile</td>
+                                            <td class="p-4 text-gray-700">Clément Colin</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Serviço Social e Educação: Desafios do Verbo Esperançar</td>
+                                            <td class="p-4 text-gray-700">Eliana Bolorino Canteiro Martins</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="6">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 6</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">10:20–12:00</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Pesquisa em serviço Social: teoria, método e metodologias</td>
+                                            <td class="p-4 text-gray-700">Carlos Antonio de Souza Moraes</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Tus primeras travesías en investigación social: Metodología fácil, dinámica y animada para quienes no quieren investigar</td>
+                                            <td class="p-4 text-gray-700">Sandra Iturrieta</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Sistematización y Trabajo Social. Reflexiones y Experiencias</td>
+                                            <td class="p-4 text-gray-700">Patricia Castañeda Meneses</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="3">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 3</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">12:10–13:30</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Nos Matan dos veces: FEMINICIDIO E IMPUNIDAD</td>
+                                            <td class="p-4 text-gray-700">Griselda Sillerico Ariñez</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Racismos, Infâncias e Juventudes: entre a (des)proteção, a educação e o extermínio</td>
+                                            <td class="p-4 text-gray-700">Eunice Teresinha Fávero Eunice Fávero</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Infancia Menores y Niñeces. Trayectorias de las construcciones histórico políticas de discursos y prácticas institucionales 1919-2019.</td>
+                                            <td class="p-4 text-gray-700">Vanesa Villeta</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Intervención Social con Niñeces Juventudes y familia</td>
+                                            <td class="p-4 text-gray-700">Darío Alfredo González</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="7">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 7</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">12:10–13:30</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Esbozos de una sociedad posprofesional.Experiencias, subjetividades y quehaceres en movimiento.Reflexionesen tiempos de covid-19</td>
+                                            <td class="p-4 text-gray-700">Clément Colin</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Orígenes y desarrollo del Movimiento de la Reconceptualización. Búsquedas en la construcción de un nuevo Proyecto Profesional en el Trabajo Social Latinoamericano</td>
+                                            <td class="p-4 text-gray-700">Gustavo Parra</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Memorias de las Resistencias del BioBío durante la dictadura cívico militar (1973-1990)</td>
+                                            <td class="p-4 text-gray-700">Eduardo Solis</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="8">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 8</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">12:10–13:30</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Trabajo Social: aportes a la historia reciente</td>
+                                            <td class="p-4 text-gray-700">Martin Hornes</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Trabajo Social Crítico en la contemporaneidad. Disputas por la autonomía profesional en los procesos de intervención</td>
+                                            <td class="p-4 text-gray-700">Marta Cimarosti</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Pensamiento contemoráneo del Trabajo Social: la propuesta de Margarita Rozas Pagaza</td>
+                                            <td class="p-4 text-gray-700">Leonel Del Prado</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="10">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 10</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">15:00–16:40</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">La dimensión socio-cultural del territorio como fundamento para la descentralización participativa en Uruguay y en Chile</td>
+                                            <td class="p-4 text-gray-700">Claudia Kuzma</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Livro "Expressões Acadêmicas e Diálogos sobre Migração, Refúgio e Políticas Sociais – Interlocuções em Direitos Humanos"</td>
+                                            <td class="p-4 text-gray-700">Luciane Pinho de Almeida</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Migración y género: Experiencias desde la investigación e incidencia social</td>
+                                            <td class="p-4 text-gray-700">Juan Antonio Vega Báez</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="11">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 11</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">15:00–16:40</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">POLÍTICAS PÚBLICAS EM TEMPOS DE PANDEMIA DA COVID-19: o desgoverno Bolsonaro, a (des) proteção social e o Serviço Social no Brasil</td>
+                                            <td class="p-4 text-gray-700">IRACILDA ALVES BRAGA</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Los rostros del Estado. De archivos y prácticas de intervención social en la historia argentina</td>
+                                            <td class="p-4 text-gray-700">Nicolas Rivas</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Wirrar pu trabajadoras ka trabajadores sociales mapuche wallmapu mu. El grito de trabajadoras y trabajadores sociales mapuche desde nuestro mundo-territorio</td>
+                                            <td class="p-4 text-gray-700">Exequiel Antilao</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="12">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 12</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">15:00–16:40</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">La dimensión socio-cultural del territorio como fundamento para la descentralización participativa en Uruguay y en Chile</td>
+                                            <td class="p-4 text-gray-700">Claudia Kuzma</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">El Trabajo Social en situaciones de emergencia climática, el caso de la inundación en la ciudad de Comodoro Rivadavia, Provincia Chubut ocurrido en el año 2017</td>
+                                            <td class="p-4 text-gray-700">CECILIA IVANA OCAMPO</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Tiempos de crisis climática: Representaciones Sociales del cambio climático en Achocalla</td>
+                                            <td class="p-4 text-gray-700">Isabel Villarroel Mur</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="13">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 13</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">16:00–17:40</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">100 años del Trabajo Social en Chile: tejiendo saberes para transformar futuros</td>
+                                            <td class="p-4 text-gray-700">Sandra Iturrieta Olivares</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Experiencias de trabajo social clínico en Chile</td>
+                                            <td class="p-4 text-gray-700">Milton Contreras Sáez</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Tortura y subjetividad política : entramado de la violencia en América Latina</td>
+                                            <td class="p-4 text-gray-700">Andrea Mireya Jiménez Pinzón</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="14">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 14</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">16:00–17:40</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">VIVENCIAS ETICAS Y POLITICAS DE LOS EST T.S.</td>
+                                            <td class="p-4 text-gray-700">CECILIA PILAR AGUAYO CUEVAS</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Entrelazamientos deseantes. La intervención en lo social y sus puntos de referencia.</td>
+                                            <td class="p-4 text-gray-700">Borja Castro Serrano</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Serviço Social, ética e regulamentação da profissão: debates críticos</td>
+                                            <td class="p-4 text-gray-700">DIEGO TABOSA DA SILVA</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="15">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 15</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">16:00–17:40</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Emprededores Ya! Capitalismo de plataformas en Uruguay</td>
+                                            <td class="p-4 text-gray-700">Noelia López</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Condiciones laborales del Trabajo Social: realidades y retos en el Valle del Cauca</td>
+                                            <td class="p-4 text-gray-700">Nora Liliana Guevara-Peña</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">LAS FAMILIAS EN BOLIVIA</td>
+                                            <td class="p-4 text-gray-700">NORAH CASTRO ORTEGA</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="16">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 16</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">17:50–19:00</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">PESQUISA E PÓS-GRADUAÇÃO EM SERVIÇO SOCIAL: QUESTÕES EM EVIDÊNCIA</td>
+                                            <td class="p-4 text-gray-700">Vera Núbia Santos</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">COINVESTIGACIÓN Y COLABORACIÓN INTERINSTITUCIONAL EN EL DIAGNÓSTICO REGIONAL SOBRE DERECHOS DE NIÑOS, NIÑAS, ADOLESCENTES Y JOVENES</td>
+                                            <td class="p-4 text-gray-700">Yesika Herrera Soto</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Análisis de los perfiles estudiantiles de Trabajo Social en América Latina</td>
+                                            <td class="p-4 text-gray-700">Nemesio Castillo Viveros</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="17">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 17</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">17:50–19:00</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Libro Narrativas de lucha: mujeres inmigrantes y violencias de género en Puerto Rico</td>
+                                            <td class="p-4 text-gray-700">Elithet Silva-Martinez</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Retazos de Memoria Profesional del Trabajo Social chileno.</td>
+                                            <td class="p-4 text-gray-700">Patricia Castañeda Meneses</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">LECTURAS CRITICAS EN AMÉRICA LATINA;REFLEXIONES DESDE TRABAJO SOCIAL</td>
+                                            <td class="p-4 text-gray-700">MARCELO TORRES FUENTES</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="21">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 21</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">17:50–19:00</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Hacia una práctica transformadora en Trabajo Social: Implicaciones para los derechos humanos y sociales</td>
+                                            <td class="p-4 text-gray-700">Isabel Feliciano Giboyeaux</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">A emergência de políticas de conciliação entre trabalho e vida familiar frente às demandas contemporâneas</td>
+                                            <td class="p-4 text-gray-700">Kênia Cristina Lopes Abrão</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Soledad y envejecimiento. Experiencias en España y América Latina</td>
+                                            <td class="p-4 text-gray-700">Lorena Patricia Gallardo Peralta</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MIÉRCOLES 15 -->
+                    <div class="day-section mb-16" data-day="miercoles">
+                        <h2 class="text-3xl font-bold text-white bg-gradient-to-r from-primary to-red-600 rounded-lg p-6 mb-8 shadow-lg">
+                            📅 MIÉRCOLES 15 DE OCTUBRE
+                        </h2>
+
+                        <div class="bloque mb-8" data-bloque="20">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 20</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">08:30–10:10</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Desafios contemporâneos e Serviço Social: trabalho, formação e exercício profissional</td>
+                                            <td class="p-4 text-gray-700">Cristiano Costa de Carvalho</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Desafios contemporâneos e Serviço Social: reflexões críticas sobre políticas sociais e capitalismo.</td>
+                                            <td class="p-4 text-gray-700">Cristiano Costa de Carvalho</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Os Direitos Sociais na América Latina: horizontes contemporâneos</td>
+                                            <td class="p-4 text-gray-700">Maria Adriana da Silva Torres</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="22">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 22</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">10:20–12:00</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">"Caminho é por onde passa": reflexões sobre formação e trabalho em Serviço Social na cena contemporânea</td>
+                                            <td class="p-4 text-gray-700">DIEGO TABOSA DA SILVA</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Serviço social: questão social e direitos humanos</td>
+                                            <td class="p-4 text-gray-700">Tânia Regina Krüger</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Trabajo social contemporáneo en el Perú</td>
+                                            <td class="p-4 text-gray-700">Ricardo Walter Soto Sulca</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="23">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 23</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">10:20–12:00</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">TRABALHO, QUESTÃO SOCIAL E DIVERSIDADE HUMANA temas contemporâneos</td>
+                                            <td class="p-4 text-gray-700">MAGALI DA SILVA ALMEIDA</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Serviço Social e Psicologia no Judiciário: perspectiva interdisciplinar</td>
+                                            <td class="p-4 text-gray-700">Adeildo Vila Nova da Silva Adeildo Vila Nova</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">PARA ALÉM DO "EVA VIU A UVA: O colher e o semear sobre o caráter político-pedagógico e o trabalho socioeducativo de assistentes sociais</td>
+                                            <td class="p-4 text-gray-700">Williana Angelo</td>
+                                            <td class="p-4"><span class="bg-orange-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Salón VK-I</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="24">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 24</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">10:20–12:00</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">O TRABALHO NA ENCRUZILHADA DO TEMPO PRESENTE: Virtualização, Precarização e Controle</td>
+                                            <td class="p-4 text-gray-700">Reivan Marinho de Souza Reivan</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Os Direitos não cabem no Estado: trabalho e política social no capitalismo</td>
+                                            <td class="p-4 text-gray-700">Fernanda Kilduff</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Capitalismo e industria 4.0: consecuencias para la clase trabajadora</td>
+                                            <td class="p-4 text-gray-700">Paula Vidal Molina</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="19">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 19</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">12:10–13:30</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">DESIGUALDADES E VIOLÊNCIAS NO CAPITALISMO NEOLIBERAL</td>
+                                            <td class="p-4 text-gray-700">Rosilene Marques Sobrinho de França</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Parcerías por y para la paz. Sistematización de experiencias de Trabajo Social desde la descolonialidad</td>
+                                            <td class="p-4 text-gray-700">Miguel Antonio Rodríguez Suárez</td>
+                                            <td class="p-4"><span class="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-semibold">Auditorio 2</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="25">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 25</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">12:10–13:30</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Marxismo e Questão Étnico Racial: desafios contemporâneos</td>
+                                            <td class="p-4 text-gray-700">Maria Beatriz Costa Abramides</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Marxismo e Questão Latino Americano: Lutas sociais classistas contra a exploração e as opressões capitalistas de gênero, raça, populações indígenas e LGBTQIAPN+</td>
+                                            <td class="p-4 text-gray-700">Maria Beatriz Costa Abramides</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Trabajo Social y luchas sociales en Nuestra América</td>
+                                            <td class="p-4 text-gray-700">JUAN PABLO SIERRA-TAPIRO</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bloque mb-8" data-bloque="18">
+                            <div class="bg-secondary text-white rounded-t-lg p-4 flex justify-between items-center">
+                                <span class="font-bold text-lg">Bloque 18</span>
+                                <span class="bg-white/20 px-4 py-1 rounded-full text-sm">14:00–15:30</span>
+                            </div>
+                            <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                                <table class="w-full">
+                                    <thead class="bg-gray-800 text-white">
+                                        <tr>
+                                            <th class="p-4 text-left w-1/2">Título</th>
+                                            <th class="p-4 text-left w-1/3">Autor/a</th>
+                                            <th class="p-4 text-left w-1/6">Sala</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Vivir en tiempos convulsionados: Reflexiones sociocríticas para propuestas de intervención Social</td>
+                                            <td class="p-4 text-gray-700">Sandra Iturrieta</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">100 AÑOS DEL TRABAJO SOCIAL LATINOAMERICANO: DE PASADO, FUTURO, CRITICAS Y UTOPÍAS</td>
+                                            <td class="p-4 text-gray-700">Paula Vidal</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="p-4">Discursos de formación en trabajo social desde la construcción de paz</td>
+                                            <td class="p-4 text-gray-700">Myriam Fernanda Torres Gómez</td>
+                                            <td class="p-4"><span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Carlos Blin</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="noResults" class="text-center py-16 hidden">
+                        <div class="text-6xl mb-4">🔍</div>
+                        <p class="text-xl text-gray-600">No se encontraron resultados</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container mx-auto px-6 text-center">
+            <div class="footer-logos">
+                <img src="src/assets/images/logo-100-anios.png" alt="Logo 100 Años" class="footer-logo">
+                <img src="src/assets/images/logo-xxiv-seminario.png" alt="Logo XXIV Seminario" class="footer-logo logo-alt">
+            </div>
+            <p class="footer-text">Crisis civilizatoria, luchas contra hegemónicas y proyectos emancipatorios.</p>
+            <p class="footer-copy">&copy; 2025 Seminario ALAEITS. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <div class="back-to-top" id="backToTop">↑</div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const bloques = document.querySelectorAll('.bloque');
+        const daySections = document.querySelectorAll('.day-section');
+        const noResults = document.getElementById('noResults');
+        const backToTop = document.getElementById('backToTop');
+
+        let totalPresentaciones = 0;
+        bloques.forEach(bloque => {
+            totalPresentaciones += bloque.querySelectorAll('tbody tr').length;
+        });
+        document.getElementById('totalPresentaciones').textContent = totalPresentaciones;
+        document.getElementById('totalBloques').textContent = bloques.length;
+
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            let hasResults = false;
+
+            if (searchTerm === '') {
+                bloques.forEach(b => { b.style.display = 'block'; b.querySelectorAll('tbody tr').forEach(row => row.style.display = ''); });
+                daySections.forEach(d => d.style.display = 'block');
+                noResults.classList.add('hidden');
+                return;
+            }
+
+            bloques.forEach(bloque => {
+                const rows = bloque.querySelectorAll('tbody tr');
+                let bloqueHasMatch = false;
+
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        row.style.display = '';
+                        bloqueHasMatch = true;
+                        hasResults = true;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                bloque.style.display = bloqueHasMatch ? 'block' : 'none';
+            });
+
+            daySections.forEach(daySection => {
+                const visibleBloques = Array.from(daySection.querySelectorAll('.bloque')).filter(b => b.style.display !== 'none');
+                daySection.style.display = visibleBloques.length > 0 ? 'block' : 'none';
+            });
+
+            noResults.classList.toggle('hidden', hasResults);
+        });
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

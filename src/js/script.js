@@ -36,6 +36,8 @@ class ALAEITSProgramManager {
                 search: '',
                 type: 'all',
                 sala: 'all',
+                salaEspecifica: 'all',
+                sede: 'all',
                 horario: 'all'
             },
             loading: false,
@@ -109,14 +111,16 @@ class ALAEITSProgramManager {
             favoritesView: '#favorites-view',
             programTabs: '#program-tabs',
             noResults: '#no-results',
-            
+
             searchInput: '#program-search-input',
             filterType: '#filter-type',
-            filterSala: '#filter-sala', 
+            filterSala: '#filter-sala',
+            filterSalaEspecifica: '#filter-sala-especifica',
+            filterSede: '#filter-sede',
             filterHorario: '#filter-horario',
             resetBtn: '#reset-filters',
             clearFiltersNoResultsBtn: '#clear-filters-no-results',
-            
+
             toastContainer: '#toast-container',
             header: '.main-header'
         };
@@ -247,6 +251,24 @@ class ALAEITSProgramManager {
             searchTextNormalized: '', // Versión normalizada para búsqueda
         };
 
+        // Calcular sala específica y sede
+        const dayMap = { 'martes 14 de octubre': '14/10', 'miércoles 15 de octubre': '15/10' };
+        const mappedDay = dayMap[normalized.dia];
+
+        if (mappedDay && normalized.horario && normalized.sala && window.getActiveRoom) {
+            const activeRoom = window.getActiveRoom(String(normalized.sala), mappedDay, normalized.horario);
+            if (activeRoom) {
+                normalized.salaEspecifica = activeRoom.nombre;
+                normalized.sede = activeRoom.nombre.startsWith('U-') ? 'UTEM' : 'UCEN';
+            } else {
+                normalized.salaEspecifica = '';
+                normalized.sede = '';
+            }
+        } else {
+            normalized.salaEspecifica = '';
+            normalized.sede = '';
+        }
+
         // Crear texto de búsqueda
         const searchRaw = [
             normalized.id,
@@ -344,12 +366,20 @@ class ALAEITSProgramManager {
         }
 
         // Filtros
-        ['filterType', 'filterSala', 'filterHorario'].forEach(filterKey => {
+        ['filterType', 'filterSala', 'filterSalaEspecifica', 'filterSede', 'filterHorario'].forEach(filterKey => {
             const element = this.elements[filterKey];
             if (element) {
                 element.addEventListener('change', (e) => {
-                    const filterName = filterKey.replace('filter', '').toLowerCase();
-                    this.state.filters[filterName] = e.target.value;
+                    const filterName = filterKey.replace('filter', '');
+                    // Convertir a camelCase
+                    const camelFilterName = filterName.charAt(0).toLowerCase() + filterName.slice(1);
+                    this.state.filters[camelFilterName] = e.target.value;
+
+                    // Si es el filtro de sala, actualizar el filtro de sala específica
+                    if (filterKey === 'filterSala') {
+                        this.updateSalaEspecificaFilter(e.target.value);
+                    }
+
                     this.performSearch();
                     this.updateURL();
                 });
@@ -461,7 +491,7 @@ class ALAEITSProgramManager {
         }
 
         // Filtros adicionales optimizados
-        const { type, sala, horario } = this.state.filters;
+        const { type, sala, salaEspecifica, sede, horario } = this.state.filters;
 
         if (type && type !== 'all') {
             const isSimposio = type === 'simposio';
@@ -470,6 +500,14 @@ class ALAEITSProgramManager {
 
         if (sala && sala !== 'all') {
             filteredData = filteredData.filter(event => event.sala === sala);
+        }
+
+        if (salaEspecifica && salaEspecifica !== 'all') {
+            filteredData = filteredData.filter(event => event.salaEspecifica === salaEspecifica);
+        }
+
+        if (sede && sede !== 'all') {
+            filteredData = filteredData.filter(event => event.sede === sede);
         }
 
         if (horario && horario !== 'all') {
@@ -501,6 +539,12 @@ class ALAEITSProgramManager {
                 }
                 if (sala && sala !== 'all') {
                     dayData = dayData.filter(event => event.sala === sala);
+                }
+                if (salaEspecifica && salaEspecifica !== 'all') {
+                    dayData = dayData.filter(event => event.salaEspecifica === salaEspecifica);
+                }
+                if (sede && sede !== 'all') {
+                    dayData = dayData.filter(event => event.sede === sede);
                 }
                 if (horario && horario !== 'all') {
                     dayData = dayData.filter(event => event.horario === horario);
@@ -784,6 +828,18 @@ class ALAEITSProgramManager {
             .filter(Boolean)
         )].sort((a, b) => parseInt(a) - parseInt(b));
 
+        // Salas específicas únicas
+        const salasEspecificas = [...new Set(this.state.fullSchedule
+            .map(event => event.salaEspecifica)
+            .filter(Boolean)
+        )].sort((a, b) => a.localeCompare(b, 'es'));
+
+        // Sedes únicas
+        const sedes = [...new Set(this.state.fullSchedule
+            .map(event => event.sede)
+            .filter(Boolean)
+        )].sort();
+
         // Horarios únicos
         const horarios = [...new Set(this.state.fullSchedule
             .map(event => event.horario)
@@ -792,13 +848,25 @@ class ALAEITSProgramManager {
 
         // Actualizar selects
         if (this.elements.filterSala) {
-            this.elements.filterSala.innerHTML = 
+            this.elements.filterSala.innerHTML =
                 '<option value="all">Todas las Salas</option>' +
                 salas.map(sala => `<option value="${sala}">Sala ${sala}</option>`).join('');
         }
 
+        if (this.elements.filterSalaEspecifica) {
+            this.elements.filterSalaEspecifica.innerHTML =
+                '<option value="all">Todas las Salas Específicas</option>' +
+                salasEspecificas.map(sala => `<option value="${sala}">${sala}</option>`).join('');
+        }
+
+        if (this.elements.filterSede) {
+            this.elements.filterSede.innerHTML =
+                '<option value="all">Todas las Sedes</option>' +
+                sedes.map(sede => `<option value="${sede}">${sede}</option>`).join('');
+        }
+
         if (this.elements.filterHorario) {
-            this.elements.filterHorario.innerHTML = 
+            this.elements.filterHorario.innerHTML =
                 '<option value="all">Todos los Horarios</option>' +
                 horarios.map(horario => `<option value="${horario}">${horario}</option>`).join('');
         }
@@ -812,6 +880,39 @@ class ALAEITSProgramManager {
         }
 
         this.log('Filtros poblados exitosamente');
+    }
+
+    /**
+     * Actualizar filtro de salas específicas según sala seleccionada
+     */
+    updateSalaEspecificaFilter(salaValue) {
+        if (!this.elements.filterSalaEspecifica) return;
+
+        // Si no hay sala seleccionada o es "all", ocultar el filtro
+        if (!salaValue || salaValue === 'all') {
+            this.elements.filterSalaEspecifica.style.display = 'none';
+            this.state.filters.salaEspecifica = 'all';
+            return;
+        }
+
+        // Filtrar salas específicas por la sala seleccionada
+        const salasEspecificasFiltradas = [...new Set(this.state.fullSchedule
+            .filter(event => event.sala === salaValue)
+            .map(event => event.salaEspecifica)
+            .filter(Boolean)
+        )].sort((a, b) => a.localeCompare(b, 'es'));
+
+        // Solo mostrar el filtro si hay salas específicas para esta sala
+        if (salasEspecificasFiltradas.length > 0) {
+            this.elements.filterSalaEspecifica.innerHTML =
+                '<option value="all">Todas las Salas Específicas</option>' +
+                salasEspecificasFiltradas.map(sala => `<option value="${sala}">${sala}</option>`).join('');
+            this.elements.filterSalaEspecifica.style.display = '';
+            this.state.filters.salaEspecifica = 'all';
+        } else {
+            this.elements.filterSalaEspecifica.style.display = 'none';
+            this.state.filters.salaEspecifica = 'all';
+        }
     }
 
     /**
@@ -965,6 +1066,8 @@ class ALAEITSProgramManager {
             search: '',
             type: 'all',
             sala: 'all',
+            salaEspecifica: 'all',
+            sede: 'all',
             horario: 'all'
         };
 
@@ -972,6 +1075,11 @@ class ALAEITSProgramManager {
         if (this.elements.searchInput) this.elements.searchInput.value = '';
         if (this.elements.filterType) this.elements.filterType.selectedIndex = 0;
         if (this.elements.filterSala) this.elements.filterSala.selectedIndex = 0;
+        if (this.elements.filterSalaEspecifica) {
+            this.elements.filterSalaEspecifica.selectedIndex = 0;
+            this.elements.filterSalaEspecifica.style.display = 'none';
+        }
+        if (this.elements.filterSede) this.elements.filterSede.selectedIndex = 0;
         if (this.elements.filterHorario) this.elements.filterHorario.selectedIndex = 0;
 
         this.performSearch();
@@ -1016,6 +1124,8 @@ class ALAEITSProgramManager {
         return this.state.filters.search !== '' ||
                this.state.filters.type !== 'all' ||
                this.state.filters.sala !== 'all' ||
+               this.state.filters.salaEspecifica !== 'all' ||
+               this.state.filters.sede !== 'all' ||
                this.state.filters.horario !== 'all';
     }
 
@@ -1057,6 +1167,8 @@ class ALAEITSProgramManager {
             search: params.get('search') || '',
             type: params.get('type') || 'all',
             sala: params.get('sala') || 'all',
+            salaEspecifica: params.get('salaEspecifica') || 'all',
+            sede: params.get('sede') || 'all',
             horario: params.get('horario') || 'all'
         };
 
@@ -1079,6 +1191,14 @@ class ALAEITSProgramManager {
         }
         if (this.elements.filterSala) {
             this.elements.filterSala.value = this.state.filters.sala;
+            // Actualizar el filtro de salas específicas cuando se sincroniza desde URL
+            this.updateSalaEspecificaFilter(this.state.filters.sala);
+        }
+        if (this.elements.filterSalaEspecifica) {
+            this.elements.filterSalaEspecifica.value = this.state.filters.salaEspecifica;
+        }
+        if (this.elements.filterSede) {
+            this.elements.filterSede.value = this.state.filters.sede;
         }
         if (this.elements.filterHorario) {
             this.elements.filterHorario.value = this.state.filters.horario;

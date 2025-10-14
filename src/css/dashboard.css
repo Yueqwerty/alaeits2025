@@ -693,6 +693,33 @@ html, body {
   color: var(--gray-900);
 }
 
+.sidebar-search {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--gray-200);
+  background: var(--gray-50);
+}
+
+.draft-search-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--gray-900);
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.draft-search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(126, 189, 180, 0.1);
+}
+
+.draft-search-input::placeholder {
+  color: var(--gray-600);
+}
+
 .event-eje {
   font-size: 0.8em;
   color: var(--gray-900);
@@ -803,6 +830,28 @@ html, body {
 .room-slot.invalid-time-slot {
   background: #ff4444 !important;
   border-color: #cc0000 !important;
+}
+
+/* Estilo para eventos con bloques horarios ilegales */
+.event-card.invalid-time-block {
+  background: #ff4444 !important;
+  border: 2px solid #cc0000 !important;
+  position: relative;
+}
+
+.event-card.invalid-time-block::after {
+  content: '⚠ Bloque horario ilegal';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #cc0000;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  z-index: 10;
 }
 
 .room-slot::before {
@@ -3617,6 +3666,26 @@ html, body {
 [data-theme="dark"] .conflicts-header {
   background: var(--bg-elevated);
   border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .sidebar-search {
+  background: var(--bg-primary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .draft-search-input {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .draft-search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .draft-search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(126, 189, 180, 0.15);
 }
 
 [data-theme="dark"] .modal-content {

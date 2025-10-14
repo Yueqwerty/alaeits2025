@@ -98,6 +98,10 @@ export class FilterService {
             return event.hora === value;
           case FILTER_TYPES.ROOM:
             return event.sala === value;
+          case FILTER_TYPES.SPECIFIC_ROOM:
+            return event.salaEspecifica === value;
+          case FILTER_TYPES.VENUE:
+            return event.sede === value;
           case FILTER_TYPES.TYPE:
             return event.tipo === value;
           case FILTER_TYPES.EJE:
@@ -120,6 +124,8 @@ export class FilterService {
       [FILTER_TYPES.DAY]: 'dia',
       [FILTER_TYPES.TIME]: 'hora',
       [FILTER_TYPES.ROOM]: 'sala',
+      [FILTER_TYPES.SPECIFIC_ROOM]: 'salaEspecifica',
+      [FILTER_TYPES.VENUE]: 'sede',
       [FILTER_TYPES.TYPE]: 'tipo',
       [FILTER_TYPES.EJE]: 'eje'
     };
@@ -136,10 +142,11 @@ export class FilterService {
     }
 
     return Array.from(values).sort((a, b) => {
-      // Ordenamiento numérico para salas, alfabético para el resto
+      // Ordenamiento numérico para salas virtuales, alfabético para el resto
       if (filterType === FILTER_TYPES.ROOM) {
         return parseInt(a) - parseInt(b);
       }
+      // Ordenamiento alfabético natural para salas específicas y sedes
       return a.localeCompare(b, 'es');
     });
   }

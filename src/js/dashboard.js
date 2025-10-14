@@ -25,7 +25,8 @@ class EnhancedCongressDashboard {
         status: 'all',
         event_type: 'all',
         scheduled_day: 'all',
-        room: 'all'
+        room: 'all',
+        draftSearch: '' // Filtro para búsqueda en eventos pendientes
       },
       bulkMode: false,
       multiSelectMode: false, // Modo de selección múltiple para drag & drop
@@ -170,11 +171,26 @@ class EnhancedCongressDashboard {
         '15:00 - 16:40', '16:50 - 18:30'
       ]),
       'miércoles 15 de octubre': Object.freeze([
-        '08:30 - 10:10', '10:20 - 12:00', 
+        '08:30 - 10:10', '10:20 - 12:00',
         '12:10 - 13:50', '14:00 - 15:30'
       ]),
       salas: 32
     });
+  }
+
+  /**
+   * Validar si un bloque horario es legal para un día específico
+   * @param {string} day - Día del evento
+   * @param {string} timeBlock - Bloque horario del evento
+   * @returns {boolean} True si el bloque es válido, false si es ilegal
+   */
+  isValidTimeBlock(day, timeBlock) {
+    if (!day || !timeBlock) return true; // Si no hay datos, no marcar como ilegal
+
+    const validBlocks = this.scheduleBlocks[day];
+    if (!validBlocks) return true; // Si no hay bloques definidos para este día, no marcar
+
+    return validBlocks.includes(timeBlock);
   }
 
   async init() {
@@ -400,6 +416,12 @@ class EnhancedCongressDashboard {
     if (target === this.elements.searchInput) {
       this.state.filters.search = target.value;
       this.debouncedSearch();
+      return;
+    }
+
+    if (target.id === 'draft-search-input') {
+      this.state.filters.draftSearch = target.value.toLowerCase();
+      this.debounce('draftSearch', () => this.renderDrafts(), 300)();
       return;
     }
   }
@@ -882,6 +904,20 @@ class EnhancedCongressDashboard {
   renderDrafts() {
     if (!this.elements.draftListEl) return;
 
+    // Filtrar drafts según el término de búsqueda
+    const searchTerm = this.state.filters.draftSearch;
+    const filteredDrafts = searchTerm
+      ? this.data.drafts.filter(event => {
+          const searchableText = [
+            event.title || '',
+            event.author || '',
+            event.id || '',
+            event.event_type || ''
+          ].join(' ').toLowerCase();
+          return searchableText.includes(searchTerm);
+        })
+      : this.data.drafts;
+
     const draftCount = document.getElementById('draft-count');
     if (draftCount) {
       draftCount.textContent = this.data.drafts.length;
@@ -890,7 +926,7 @@ class EnhancedCongressDashboard {
     const fragment = document.createDocumentFragment();
 
     // Añadir controles de selección múltiple si está activado el modo
-    if (this.state.multiSelectMode && this.data.drafts.length > 0) {
+    if (this.state.multiSelectMode && filteredDrafts.length > 0) {
       const controls = document.createElement('div');
       controls.className = 'multi-select-controls';
       controls.innerHTML = `
@@ -905,11 +941,17 @@ class EnhancedCongressDashboard {
       fragment.appendChild(controls);
     }
 
-    if (this.data.drafts.length > 0) {
-      this.data.drafts.forEach(event => {
+    if (filteredDrafts.length > 0) {
+      filteredDrafts.forEach(event => {
         const card = this.createEventCard(event, 'full');
         fragment.appendChild(card);
       });
+    } else if (searchTerm && this.data.drafts.length > 0) {
+      // Si hay búsqueda activa pero no hay resultados
+      const emptyState = document.createElement('div');
+      emptyState.className = 'empty-state';
+      emptyState.innerHTML = '<p>No se encontraron eventos que coincidan con la búsqueda</p>';
+      fragment.appendChild(emptyState);
     } else {
       const emptyState = document.createElement('div');
       emptyState.className = 'empty-state';
@@ -1169,6 +1211,15 @@ class EnhancedCongressDashboard {
     // Añadir clase si está seleccionada
     if (this.state.selectedEvents.has(event.id)) {
       card.classList.add('selected');
+    }
+
+    // Validar bloque horario - marcar con clase si es ilegal
+    if (event.scheduled_day && event.scheduled_time_block) {
+      const isValidBlock = this.isValidTimeBlock(event.scheduled_day, event.scheduled_time_block);
+      if (!isValidBlock) {
+        card.classList.add('invalid-time-block');
+        card.setAttribute('data-warning', `Bloque horario ilegal: ${event.scheduled_time_block}`);
+      }
     }
 
     if (type === 'mini') {

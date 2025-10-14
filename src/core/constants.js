@@ -59,6 +59,8 @@ export const FILTER_TYPES = {
   DAY: 'day',
   TIME: 'time',
   ROOM: 'room',
+  SPECIFIC_ROOM: 'specific_room',
+  VENUE: 'venue',
   TYPE: 'type',
   EJE: 'eje',
 };

@@ -72,10 +72,28 @@
     <header class="main-header">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="index.html" class="logo">ALAEITS 2025</a>
+
+            <!-- Menú Desktop -->
             <nav class="hidden md:flex items-center space-x-8">
                 <a href="index.html" class="nav-link">Volver al Programa</a>
             </nav>
+
+            <!-- Botón Hamburguesa Mobile -->
+            <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
         </div>
+
+        <!-- Menú Mobile -->
+        <nav id="mobile-menu" class="hidden md:hidden bg-primary border-t border-red-800">
+            <div class="container mx-auto px-6 py-4 flex flex-col space-y-3">
+                <a href="index.html" class="text-white hover:text-gray-200 py-2">
+                    ← Volver al Programa
+                </a>
+            </div>
+        </nav>
     </header>
 
     <main class="min-h-screen">
@@ -1069,6 +1087,12 @@
 
         backToTop.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
         });
     </script>
 </body>

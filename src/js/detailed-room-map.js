@@ -87,7 +87,7 @@ const roomMap = {
       { nombre: "Aula Magna Ponencias", inicio: "16:50", fin: "18:30", capacity: 30 }
     ],
     "20": [
-      { nombre: "Sala de Internalización", inicio: "08:15", fin: "18:30", capacity: 6 }
+      { nombre: "Sala de Internacionalización", inicio: "08:15", fin: "18:30", capacity: 6 }
     ],
     "21": [
       { nombre: "Híbrida 602", inicio: "08:15", fin: "15:00", capacity: 6 }
@@ -168,7 +168,7 @@ const roomMap = {
       { nombre: "Salón Rojo", inicio: "08:30", fin: "15:30", capacity: 6 }
     ],
     "14": [
-      { nombre: "Sala de Internalización", inicio: "08:15", fin: "15:30", capacity: 6 }
+      { nombre: "Sala de Internacionalización", inicio: "08:15", fin: "15:30", capacity: 6 }
     ],
     "15": [
       { nombre: "Híbrida 602", inicio: "08:15", fin: "13:30", capacity: 6 }

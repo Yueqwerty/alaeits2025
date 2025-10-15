@@ -11,7 +11,7 @@
  *
  * Capacidades:
  * - Por defecto: 6 ponencias por sala/bloque (1 mesa)
- * - Miércoles 15/10 salas 1-4, 6-14: 8 ponencias por sala (para horario 14:00-15:30)
+ * - Miércoles 15/10 salas 1-4, 6-14: 9 ponencias por sala (para horario 14:00-15:30)
  * - Aula Magna Ponencias: 30 ponencias (5 mesas)
  * - Salas excluidas: Aula Magna Central 1, Aula Magna Central 2, Aula Magna Mesa Cierre
  *

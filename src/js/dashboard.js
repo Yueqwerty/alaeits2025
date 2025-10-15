@@ -1137,21 +1137,39 @@ class EnhancedCongressDashboard {
 
   updateSlotVisuals() {
     const roomSlots = document.querySelectorAll('.room-slot');
-    
+
     requestAnimationFrame(() => {
       roomSlots.forEach(slot => {
         const eventCount = slot.querySelectorAll('.event-card').length;
-        const maxCapacity = 6;
-        
+
+        // Obtener capacidad dinámica desde roomMap
+        const roomId = slot.dataset.room;
+        const timeBlock = slot.dataset.time;
+        const dayDate = this.state.selectedDay; // formato: "martes 14 de octubre"
+
+        let maxCapacity = 6; // valor por defecto
+
+        if (roomId && timeBlock && dayDate && window.getActiveRoom) {
+          const dayMap = { 'martes 14 de octubre': '14/10', 'miércoles 15 de octubre': '15/10' };
+          const mappedDay = dayMap[dayDate];
+
+          if (mappedDay) {
+            const activeRoom = window.getActiveRoom(roomId, mappedDay, timeBlock);
+            if (activeRoom && activeRoom.capacity) {
+              maxCapacity = activeRoom.capacity;
+            }
+          }
+        }
+
         slot.classList.remove('is-full', 'is-overloaded');
         const existingIndicator = slot.querySelector('.capacity-indicator');
         existingIndicator?.remove();
-        
+
         if (eventCount === 0) return;
-        
+
         let indicatorClass = '';
         const indicatorText = `${eventCount}/${maxCapacity}`;
-        
+
         if (eventCount === maxCapacity) {
           slot.classList.add('is-full');
           indicatorClass = 'full';
@@ -1159,7 +1177,7 @@ class EnhancedCongressDashboard {
           slot.classList.add('is-overloaded');
           indicatorClass = 'overloaded';
         }
-        
+
         const indicator = document.createElement('div');
         indicator.className = `capacity-indicator ${indicatorClass}`;
         indicator.textContent = indicatorText;
@@ -1381,7 +1399,27 @@ class EnhancedCongressDashboard {
        */
       onMove: (evt) => {
         const targetContainer = evt.to;
-        const maxCapacity = 6;
+
+        // Obtener capacidad dinámica desde roomMap
+        let maxCapacity = 6; // valor por defecto
+
+        if (targetContainer.classList.contains('room-slot')) {
+          const roomId = targetContainer.dataset.room;
+          const timeBlock = targetContainer.dataset.time;
+          const dayDate = this.state.selectedDay;
+
+          if (roomId && timeBlock && dayDate && window.getActiveRoom) {
+            const dayMap = { 'martes 14 de octubre': '14/10', 'miércoles 15 de octubre': '15/10' };
+            const mappedDay = dayMap[dayDate];
+
+            if (mappedDay) {
+              const activeRoom = window.getActiveRoom(roomId, mappedDay, timeBlock);
+              if (activeRoom && activeRoom.capacity) {
+                maxCapacity = activeRoom.capacity;
+              }
+            }
+          }
+        }
 
         // Limpiar todas las clases de validación
         document.querySelectorAll('.drop-valid, .drop-invalid').forEach(el => {

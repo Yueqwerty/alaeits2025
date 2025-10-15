@@ -11,6 +11,7 @@
  *
  * Capacidades:
  * - Por defecto: 6 ponencias por sala/bloque (1 mesa)
+ * - Miércoles 15/10 salas 1-4, 6-14: 8 ponencias por sala (para horario 14:00-15:30)
  * - Aula Magna Ponencias: 30 ponencias (5 mesas)
  * - Salas excluidas: Aula Magna Central 1, Aula Magna Central 2, Aula Magna Mesa Cierre
  *
@@ -129,46 +130,46 @@ const roomMap = {
 
   "15/10": {
     "1": [
-      { nombre: "C-103", inicio: "08:00", fin: "15:30", capacity: 6 }
+      { nombre: "C-103", inicio: "08:00", fin: "15:30", capacity: 9 }
     ],
     "2": [
-      { nombre: "D-103", inicio: "08:00", fin: "15:30", capacity: 6 }
+      { nombre: "D-103", inicio: "08:00", fin: "15:30", capacity: 9 }
     ],
     "3": [
-      { nombre: "D-207", inicio: "08:00", fin: "15:30", capacity: 6 }
+      { nombre: "D-207", inicio: "08:00", fin: "15:30", capacity: 9 }
     ],
     "4": [
-      { nombre: "D-209", inicio: "08:00", fin: "15:30", capacity: 6 }
+      { nombre: "D-209", inicio: "08:00", fin: "15:30", capacity: 9 }
     ],
     "5": [
       { nombre: "D-307", inicio: "11:00", fin: "14:15", capacity: 6 }
     ],
     "6": [
-      { nombre: "B-408", inicio: "08:00", fin: "15:30", capacity: 6 }
+      { nombre: "B-408", inicio: "08:00", fin: "15:30", capacity: 9 }
     ],
     "7": [
-      { nombre: "D-202", inicio: "08:00", fin: "15:30", capacity: 6 }
+      { nombre: "D-202", inicio: "08:00", fin: "15:30", capacity: 9 }
     ],
     "8": [
-      { nombre: "Sala Licenciatura", inicio: "08:00", fin: "15:30", capacity: 6 }
+      { nombre: "Sala Licenciatura", inicio: "08:00", fin: "15:30", capacity: 9 }
     ],
     "9": [
-      { nombre: "Aula C", inicio: "08:15", fin: "15:35", capacity: 6 }
+      { nombre: "Aula C", inicio: "08:15", fin: "15:35", capacity: 9 }
     ],
     "10": [
-      { nombre: "Aula D", inicio: "08:15", fin: "15:35", capacity: 6 }
+      { nombre: "Aula D", inicio: "08:15", fin: "15:35", capacity: 9 }
     ],
     "11": [
-      { nombre: "Aula D-406", inicio: "08:15", fin: "15:35", capacity: 6 }
+      { nombre: "Aula D-406", inicio: "08:15", fin: "15:35", capacity: 9 }
     ],
     "12": [
-      { nombre: "Aula D-407", inicio: "08:15", fin: "15:35", capacity: 6 }
+      { nombre: "Aula D-407", inicio: "08:15", fin: "15:35", capacity: 9 }
     ],
     "13": [
-      { nombre: "Salón Rojo", inicio: "08:30", fin: "15:30", capacity: 6 }
+      { nombre: "Salón Rojo", inicio: "08:30", fin: "15:30", capacity: 9 }
     ],
     "14": [
-      { nombre: "Sala de Internacionalización", inicio: "08:15", fin: "15:30", capacity: 6 }
+      { nombre: "Sala de Internacionalización", inicio: "08:15", fin: "15:30", capacity: 9 }
     ],
     "15": [
       { nombre: "Híbrida 602", inicio: "08:15", fin: "13:30", capacity: 6 }

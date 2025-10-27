@@ -16,22 +16,22 @@
 
 ---
 
-## 📋 Tabla de Contenidos
+## Tabla de Contenidos
 
-- [Acerca del Proyecto](#-acerca-del-proyecto)
-- [Características](#-características)
-- [Stack Tecnológico](#-stack-tecnológico)
-- [Arquitectura](#-arquitectura)
-- [Comenzando](#-comenzando)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [API Endpoints](#-api-endpoints)
-- [Deployment](#-deployment)
-- [Contribuir](#-contribuir)
-- [Licencia](#-licencia)
+- [Acerca del Proyecto](#acerca-del-proyecto)
+- [Características](#características)
+- [Stack Tecnológico](#stack-tecnológico)
+- [Arquitectura](#arquitectura)
+- [Comenzando](#comenzando)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [API Endpoints](#api-endpoints)
+- [Deployment](#deployment)
+- [Contribuir](#contribuir)
+- [Licencia](#licencia)
 
 ---
 
-## 🎯 Acerca del Proyecto
+## Acerca del Proyecto
 
 Plataforma web integral desarrollada para el **XXIV Seminario Internacional ALAEITS 2025**, conmemorando los 100 años del Trabajo Social en Chile. El sistema proporciona una experiencia completa para participantes, organizadores y asistentes, incluyendo:
 
@@ -45,53 +45,53 @@ Plataforma web integral desarrollada para el **XXIV Seminario Internacional ALAE
 
 ---
 
-## ✨ Características
+## Características
 
-### 🗓️ Programa Interactivo
+### Programa Interactivo
 
-- ✅ **Búsqueda Avanzada**: Filtrado por tipo de evento, sala, sede, horario y texto libre
-- ✅ **Visualización por Días**: Navegación intuitiva entre los 3 días del seminario
-- ✅ **Sistema de Favoritos**: Marcado y persistencia de eventos favoritos (localStorage)
-- ✅ **Vista de Mesa Completa**: Visualización detallada de simposios con timeline
-- ✅ **Compartir Enlaces**: URLs limpias y deep linking para compartir eventos específicos
-- ✅ **Export PDF**: Generación de PDFs para mesas completas
-- ✅ **Highlighting**: Resaltado de términos de búsqueda en resultados
+- **Búsqueda Avanzada**: Filtrado por tipo de evento, sala, sede, horario y texto libre
+- **Visualización por Días**: Navegación intuitiva entre los 3 días del seminario
+- **Sistema de Favoritos**: Marcado y persistencia de eventos favoritos (localStorage)
+- **Vista de Mesa Completa**: Visualización detallada de simposios con timeline
+- **Compartir Enlaces**: URLs limpias y deep linking para compartir eventos específicos
+- **Export PDF**: Generación de PDFs para mesas completas
+- **Highlighting**: Resaltado de términos de búsqueda en resultados
 
-### 📜 Sistema de Certificados Digitales
+### Sistema de Certificados Digitales
 
-- ✅ **Autenticación Dual**: Sistema para ponentes (ID + email) y oyentes (solo email)
-- ✅ **Validación en Tiempo Real**: Verificación contra base de datos PostgreSQL
-- ✅ **Multi-certificados**: Soporte para ponentes con múltiples presentaciones
-- ✅ **Vista Previa**: Modal de visualización de certificados antes de descargar
-- ✅ **Descarga Directa**: Formato PDF de alta calidad
-- ✅ **URLs Limpias**: Sistema de rewrites sin extensiones .html
+- **Autenticación Dual**: Sistema para ponentes (ID + email) y oyentes (solo email)
+- **Validación en Tiempo Real**: Verificación contra base de datos PostgreSQL
+- **Multi-certificados**: Soporte para ponentes con múltiples presentaciones
+- **Vista Previa**: Modal de visualización de certificados antes de descargar
+- **Descarga Directa**: Formato PDF de alta calidad
+- **URLs Limpias**: Sistema de rewrites sin extensiones .html
 
-### 🔧 Panel de Administración
+### Panel de Administración
 
-- ✅ **Dashboard Analítico**: Métricas en tiempo real del evento
-- ✅ **Gestión de Eventos**: CRUD completo de ponencias y simposios
-- ✅ **Detección de Conflictos**: Análisis automático de sobrecargas de salas
-- ✅ **Sincronización MDB**: Integración con sistema de gestión de base de datos
-- ✅ **Búsqueda Avanzada**: Filtrado multi-criterio de eventos
-- ✅ **Operaciones en Masa**: Modificación de múltiples eventos simultáneamente
+- **Dashboard Analítico**: Métricas en tiempo real del evento
+- **Gestión de Eventos**: CRUD completo de ponencias y simposios
+- **Detección de Conflictos**: Análisis automático de sobrecargas de salas
+- **Sincronización MDB**: Integración con sistema de gestión de base de datos
+- **Búsqueda Avanzada**: Filtrado multi-criterio de eventos
+- **Operaciones en Masa**: Modificación de múltiples eventos simultáneamente
 
-### 📱 Experiencia Mobile
+### Experiencia Mobile
 
-- ✅ **Menú Hamburguesa Profesional**: Animaciones suaves y overlay con blur
-- ✅ **Navegación Intuitiva**: Enlaces con iconos SVG y estados hover
-- ✅ **CTA Destacado**: Botón de certificados prominente en menú móvil
-- ✅ **Cierre Inteligente**: ESC key, click en overlay, o selección de enlace
-- ✅ **Prevención de Scroll**: Bloqueo del scroll del body cuando el menú está abierto
+- **Menú Hamburguesa Profesional**: Animaciones suaves y overlay con blur
+- **Navegación Intuitiva**: Enlaces con iconos SVG y estados hover
+- **CTA Destacado**: Botón de certificados prominente en menú móvil
+- **Cierre Inteligente**: ESC key, click en overlay, o selección de enlace
+- **Prevención de Scroll**: Bloqueo del scroll del body cuando el menú está abierto
 
-### 📚 Presentaciones de Libros
+### Presentaciones de Libros
 
-- ✅ **Galería Visual**: Cards con imágenes de portadas
-- ✅ **Información Detallada**: Autores, editoriales y descripciones
-- ✅ **Responsive Design**: Adaptación perfecta a todos los dispositivos
+- **Galería Visual**: Cards con imágenes de portadas
+- **Información Detallada**: Autores, editoriales y descripciones
+- **Responsive Design**: Adaptación perfecta a todos los dispositivos
 
 ---
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 
 ### Frontend
 
@@ -122,7 +122,7 @@ Plataforma web integral desarrollada para el **XXIV Seminario Internacional ALAE
 
 ---
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 ### Arquitectura del Sistema
 
@@ -151,15 +151,15 @@ Plataforma web integral desarrollada para el **XXIV Seminario Internacional ALAE
 
 ### Características de Rendimiento
 
-- ✅ **Cache Busting**: Versionado automático de assets (CSS/JS)
-- ✅ **API Caching**: Headers personalizados para control de caché
-- ✅ **Clean URLs**: Rewrites de Vercel para URLs sin extensiones
-- ✅ **Lazy Loading**: Carga diferida de imágenes
-- ✅ **Minification**: CSS optimizado con Tailwind purge
+- **Cache Busting**: Versionado automático de assets (CSS/JS)
+- **API Caching**: Headers personalizados para control de caché
+- **Clean URLs**: Rewrites de Vercel para URLs sin extensiones
+- **Lazy Loading**: Carga diferida de imágenes
+- **Minification**: CSS optimizado con Tailwind purge
 
 ---
 
-## 🚀 Comenzando
+## Comenzando
 
 ### Prerrequisitos
 
@@ -221,7 +221,7 @@ npm run lint
 
 ---
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 alaeits2025/
@@ -264,7 +264,7 @@ alaeits2025/
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Administración
 
@@ -306,7 +306,7 @@ alaeits2025/
 
 ---
 
-## 🌐 Deployment
+## Deployment
 
 El proyecto está configurado para deployment automático en **Vercel**.
 
@@ -335,14 +335,14 @@ vercel --prod
 
 El archivo `vercel.json` incluye:
 
-- ✅ **Clean URLs**: Remover extensiones `.html`
-- ✅ **Rewrites**: Mapeo de rutas limpias
-- ✅ **Headers**: Control de caché para API
-- ✅ **CORS**: Configuración de acceso cross-origin
+- **Clean URLs**: Remover extensiones `.html`
+- **Rewrites**: Mapeo de rutas limpias
+- **Headers**: Control de caché para API
+- **CORS**: Configuración de acceso cross-origin
 
 ---
 
-## 🤝 Contribuir
+## Contribuir
 
 Las contribuciones son bienvenidas. Para cambios importantes:
 
@@ -361,13 +361,13 @@ Las contribuciones son bienvenidas. Para cambios importantes:
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
 ---
 
-## 👥 Equipo
+## Equipo
 
 **Organizado por:**
 - Universidad Central de Chile (UCEN)
@@ -378,7 +378,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 
 ---
 
-## 📞 Contacto
+## Contacto
 
 Para consultas sobre el evento:
 - **Web**: [https://www.alaeits2025.cl/](https://www.alaeits2025.cl/)

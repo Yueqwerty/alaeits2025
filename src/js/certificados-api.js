@@ -428,7 +428,6 @@
 
                 card.innerHTML = `
                     <div class="certificate-header">
-                        <div class="certificate-icon">${tipoInfo.emoji}</div>
                         <div class="certificate-content">
                             <span class="certificate-type">${typeText}</span>
                             <h3 class="certificate-title">${this.escapeHtml(cert.title || 'Sin título')}</h3>
@@ -486,18 +485,18 @@
         getTipoCertificado(paperId, certificateType) {
             // Si es oyente
             if (certificateType === 'attendee' || !paperId) {
-                return { tipo: 'Asistencia', emoji: '🎓', eje: 'Oyente' };
+                return { tipo: 'Asistencia', eje: 'Oyente' };
             }
 
             // Si es ponente
             const prefix = paperId.charAt(0).toUpperCase();
             const tipos = {
-                'P': { tipo: 'Ponencia', emoji: '📜', eje: 'Ponencia de Investigación' },
-                'E': { tipo: 'Presentación', emoji: '🎤', eje: 'Presentación Oral' },
-                'Z': { tipo: 'Ponencia', emoji: '📋', eje: 'Ponencia Especial' },
-                'O': { tipo: 'Ponencia', emoji: '🏛️', eje: 'Ponencia Organizativa' }
+                'P': { tipo: 'Ponencia', eje: 'Ponencia de Investigación' },
+                'E': { tipo: 'Presentación', eje: 'Presentación Oral' },
+                'Z': { tipo: 'Ponencia', eje: 'Ponencia Especial' },
+                'O': { tipo: 'Ponencia', eje: 'Ponencia Organizativa' }
             };
-            return tipos[prefix] || { tipo: 'Ponencia', emoji: '📜', eje: 'Ponencia General' };
+            return tipos[prefix] || { tipo: 'Ponencia', eje: 'Ponencia General' };
         }
 
         formatDate(dateString) {

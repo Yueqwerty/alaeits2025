@@ -1,4 +1,10 @@
 {
+  "rewrites": [
+    { "source": "/certificados", "destination": "/certificados.html" },
+    { "source": "/presentaciones_libros", "destination": "/presentaciones_libros.html" }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false,
   "headers": [
     {
       "source": "/api/(.*)",
@@ -14,6 +20,18 @@
         {
           "key": "Expires",
           "value": "0"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
         }
       ]
     }

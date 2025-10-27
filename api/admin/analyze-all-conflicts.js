@@ -2,6 +2,7 @@ require('dotenv').config({ path: '.env.local' });
 const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
+const { getRoomCapacity } = require('./room-capacity-helper');
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
@@ -109,13 +110,13 @@ async function analyzeAllConflicts() {
     }
     console.log(`Total: ${eventosHorarioIncompatible.length} eventos con horario incompatible\n`);
 
-    // CONFLICTO TIPO 4: Sobrecarga de salas
-    console.log('=== CONFLICTO TIPO 4: Sobrecarga de salas (>6 ponencias por slot) ===');
+    // CONFLICTO TIPO 4: Sobrecarga de salas (capacidad dinámica)
+    console.log('=== CONFLICTO TIPO 4: Sobrecarga de salas (excede capacidad dinámica) ===');
     const slotCounts = {};
     ponencias.forEach(p => {
       const key = `${p.scheduled_day}-${p.room}-${p.scheduled_time_block}`;
       if (!slotCounts[key]) {
-        slotCounts[key] = { count: 0, events: [], room: p.room };
+        slotCounts[key] = { count: 0, events: [], room: p.room, day: p.scheduled_day };
       }
       slotCounts[key].count++;
       slotCounts[key].events.push(p);
@@ -125,7 +126,7 @@ async function analyzeAllConflicts() {
     for (const key in slotCounts) {
       const slot = slotCounts[key];
       const roomNum = parseInt(slot.room);
-      const maxCapacity = roomNum === 19 ? 30 : 6;
+      const maxCapacity = getRoomCapacity(slot.day, roomNum);
 
       if (slot.count > maxCapacity) {
         console.log(`❌ Sala ${slot.room} en ${key}: ${slot.count} ponencias (máx: ${maxCapacity})`);

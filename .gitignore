@@ -103,6 +103,21 @@ backups/
 *-backup-*.json
 .SIMPOSIOS-MIGRACION-REPORT.md
 
+# Base de datos local (CSV y SQL)
+database/
+*.csv
+
+# Scripts de migración y mantenimiento (no necesarios para producción)
+scripts/
+api/db/
+
+# Archivos temporales del sistema
+nul
+
+# Archivos JS de certificados no utilizados (obsoletos)
+src/js/certificados.js
+src/js/certificados-data.js
+
 # 8. Archivos de Verificación y Scripts de Un Solo Uso
 # -------------------------------------------------------------------
 # Archivo de verificación de Google.
@@ -114,6 +129,28 @@ migrate.js
 hash-password.js
 fix-ejes-script.js
 update-existing-emails.js
+
+# Scripts de administración de un solo uso (no necesarios para funcionamiento)
+api/admin/analyze-all-conflicts.js
+api/admin/analyze-capacity.js
+api/admin/backup-ejes.js
+api/admin/check-simposios-mixtos.js
+api/admin/check-unscheduled-events.js
+api/admin/fix-illegal-time-block.js
+api/admin/fix-regular-events-in-u-rooms.js
+api/admin/fix-simposios-rooms.js
+api/admin/move-ponencias-fuera-de-u.js
+api/admin/move-simposios-miercoles.js
+api/admin/move-simposios-visual.js
+api/admin/propose-movements.js
+api/admin/repair-ejes.js
+api/admin/restore-ejes.js
+api/admin/room-capacity-helper.js
+api/admin/schedule-missing-events.js
+api/admin/send-schedule-notification.js
+api/admin/unpublish-illegal-time-block.js
+api/admin/unschedule-overflow-events.js
+api/admin/verify-simposios.js
 
 
 # 9. Archivos Temporales y de Sistema

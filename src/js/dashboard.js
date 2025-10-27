@@ -1145,17 +1145,17 @@ class EnhancedCongressDashboard {
         // Obtener capacidad dinámica desde roomMap
         const roomId = slot.dataset.room;
         const timeBlock = slot.dataset.time;
-        const dayDate = this.state.selectedDay; // formato: "martes 14 de octubre"
+        const dayDate = slot.dataset.day; // USAR dataset.day del slot, no this.state.selectedDay
 
         let maxCapacity = 6; // valor por defecto
 
-        if (roomId && timeBlock && dayDate && window.getActiveRoom) {
+        if (roomId && timeBlock && dayDate) {
           const dayMap = { 'martes 14 de octubre': '14/10', 'miércoles 15 de octubre': '15/10' };
           const mappedDay = dayMap[dayDate];
 
-          if (mappedDay) {
+          if (mappedDay && window.getActiveRoom) {
             const activeRoom = window.getActiveRoom(roomId, mappedDay, timeBlock);
-            if (activeRoom && activeRoom.capacity) {
+            if (activeRoom && typeof activeRoom.capacity === 'number') {
               maxCapacity = activeRoom.capacity;
             }
           }
@@ -1406,15 +1406,15 @@ class EnhancedCongressDashboard {
         if (targetContainer.classList.contains('room-slot')) {
           const roomId = targetContainer.dataset.room;
           const timeBlock = targetContainer.dataset.time;
-          const dayDate = this.state.selectedDay;
+          const dayDate = targetContainer.dataset.day;
 
-          if (roomId && timeBlock && dayDate && window.getActiveRoom) {
+          if (roomId && timeBlock && dayDate) {
             const dayMap = { 'martes 14 de octubre': '14/10', 'miércoles 15 de octubre': '15/10' };
             const mappedDay = dayMap[dayDate];
 
-            if (mappedDay) {
+            if (mappedDay && window.getActiveRoom) {
               const activeRoom = window.getActiveRoom(roomId, mappedDay, timeBlock);
-              if (activeRoom && activeRoom.capacity) {
+              if (activeRoom && typeof activeRoom.capacity === 'number') {
                 maxCapacity = activeRoom.capacity;
               }
             }
@@ -1429,6 +1429,20 @@ class EnhancedCongressDashboard {
         if (targetContainer.classList.contains('room-slot')) {
           const currentCount = targetContainer.querySelectorAll('.event-card').length;
           const movingCount = this.draggedEventIds ? this.draggedEventIds.length : 1;
+
+          // Verificar tipo de evento que se está moviendo
+          const isDraggingSimposio = evt.item && evt.item.classList.contains('simposio');
+
+          // Verificar si hay simposios en el slot destino
+          const hasSimposio = Array.from(targetContainer.querySelectorAll('.event-card')).some(card => {
+            return card.classList.contains('simposio');
+          });
+
+          // Si hay simposio en destino y se arrastra ponencia, o viceversa, bloquear
+          if (hasSimposio || (isDraggingSimposio && currentCount > 0)) {
+            targetContainer.classList.add('drop-invalid');
+            return false;
+          }
 
           // Validar capacidad considerando múltiples elementos
           if (currentCount + movingCount > maxCapacity) {

@@ -33,7 +33,7 @@
     </script>
     
 
-    <link rel="stylesheet" href="src/css/style.css?v=20251014">
+    <link rel="stylesheet" href="src/css/style.css?v=20251027c">
 
 </head>
 
@@ -44,7 +44,7 @@
             <a href="#" class="logo">ALAEITS 2025</a>
 
             <!-- Menú Desktop -->
-            <nav class="hidden md:flex items-center space-x-8">
+            <nav class="hidden md:flex items-center space-x-6">
                 <a href="https://www.google.com/maps/place/Facultad+de+Derecho+y+Humanidades,+Edificio+Gonzalo+Hern%C3%A1ndez+Uribe,+Universidad+Central+de+Chile/@-33.45137,-70.6544282,3a,75y,287.7h,77.7t/data=!3m7!1e1!3m5!1svuaB3R67YwcplGHA82Mbvw!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D12.30317331573498%26panoid%3DvuaB3R67YwcplGHA82Mbvw%26yaw%3D287.70413086725836!7i16384!8i8192!4m14!1m7!3m6!1s0x9662c508d7a0a261:0x850e328213a0fb72!2sFacultad+de+Derecho+y+Humanidades,+Edificio+Gonzalo+Hern%C3%A1ndez+Uribe,+Universidad+Central+de+Chile!8m2!3d-33.4513519!4d-70.6545676!16s%2Fg%2F11cs6k5kgs!3m5!1s0x9662c508d7a0a261:0x850e328213a0fb72!8m2!3d-33.4513519!4d-70.6545676!16s%2Fg%2F11cs6k5kgs?entry=ttu&g_ep=EgoyMDI1MTAwOC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" class="nav-link" title="Ver ubicación UCEN en Google Maps">
                 UCEN
             </a>
@@ -55,35 +55,76 @@
                 Inicio
             </a>
                 <a href="#programa" class="nav-link">Programa</a>
-                <a href="presentaciones_libros.html" class="nav-link">Libros</a>
+                <a href="/presentaciones_libros" class="nav-link">Libros</a>
+                <a href="/certificados" class="nav-link-certificados">Certificados</a>
             </nav>
 
             <!-- Botón Hamburguesa Mobile -->
-            <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
+            <button id="mobile-menu-btn" class="md:hidden mobile-menu-button focus:outline-none z-50 relative">
+                <div class="hamburger">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </div>
             </button>
         </div>
 
+        <!-- Overlay oscuro -->
+        <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
+
         <!-- Menú Mobile -->
-        <nav id="mobile-menu" class="hidden md:hidden bg-primary border-t border-red-800">
-            <div class="container mx-auto px-6 py-4 flex flex-col space-y-3">
-                <a href="https://www.google.com/maps/place/Facultad+de+Derecho+y+Humanidades,+Edificio+Gonzalo+Hern%C3%A1ndez+Uribe,+Universidad+Central+de+Chile/@-33.45137,-70.6544282,3a,75y,287.7h,77.7t/data=!3m7!1e1!3m5!1svuaB3R67YwcplGHA82Mbvw!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D12.30317331573498%26panoid%3DvuaB3R67YwcplGHA82Mbvw%26yaw%3D287.70413086725836!7i16384!8i8192!4m14!1m7!3m6!1s0x9662c508d7a0a261:0x850e328213a0fb72!2sFacultad+de+Derecho+y+Humanidades,+Edificio+Gonzalo+Hern%C3%A1ndez+Uribe,+Universidad+Central+de+Chile!8m2!3d-33.4513519!4d-70.6545676!16s%2Fg%2F11cs6k5kgs!3m5!1s0x9662c508d7a0a261:0x850e328213a0fb72!8m2!3d-33.4513519!4d-70.6545676!16s%2Fg%2F11cs6k5kgs?entry=ttu&g_ep=EgoyMDI1MTAwOC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" class="text-white hover:text-gray-200 py-2">
-                    📍 UCEN
-                </a>
-                <a href="https://www.google.com/maps/place/Escuela+de+Trabajo+Social+UTEM/@-33.4482243,-70.6573718,3a,75y,230.32h,86.93t/data=!3m7!1e1!3m5!1svFI6fb1100LGqBNIF60HSg!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D3.066214574281986%26panoid%3DvFI6fb1100LGqBNIF60HSg%26yaw%3D230.3222447476349!7i16384!8i8192!4m10!1m2!2m1!1sFelipe+G%C3%A1mez+de+Vidaurre+1550,+Santiago,+Chile!3m6!1s0x9662c507f08e2db3:0x407e6f38513f677b!8m2!3d-33.4483359!4d-70.6573604!15sCi9GZWxpcGUgR8OhbWV6IGRlIFZpZGF1cnJlIDE1NTAsIFNhbnRpYWdvLCBDaGlsZVovIi1mZWxpcGUgZ8OhbWV6IGRlIHZpZGF1cnJlIDE1NTAgc2FudGlhZ28gY2hpbGWSARFwdWJsaWNfdW5pdmVyc2l0eZoBI0NoWkRTVWhOTUc5blMwVkpRMEZuU1VScWIzSkVORmRuRUFFqgF6EAEqIiIeZmVsaXBlIGfDoW1leiBkZSB2aWRhdXJyZSAxNTUwKA4yHxABIhvlVvO7O6VDpVffPAJOmuraiNL9m02DzlQrJHwyMRACIi1mZWxpcGUgZ8OhbWV6IGRlIHZpZGF1cnJlIDE1NTAgc2FudGlhZ28gY2hpbGXgAQD6AQQIABAV!16s%2Fg%2F1vq7619g?entry=ttu&g_ep=EgoyMDI1MTAwOC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" class="text-white hover:text-gray-200 py-2">
-                    📍 UTEM
-                </a>
-                <a href="https://www.alaeits2025.cl/" target="_blank" rel="noopener noreferrer" class="text-white hover:text-gray-200 py-2">
-                    🏠 Inicio
-                </a>
-                <a href="#programa" class="text-white hover:text-gray-200 py-2">
-                    📋 Programa
-                </a>
-                <a href="presentaciones_libros.html" class="text-white hover:text-gray-200 py-2">
-                    📚 Libros
-                </a>
+        <nav id="mobile-menu" class="mobile-menu">
+            <div class="mobile-menu-content">
+                <div class="mobile-menu-header">
+                    <span class="mobile-menu-title">Menú</span>
+                </div>
+
+                <div class="mobile-menu-items">
+                    <a href="https://www.google.com/maps/place/Facultad+de+Derecho+y+Humanidades,+Edificio+Gonzalo+Hern%C3%A1ndez+Uribe,+Universidad+Central+de+Chile/@-33.45137,-70.6544282,3a,75y,287.7h,77.7t/data=!3m7!1e1!3m5!1svuaB3R67YwcplGHA82Mbvw!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D12.30317331573498%26panoid%3DvuaB3R67YwcplGHA82Mbvw%26yaw%3D287.70413086725836!7i16384!8i8192!4m14!1m7!3m6!1s0x9662c508d7a0a261:0x850e328213a0fb72!2sFacultad+de+Derecho+y+Humanidades,+Edificio+Gonzalo+Hern%C3%A1ndez+Uribe,+Universidad+Central+de+Chile!8m2!3d-33.4513519!4d-70.6545676!16s%2Fg%2F11cs6k5kgs!3m5!1s0x9662c508d7a0a261:0x850e328213a0fb72!8m2!3d-33.4513519!4d-70.6545676!16s%2Fg%2F11cs6k5kgs?entry=ttu&g_ep=EgoyMDI1MTAwOC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" class="mobile-menu-link">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span>UCEN</span>
+                    </a>
+                    <a href="https://www.google.com/maps/place/Escuela+de+Trabajo+Social+UTEM/@-33.4482243,-70.6573718,3a,75y,230.32h,86.93t/data=!3m7!1e1!3m5!1svFI6fb1100LGqBNIF60HSg!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D3.066214574281986%26panoid%3DvFI6fb1100LGqBNIF60HSg%26yaw%3D230.3222447476349!7i16384!8i8192!4m10!1m2!2m1!1sFelipe+G%C3%A1mez+de+Vidaurre+1550,+Santiago,+Chile!3m6!1s0x9662c507f08e2db3:0x407e6f38513f677b!8m2!3d-33.4483359!4d-70.6573604!15sCi9GZWxpcGUgR8OhbWV6IGRlIFZpZGF1cnJlIDE1NTAsIFNhbnRpYWdvLCBDaGlsZVovIi1mZWxpcGUgZ8OhbWV6IGRlIHZpZGF1cnJlIDE1NTAgc2FudGlhZ28gY2hpbGWSARFwdWJsaWNfdW5pdmVyc2l0eZoBI0NoWkRTVWhOTUc5blMwVkpRMEZuU1VScWIzSkVORmRuRUFFqgF6EAEqIiIeZmVsaXBlIGfDoW1leiBkZSB2aWRhdXJyZSAxNTUwKA4yHxABIhvlVvO7O6VDpVffPAJOmuraiNL9m02DzlQrJHwyMRACIi1mZWxpcGUgZ8OhbWV6IGRlIHZpZGF1cnJlIDE1NTAgc2FudGlhZ28gY2hpbGXgAQD6AQQIABAV!16s%2Fg%2F1vq7619g?entry=ttu&g_ep=EgoyMDI1MTAwOC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" class="mobile-menu-link">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span>UTEM</span>
+                    </a>
+                    <a href="https://www.alaeits2025.cl/" target="_blank" rel="noopener noreferrer" class="mobile-menu-link">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        <span>Inicio</span>
+                    </a>
+                    <a href="#programa" class="mobile-menu-link">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <span>Programa</span>
+                    </a>
+                    <a href="/presentaciones_libros" class="mobile-menu-link">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                        <span>Libros</span>
+                    </a>
+
+                    <div class="mobile-menu-divider"></div>
+
+                    <a href="/certificados" class="mobile-menu-link-certificados">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <div class="mobile-menu-certificados-content">
+                            <span class="mobile-menu-certificados-title">Certificados Oficiales</span>
+                            <span class="mobile-menu-certificados-subtitle">Accede a tu certificado digital</span>
+                        </div>
+                    </a>
+                </div>
             </div>
         </nav>
     </header>
@@ -167,9 +208,47 @@
 
     <!-- Mobile Menu Toggle -->
     <script>
-        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenu.classList.toggle('hidden');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link, .mobile-menu-link-certificados');
+
+        function toggleMobileMenu() {
+            mobileMenuBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            mobileMenuOverlay.classList.toggle('active');
+
+            // Prevenir scroll cuando el menú está abierto
+            if (mobileMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        function closeMobileMenu() {
+            mobileMenuBtn.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            mobileMenuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+        // Cerrar menú al hacer click en cualquier enlace
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                // Pequeño delay para que se vea la animación
+                setTimeout(closeMobileMenu, 150);
+            });
+        });
+
+        // Cerrar menú con tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+                closeMobileMenu();
+            }
         });
     </script>
 </body>

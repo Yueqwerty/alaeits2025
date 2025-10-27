@@ -2,6 +2,7 @@ require('dotenv').config({ path: '.env.local' });
 
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
+const { getRoomCapacity } = require('./room-capacity-helper');
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
@@ -152,23 +153,25 @@ module.exports = async (req, res) => {
           });
         }
 
-        // Verificar capacidad del slot
+        // Verificar capacidad del slot - usar capacidad dinámica
+        const maxCapacity = getRoomCapacity(data.scheduled_day, roomNumber);
+
         const currentCapacity = await client.query(`
-          SELECT COUNT(*) as count 
-          FROM events 
-          WHERE scheduled_day = $1 
-            AND scheduled_time_block = $2 
+          SELECT COUNT(*) as count
+          FROM events
+          WHERE scheduled_day = $1
+            AND scheduled_time_block = $2
             AND room = $3
             AND status = 'publicado'
         `, [data.scheduled_day, data.scheduled_time_block, roomNumber]);
 
-        if (parseInt(currentCapacity.rows[0].count) + eventIds.length > 6) {
+        if (parseInt(currentCapacity.rows[0].count) + eventIds.length > maxCapacity) {
           await client.query('ROLLBACK');
-          return res.status(400).json({ 
-            message: `Room ${roomNumber} would exceed capacity (max 6 events per slot)`,
+          return res.status(400).json({
+            message: `Room ${roomNumber} would exceed capacity (max ${maxCapacity} events per slot)`,
             currentCapacity: parseInt(currentCapacity.rows[0].count),
             trying_to_add: eventIds.length,
-            max_capacity: 6
+            max_capacity: maxCapacity
           });
         }
 
@@ -219,7 +222,9 @@ module.exports = async (req, res) => {
           });
         }
 
-        // 1. Verificar que la sala de destino no esté llena
+        // 1. Verificar que la sala de destino no esté llena - usar capacidad dinámica
+        const maxCapacityDest = getRoomCapacity(destination.day, destinationRoom);
+
         const capacityCheck = await client.query(`
           SELECT COUNT(*) as count
           FROM events
@@ -243,13 +248,13 @@ module.exports = async (req, res) => {
 
         const eventsToMove = parseInt(sourceEventsCount.rows[0].count);
 
-        if (currentOccupancy + eventsToMove > 6) {
+        if (currentOccupancy + eventsToMove > maxCapacityDest) {
           await client.query('ROLLBACK');
           return res.status(409).json({
-            message: `La sala ${destinationRoom} no tiene suficiente capacidad. Ocupación actual: ${currentOccupancy}, intentando añadir: ${eventsToMove}, máximo: 6`,
+            message: `La sala ${destinationRoom} no tiene suficiente capacidad. Ocupación actual: ${currentOccupancy}, intentando añadir: ${eventsToMove}, máximo: ${maxCapacityDest}`,
             currentOccupancy,
             eventsToMove,
-            maxCapacity: 6
+            maxCapacity: maxCapacityDest
           });
         }
 

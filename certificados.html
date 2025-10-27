@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Certificados - XXIV Seminario ALAEITS 2025</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="src/assets/images/favicon.ico">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f8f9fa;
+            color: #1a1a1a;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .professional-header {
+            background: #002147;
+            border-bottom: 3px solid #C8102E;
+            padding: 1.5rem 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .header-logo {
+            max-width: 70px;
+            height: auto;
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        .header-text h1 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-text p {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+
+        .btn-back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-back-home:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(-2px);
+        }
+
+        .btn-back-home svg {
+            flex-shrink: 0;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Login Card */
+        .login-card {
+            max-width: 580px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 40px rgba(0, 0, 0, 0.03);
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #002147 0%, #003366 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 33, 71, 0.15);
+        }
+
+        .welcome-icon svg {
+            width: 36px;
+            height: 36px;
+            color: white;
+        }
+
+        .welcome-section h2 {
+            color: #1a1a1a;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            color: #666;
+            font-size: 0.9375rem;
+            line-height: 1.5;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #1a1a1a;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 0.875rem 0.75rem 2.75rem;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-input:hover {
+            border-color: #d1d5db;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #002147;
+            box-shadow: 0 0 0 3px rgba(0, 33, 71, 0.08);
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: #6b7280;
+            pointer-events: none;
+        }
+
+        .form-input:focus ~ .input-icon {
+            color: #002147;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.875rem 1.5rem;
+            background: #002147;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-submit:hover {
+            background: #003366;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 33, 71, 0.15);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-submit:disabled:hover {
+            transform: none;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            background: #002147;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem 1.125rem;
+            border-radius: 8px;
+            margin-top: 1.25rem;
+            display: none;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            border: 1.5px solid #fca5a5;
+            color: #991b1b;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .alert-error[style*="display: block"] {
+            display: flex !important;
+        }
+
+        .alert-error::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23991b1b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        /* Documents View */
+        .documents-view {
+            display: none;
+        }
+
+        .user-welcome {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-welcome-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .user-greeting {
+            font-size: 1.125rem;
+            color: #1a1a1a;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-email-display {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .btn-logout {
+            padding: 0.5rem 1rem;
+            background: white;
+            color: #1a1a1a;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #f5f5f5;
+            border-color: #b0b0b0;
+        }
+
+        .add-certificate-section {
+            margin-top: 0;
+        }
+
+        .add-certificate-label {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+
+        .add-certificate-form {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .add-paper-input {
+            flex: 1;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .add-paper-input:focus {
+            outline: none;
+            border-color: #002147;
+        }
+
+        .btn-add-certificate {
+            padding: 0.625rem 1.25rem;
+            background: #002147;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-add-certificate:hover {
+            background: #003366;
+        }
+
+        .btn-add-certificate:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .certificates-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .certificates-header h2 {
+            color: #1a1a1a;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .certificates-count {
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        /* Certificate Card */
+        .certificate-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .certificate-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .certificate-icon {
+            width: 48px;
+            height: 48px;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .certificate-content {
+            flex: 1;
+        }
+
+        .certificate-type {
+            display: inline-block;
+            padding: 0.25rem 0.625rem;
+            background: #f0f0f0;
+            color: #666;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .certificate-title {
+            color: #1a1a1a;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.375rem;
+            line-height: 1.4;
+        }
+
+        .certificate-description {
+            color: #666;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .certificate-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8125rem;
+            color: #666;
+        }
+
+        .meta-item svg {
+            width: 14px;
+            height: 14px;
+            color: #999;
+        }
+
+        .certificate-institution {
+            padding: 0.875rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 1.25rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .certificate-institution strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .certificate-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-download,
+        .btn-view {
+            flex: 1;
+            padding: 0.75rem 1.25rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .btn-download {
+            background: #002147;
+            color: white;
+            border: none;
+        }
+
+        .btn-download:hover {
+            background: #003366;
+        }
+
+        .btn-view {
+            background: white;
+            color: #1a1a1a;
+            border: 1px solid #d0d0d0;
+        }
+
+        .btn-view:hover {
+            background: #f5f5f5;
+            border-color: #b0b0b0;
+        }
+
+        .btn-download svg,
+        .btn-view svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Back Link */
+        .back-link {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .back-link a {
+            color: #002147;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Minimal Tabs Design */
+        .tabs-container {
+            margin-bottom: 2.5rem;
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #f3f4f6;
+            position: relative;
+            margin-bottom: 2rem;
+            background: #f9fafb;
+            border-radius: 8px 8px 0 0;
+            padding: 0.25rem;
+        }
+
+        .tab-button {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            color: #6b7280;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+        }
+
+        .tab-button:hover {
+            color: #374151;
+            background: rgba(0, 33, 71, 0.04);
+        }
+
+        .tab-button.active {
+            color: #002147;
+            font-weight: 600;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes tabSlide {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-description {
+            color: #6b7280;
+            font-size: 0.9375rem;
+            margin-bottom: 1.75rem;
+            line-height: 1.6;
+            padding: 0.75rem 1rem;
+            background: #f9fafb;
+            border-left: 3px solid #e5e7eb;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Form Labels - Minimal */
+        .form-label {
+            display: block;
+            color: #1a1a1a;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        /* PDF Modal */
+        .pdf-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .pdf-modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 900px;
+            width: auto;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .pdf-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            background: #002147;
+            color: white;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .pdf-modal-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .pdf-close-btn {
+            background: white;
+            color: #002147;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .pdf-close-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .pdf-viewer-container {
+            width: 850px;
+            height: 1100px;
+            background: white;
+            overflow: auto;
+        }
+
+        .pdf-viewer-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .pdf-viewer-container {
+                width: 700px;
+                height: 900px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-text h1 {
+                font-size: 1.25rem;
+            }
+
+            .btn-back-home {
+                width: 100%;
+                justify-content: center;
+                padding: 0.875rem 1rem;
+            }
+
+            .main-container {
+                padding: 2rem 1rem;
+            }
+
+            .login-card {
+                padding: 2rem 1.25rem;
+            }
+
+            .welcome-section h2 {
+                font-size: 1.25rem;
+            }
+
+            .section-title {
+                font-size: 0.875rem;
+            }
+
+            .tabs-header {
+                gap: 1rem;
+            }
+
+            .tab-button {
+                font-size: 0.9375rem;
+                padding: 0.875rem 0.25rem;
+            }
+
+            .tab-description {
+                font-size: 0.875rem;
+            }
+
+            .user-welcome-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .add-certificate-form {
+                flex-direction: column;
+            }
+
+            .add-paper-input {
+                width: 100%;
+            }
+
+            .btn-add-certificate {
+                width: 100%;
+            }
+
+            .certificate-header {
+                flex-direction: column;
+            }
+
+            .certificate-actions {
+                flex-direction: column;
+            }
+
+            .certificate-meta {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .pdf-modal {
+                padding: 1rem;
+            }
+
+            .pdf-modal-content {
+                max-width: 95%;
+                max-height: 95vh;
+            }
+
+            .pdf-viewer-container {
+                width: 100%;
+                height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="professional-header">
+        <div class="header-content">
+            <img src="src/assets/images/logo-100-anios.png" alt="ALAEITS 2025" class="header-logo">
+            <div class="header-text">
+                <h1>Portal de Certificados Digitales</h1>
+                <p>XXIV Seminario ALAEITS 2025 - Chile</p>
+            </div>
+            <a href="/" class="btn-back-home">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                <span>Volver al Inicio</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Login View -->
+        <div id="login-view" class="login-card fade-in">
+            <div class="welcome-section">
+                <div class="welcome-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                </div>
+                <h2>Acceso a Certificados</h2>
+                <p>Ingrese sus credenciales para acceder a su certificado oficial del XXIV Seminario ALAEITS 2025.</p>
+            </div>
+
+            <form id="login-form">
+                <!-- Tabs Minimalistas -->
+                <div class="tabs-container">
+                    <div class="tabs-header">
+                        <button type="button" class="tab-button active" data-tab="presenter">
+                            Ponente
+                        </button>
+                        <button type="button" class="tab-button" data-tab="attendee">
+                            Oyente
+                        </button>
+                    </div>
+
+                    <!-- Input oculto para mantener compatibilidad -->
+                    <input type="hidden" name="participant-type" id="participant-type" value="presenter">
+
+                    <!-- Tab Content: Ponente -->
+                    <div class="tab-content active" data-content="presenter">
+                        <p class="tab-description">
+                            Ingresa tu ID de ponencia y correo electrónico registrado para acceder a tu certificado oficial.
+                        </p>
+
+                        <div class="form-group">
+                            <label for="paper-id" class="form-label">ID de Ponencia</label>
+                            <div class="form-input-wrapper">
+                                <input
+                                    type="text"
+                                    id="paper-id"
+                                    name="paper-id"
+                                    class="form-input"
+                                    placeholder="Ej: P513, E506, Z20"
+                                    autocomplete="off"
+                                >
+                                <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email-presenter" class="form-label">Correo Electrónico</label>
+                            <div class="form-input-wrapper">
+                                <input
+                                    type="email"
+                                    id="email-presenter"
+                                    name="email-presenter"
+                                    class="form-input"
+                                    placeholder="nombre@institucion.edu"
+                                    autocomplete="email"
+                                >
+                                <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Oyente -->
+                    <div class="tab-content" data-content="attendee">
+                        <p class="tab-description">
+                            Ingresa tu correo electrónico registrado para acceder a tu certificado de asistencia.
+                        </p>
+
+                        <div class="form-group">
+                            <label for="email-attendee" class="form-label">Correo Electrónico</label>
+                            <div class="form-input-wrapper">
+                                <input
+                                    type="email"
+                                    id="email-attendee"
+                                    name="email-attendee"
+                                    class="form-input"
+                                    placeholder="nombre@institucion.edu"
+                                    autocomplete="email"
+                                >
+                                <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="login-btn">
+                    <span id="login-btn-text">Acceder</span>
+                    <span id="login-btn-spinner" class="spinner hidden"></span>
+                </button>
+
+                <div id="login-error" class="alert alert-error"></div>
+            </form>
+
+            <div class="back-link">
+                <a href="/">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Volver al programa
+                </a>
+            </div>
+        </div>
+
+        <!-- Document View -->
+        <div id="document-view" class="documents-view hidden">
+            <div class="user-welcome fade-in">
+                <div class="user-welcome-header">
+                    <div class="user-info">
+                        <p class="user-greeting">Bienvenido/a, <span id="user-name"></span></p>
+                        <p class="user-email-display"><span id="user-paper-id"></span> - <span id="user-email"></span></p>
+                    </div>
+                    <button id="logout-btn" class="btn-logout">Cerrar Sesión</button>
+                </div>
+
+                <div class="add-certificate-section">
+                    <p class="add-certificate-label">¿Tiene más ponencias? Agregue otro ID:</p>
+                    <div class="add-certificate-form">
+                        <input
+                            type="text"
+                            id="add-paper-id"
+                            class="add-paper-input"
+                            placeholder="Ej: P513, E506"
+                            autocomplete="off"
+                        >
+                        <button id="add-certificate-btn" class="btn-add-certificate">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="certificates-header">
+                <h2>Sus Certificados Oficiales</h2>
+                <p class="certificates-count">XXIV Seminario ALAEITS 2025</p>
+            </div>
+
+            <div id="certificate-container">
+                <!-- Certificates will be loaded here -->
+            </div>
+
+            <div class="back-link">
+                <a href="/">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Volver al programa
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Modal -->
+    <div id="pdf-modal" class="pdf-modal hidden">
+        <div class="pdf-modal-content">
+            <div class="pdf-modal-header">
+                <h3>Vista Previa del Certificado</h3>
+                <button id="pdf-close-btn" class="pdf-close-btn">Cerrar</button>
+            </div>
+            <div class="pdf-viewer-container">
+                <iframe id="pdf-iframe" src=""></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script src="src/js/certificados-api.js?v=20251027016"></script>
+</body>
+</html>

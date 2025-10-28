@@ -52,9 +52,10 @@
 
         .header-text h1 {
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 600;
             margin-bottom: 0.25rem;
+            line-height: 1.3;
         }
 
         .header-text p {
@@ -768,7 +769,7 @@
             }
 
             .header-text h1 {
-                font-size: 1.25rem;
+                font-size: 1.1rem;
             }
 
             .btn-back-home {
@@ -858,7 +859,7 @@
         <div class="header-content">
             <img src="src/assets/images/logo-100-anios.png" alt="ALAEITS 2025" class="header-logo">
             <div class="header-text">
-                <h1>Portal de Certificados Digitales</h1>
+                <h1>Portal de Certificados Digitales / Portal de Certificados Digitais</h1>
                 <p>XXIV Seminario ALAEITS 2025 - Chile</p>
             </div>
             <a href="/" class="btn-back-home">
@@ -880,7 +881,13 @@
                     </svg>
                 </div>
                 <h2>Acceso a Certificados</h2>
-                <p>Ingrese sus credenciales para acceder a su certificado oficial del XXIV Seminario ALAEITS 2025.</p>
+                <h2 style="font-size: 1.25rem; color: #666; font-weight: 500; margin-top: 0.25rem;">Acesso aos Certificados</h2>
+                <p style="margin-top: 1rem;">
+                    <strong>Importante:</strong> Ingrese el <strong>mismo correo electrónico</strong> que utilizó al registrarse o enviar su ponencia al seminario.
+                </p>
+                <p style="margin-top: 0.5rem; font-style: italic; color: #666;">
+                    <strong>Importante:</strong> Insira o <strong>mesmo e-mail</strong> que você usou ao se registrar ou enviar sua apresentação ao seminário.
+                </p>
             </div>
 
             <form id="login-form">
@@ -901,11 +908,12 @@
                     <!-- Tab Content: Ponente -->
                     <div class="tab-content active" data-content="presenter">
                         <p class="tab-description">
-                            Ingresa tu ID de ponencia y correo electrónico registrado para acceder a tu certificado oficial.
+                            <strong>ES:</strong> Ingresa tu ID de ponencia y el <strong>mismo correo</strong> que usaste al enviar tu trabajo.<br>
+                            <strong>PT:</strong> Insira o ID da sua apresentação e o <strong>mesmo e-mail</strong> que você usou ao enviar seu trabalho.
                         </p>
 
                         <div class="form-group">
-                            <label for="paper-id" class="form-label">ID de Ponencia</label>
+                            <label for="paper-id" class="form-label">ID de Ponencia / ID da Apresentação</label>
                             <div class="form-input-wrapper">
                                 <input
                                     type="text"
@@ -922,7 +930,10 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="email-presenter" class="form-label">Correo Electrónico</label>
+                            <label for="email-presenter" class="form-label">Correo Electrónico / E-mail <span style="color: #C8102E;">*</span></label>
+                            <p style="font-size: 0.8125rem; color: #666; margin-bottom: 0.5rem;">
+                                <strong>Use el mismo correo de su registro / Use o mesmo e-mail do seu registro</strong>
+                            </p>
                             <div class="form-input-wrapper">
                                 <input
                                     type="email"
@@ -942,11 +953,15 @@
                     <!-- Tab Content: Oyente -->
                     <div class="tab-content" data-content="attendee">
                         <p class="tab-description">
-                            Ingresa tu correo electrónico registrado para acceder a tu certificado de asistencia.
+                            <strong>ES:</strong> Ingresa el <strong>mismo correo</strong> que usaste al registrarte al seminario.<br>
+                            <strong>PT:</strong> Insira o <strong>mesmo e-mail</strong> que você usou ao se registrar no seminário.
                         </p>
 
                         <div class="form-group">
-                            <label for="email-attendee" class="form-label">Correo Electrónico</label>
+                            <label for="email-attendee" class="form-label">Correo Electrónico / E-mail <span style="color: #C8102E;">*</span></label>
+                            <p style="font-size: 0.8125rem; color: #666; margin-bottom: 0.5rem;">
+                                <strong>Use el mismo correo de su registro / Use o mesmo e-mail do seu registro</strong>
+                            </p>
                             <div class="form-input-wrapper">
                                 <input
                                     type="email"

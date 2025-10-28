@@ -119,6 +119,7 @@ class EnhancedCongressDashboard {
       navItems: '.nav-item',
       viewContainers: '.view-container',
       logoutBtn: '#logout-btn',
+      updateCertificatesBtn: '#update-certificates-btn',
       analyticsContainer: '#analytics-container',
       metricsGrid: '#metrics-grid',
       chartsContainer: '#charts-container',
@@ -378,6 +379,11 @@ class EnhancedCongressDashboard {
       return;
     }
 
+    if (target === this.elements.updateCertificatesBtn) {
+      this.handleUpdateCertificates();
+      return;
+    }
+
     if (target === this.elements.logoutBtn) {
       this.handleLogout();
       return;
@@ -467,6 +473,64 @@ class EnhancedCongressDashboard {
   handleResize() {
     if (this.state.currentView === 'schedule') {
       this.updateSlotVisuals();
+    }
+  }
+
+  async handleUpdateCertificates() {
+    if (!confirm('¿Desea actualizar los certificados desde los archivos CSV?\n\nEsto sincronizará la base de datos con los últimos certificados emitidos.')) {
+      return;
+    }
+
+    const btn = this.elements.updateCertificatesBtn;
+    if (!btn) return;
+
+    // Deshabilitar botón y cambiar texto
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `
+      <svg class="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12a9 9 0 11-6.219-8.56"></path>
+      </svg>
+      Actualizando...
+    `;
+
+    try {
+      const response = await fetch('/api/admin/certificates/migrate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.authToken}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        const { ponentes, oyentes } = data.results;
+
+        const message = `✅ Certificados actualizados correctamente\n\n` +
+          `📊 Ponentes:\n` +
+          `  • Insertados: ${ponentes.insertados}\n` +
+          `  • Actualizados: ${ponentes.actualizados}\n` +
+          `  • Total en BD: ${ponentes.total}\n\n` +
+          `📊 Oyentes:\n` +
+          `  • Insertados: ${oyentes.insertados}\n` +
+          `  • Actualizados: ${oyentes.actualizados}\n` +
+          `  • Total en BD: ${oyentes.total}`;
+
+        this.showNotification(message, 'success', 8000);
+        alert(message);
+      } else {
+        throw new Error(data.message || 'Error al actualizar certificados');
+      }
+    } catch (error) {
+      console.error('Error actualizando certificados:', error);
+      this.showNotification(`Error: ${error.message}`, 'error');
+      alert(`Error al actualizar certificados: ${error.message}`);
+    } finally {
+      // Restaurar botón
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
     }
   }
 

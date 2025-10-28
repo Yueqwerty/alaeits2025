@@ -917,7 +917,38 @@
         </div>
     </header>
 
-    <div class="main-container">
+    <!-- Mensaje de Mantenimiento -->
+    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.95); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+        <div style="background: white; border-radius: 16px; padding: 3rem; max-width: 600px; text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
+            <div style="width: 80px; height: 80px; margin: 0 auto 2rem; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <svg width="40" height="40" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            <h2 style="color: #1a1a1a; font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem;">
+                Sistema en Mantenimiento
+            </h2>
+            <h3 style="color: #92400e; font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">
+                Manutenção do Sistema
+            </h3>
+            <p style="color: #666; font-size: 1rem; line-height: 1.6; margin-bottom: 1rem;">
+                <strong>Español:</strong> Estamos realizando ajustes en nuestra base de datos. La descarga de certificados estará disponible nuevamente en breve.
+            </p>
+            <p style="color: #666; font-size: 1rem; line-height: 1.6; margin-bottom: 2rem;">
+                <strong>Português:</strong> Estamos fazendo ajustes em nosso banco de dados. O download de certificados estará disponível novamente em breve.
+            </p>
+            <p style="color: #f59e0b; font-size: 0.875rem; font-weight: 600;">
+                Disculpe las molestias / Desculpe o transtorno
+            </p>
+            <div style="margin-top: 2rem;">
+                <a href="/" style="display: inline-block; padding: 0.875rem 2rem; background: #002147; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.2s;">
+                    Volver al inicio
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container" style="display: none;">
         <!-- Login View -->
         <div id="login-view" class="login-card fade-in">
             <div class="welcome-section">

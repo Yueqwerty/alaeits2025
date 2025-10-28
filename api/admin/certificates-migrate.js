@@ -206,12 +206,15 @@ async function migrateAttendees(csvPath, pool) {
       }
 
       // Formato CSV: Nombres, Apellido1, Apellido2, País, Correo, {{AUTOR}}, PDF_URL
+      const firstName = fields[0]?.trim();
+      const lastName1 = fields[1]?.trim();
+      const lastName2 = fields[2]?.trim();
       const country = fields[3]?.trim();
       const email = fields[4]?.trim()?.toLowerCase();
       const fullName = fields[5]?.trim(); // Columna {{AUTOR}} tiene el nombre completo
       const pdfUrl = fields[6]?.trim();
 
-      if (!fullName || !email) {
+      if (!firstName || !lastName1 || !fullName || !email || !country || !pdfUrl) {
         log('warn', `Línea ${i + 1}: Faltan datos obligatorios`);
         saltados++;
         continue;
@@ -219,19 +222,25 @@ async function migrateAttendees(csvPath, pool) {
 
       const result = await pool.query(`
         INSERT INTO attendees (
+          first_name,
+          last_name_1,
+          last_name_2,
           full_name,
           email,
           country,
           pdf_url
-        ) VALUES ($1, $2, $3, $4)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7)
         ON CONFLICT (email)
         DO UPDATE SET
+          first_name = EXCLUDED.first_name,
+          last_name_1 = EXCLUDED.last_name_1,
+          last_name_2 = EXCLUDED.last_name_2,
           full_name = EXCLUDED.full_name,
           country = EXCLUDED.country,
           pdf_url = EXCLUDED.pdf_url,
           updated_at = NOW()
         RETURNING (xmax = 0) AS inserted;
-      `, [fullName, email, country, pdfUrl]);
+      `, [firstName, lastName1, lastName2 || null, fullName, email, country, pdfUrl]);
 
       if (result.rows[0].inserted) {
         insertados++;

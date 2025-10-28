@@ -120,6 +120,7 @@ class EnhancedCongressDashboard {
       viewContainers: '.view-container',
       logoutBtn: '#logout-btn',
       updateCertificatesBtn: '#update-certificates-btn',
+      generateCertificatesBtn: '#generate-certificates-btn',
       analyticsContainer: '#analytics-container',
       metricsGrid: '#metrics-grid',
       chartsContainer: '#charts-container',
@@ -384,6 +385,11 @@ class EnhancedCongressDashboard {
       return;
     }
 
+    if (target === this.elements.generateCertificatesBtn) {
+      this.handleGenerateCertificates();
+      return;
+    }
+
     if (target === this.elements.logoutBtn) {
       this.handleLogout();
       return;
@@ -527,6 +533,72 @@ class EnhancedCongressDashboard {
       console.error('Error actualizando certificados:', error);
       this.showNotification(`Error: ${error.message}`, 'error');
       alert(`Error al actualizar certificados: ${error.message}`);
+    } finally {
+      // Restaurar botón
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
+    }
+  }
+
+  async handleGenerateCertificates() {
+    if (!confirm('🚀 ¿Generar certificados desde Google Sheets?\n\nEsto procesará TODOS los certificados pendientes en la hoja "Cruce".\nPuede tomar varios minutos dependiendo de la cantidad.\n\n⚠️ Asegúrate de haber configurado las credenciales de Google en Vercel.')) {
+      return;
+    }
+
+    const btn = this.elements.generateCertificatesBtn;
+    if (!btn) return;
+
+    // Deshabilitar botón y cambiar texto
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `
+      <svg class="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12a9 9 0 11-6.219-8.56"></path>
+      </svg>
+      Generando...
+    `;
+
+    try {
+      this.showNotification('⏳ Iniciando generación de certificados... Esto puede tomar varios minutos.', 'info', 10000);
+
+      const response = await fetch('/api/certificates/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.authToken}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        const { stats } = data;
+
+        const message = `✅ Generación de certificados completada\n\n` +
+          `📊 Estadísticas:\n` +
+          `  • Total en hoja: ${stats.total}\n` +
+          `  • Pendientes: ${stats.pending}\n` +
+          `  • Procesados: ${stats.processed}\n` +
+          `  • Errores: ${stats.errors}\n` +
+          `  • Duración: ${stats.duration}\n` +
+          `  • Velocidad: ${stats.throughput}`;
+
+        this.showNotification('✅ Certificados generados exitosamente', 'success', 8000);
+        alert(message);
+
+        // Mostrar errores si los hay
+        if (data.errors && data.errors.length > 0) {
+          console.error('Errores en generación:', data.errors);
+          const errorDetails = data.errors.map(e => `  • Fila ${e.rowIndex}: ${e.error}`).join('\n');
+          alert(`⚠️ Algunos certificados tuvieron errores:\n\n${errorDetails.substring(0, 500)}${data.errors.length > 5 ? '\n... y más' : ''}`);
+        }
+      } else {
+        throw new Error(data.message || 'Error al generar certificados');
+      }
+    } catch (error) {
+      console.error('Error generando certificados:', error);
+      this.showNotification(`❌ Error: ${error.message}`, 'error', 10000);
+      alert(`❌ Error al generar certificados:\n\n${error.message}\n\nRevisa la configuración de credenciales de Google en Vercel.`);
     } finally {
       // Restaurar botón
       btn.disabled = false;

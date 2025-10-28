@@ -64,12 +64,49 @@
             font-weight: 400;
         }
 
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .language-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 0.25rem;
+            gap: 0.25rem;
+        }
+
+        .language-toggle button {
+            padding: 0.5rem 0.75rem;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .language-toggle button.active {
+            background: rgba(255, 255, 255, 0.95);
+            color: #764ba2;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .language-toggle button:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
         .btn-back-home {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             padding: 0.75rem 1.25rem;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             color: white;
             text-decoration: none;
             border-radius: 8px;
@@ -81,7 +118,7 @@
         }
 
         .btn-back-home:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.25);
             border-color: rgba(255, 255, 255, 0.3);
             transform: translateX(-2px);
         }
@@ -417,14 +454,15 @@
         .certificate-icon {
             width: 48px;
             height: 48px;
-            background: #f8f9fa;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
+            background: linear-gradient(135deg, #ddd6fe 0%, #bfdbfe 100%);
+            border: none;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
             flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
         }
 
         .certificate-content {
@@ -433,19 +471,20 @@
 
         .certificate-type {
             display: inline-block;
-            padding: 0.25rem 0.625rem;
-            background: #f0f0f0;
-            color: #666;
-            border-radius: 3px;
+            padding: 0.375rem 0.875rem;
+            background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+            color: #92400e;
+            border-radius: 6px;
             font-size: 0.75rem;
-            font-weight: 500;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 0.5rem;
+            box-shadow: 0 2px 4px rgba(252, 211, 77, 0.3);
         }
 
         .certificate-title {
-            color: #1a1a1a;
+            color: #5b21b6;
             font-size: 1.125rem;
             font-weight: 600;
             margin-bottom: 0.375rem;
@@ -453,7 +492,7 @@
         }
 
         .certificate-description {
-            color: #666;
+            color: #64748b;
             font-size: 0.875rem;
             line-height: 1.5;
         }
@@ -480,17 +519,18 @@
         }
 
         .certificate-institution {
-            padding: 0.875rem;
-            background: #f8f9fa;
-            border-radius: 4px;
+            padding: 1rem 1.25rem;
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
             margin-bottom: 1.25rem;
             font-size: 0.875rem;
-            color: #666;
+            color: #78350f;
         }
 
         .certificate-institution strong {
-            color: #1a1a1a;
-            font-weight: 500;
+            color: #92400e;
+            font-weight: 600;
         }
 
         .certificate-actions {
@@ -859,15 +899,21 @@
         <div class="header-content">
             <img src="src/assets/images/logo-100-anios.png" alt="ALAEITS 2025" class="header-logo">
             <div class="header-text">
-                <h1>Portal de Certificados Digitales / Portal de Certificados Digitais</h1>
+                <h1 data-i18n="header-title">Portal de Certificados Digitales</h1>
                 <p>XXIV Seminario ALAEITS 2025 - Chile</p>
             </div>
-            <a href="/" class="btn-back-home">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                <span>Volver al Inicio</span>
-            </a>
+            <div class="header-actions">
+                <div class="language-toggle">
+                    <button onclick="changeLanguage('es')" id="btn-lang-es" class="active">ES</button>
+                    <button onclick="changeLanguage('pt')" id="btn-lang-pt">PT</button>
+                </div>
+                <a href="/" class="btn-back-home">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    <span data-i18n="back-btn">Volver al Inicio</span>
+                </a>
+            </div>
         </div>
     </header>
 
@@ -880,13 +926,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                     </svg>
                 </div>
-                <h2>Acceso a Certificados</h2>
-                <h2 style="font-size: 1.25rem; color: #666; font-weight: 500; margin-top: 0.25rem;">Acesso aos Certificados</h2>
-                <p style="margin-top: 1rem;">
+                <h2 data-i18n="welcome-title">Acceso a Certificados</h2>
+                <p style="margin-top: 1rem;" data-i18n="important-email">
                     <strong>Importante:</strong> Ingrese el <strong>mismo correo electrónico</strong> que utilizó al registrarse o enviar su ponencia al seminario.
-                </p>
-                <p style="margin-top: 0.5rem; font-style: italic; color: #666;">
-                    <strong>Importante:</strong> Insira o <strong>mesmo e-mail</strong> que você usou ao se registrar ou enviar sua apresentação ao seminário.
                 </p>
             </div>
 
@@ -907,13 +949,12 @@
 
                     <!-- Tab Content: Ponente -->
                     <div class="tab-content active" data-content="presenter">
-                        <p class="tab-description">
-                            <strong>ES:</strong> Ingresa tu ID de ponencia y el <strong>mismo correo</strong> que usaste al enviar tu trabajo.<br>
-                            <strong>PT:</strong> Insira o ID da sua apresentação e o <strong>mesmo e-mail</strong> que você usou ao enviar seu trabalho.
+                        <p class="tab-description" data-i18n="presenter-desc">
+                            Ingresa tu ID de ponencia y el <strong>mismo correo</strong> que usaste al enviar tu trabajo.
                         </p>
 
                         <div class="form-group">
-                            <label for="paper-id" class="form-label">ID de Ponencia / ID da Apresentação</label>
+                            <label for="paper-id" class="form-label" data-i18n="paper-id-label">ID de Ponencia</label>
                             <div class="form-input-wrapper">
                                 <input
                                     type="text"
@@ -930,9 +971,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="email-presenter" class="form-label">Correo Electrónico / E-mail <span style="color: #C8102E;">*</span></label>
-                            <p style="font-size: 0.8125rem; color: #666; margin-bottom: 0.5rem;">
-                                <strong>Use el mismo correo de su registro / Use o mesmo e-mail do seu registro</strong>
+                            <label for="email-presenter" class="form-label"><span data-i18n="email-label">Correo Electrónico</span> <span style="color: #C8102E;">*</span></label>
+                            <p style="font-size: 0.8125rem; color: #666; margin-bottom: 0.5rem;" data-i18n="same-email-reminder">
+                                <strong>Use el mismo correo de su registro</strong>
                             </p>
                             <div class="form-input-wrapper">
                                 <input
@@ -952,15 +993,14 @@
 
                     <!-- Tab Content: Oyente -->
                     <div class="tab-content" data-content="attendee">
-                        <p class="tab-description">
-                            <strong>ES:</strong> Ingresa el <strong>mismo correo</strong> que usaste al registrarte al seminario.<br>
-                            <strong>PT:</strong> Insira o <strong>mesmo e-mail</strong> que você usou ao se registrar no seminário.
+                        <p class="tab-description" data-i18n="attendee-desc">
+                            Ingresa el <strong>mismo correo</strong> que usaste al registrarte al seminario.
                         </p>
 
                         <div class="form-group">
-                            <label for="email-attendee" class="form-label">Correo Electrónico / E-mail <span style="color: #C8102E;">*</span></label>
-                            <p style="font-size: 0.8125rem; color: #666; margin-bottom: 0.5rem;">
-                                <strong>Use el mismo correo de su registro / Use o mesmo e-mail do seu registro</strong>
+                            <label for="email-attendee" class="form-label"><span data-i18n="email-label">Correo Electrónico</span> <span style="color: #C8102E;">*</span></label>
+                            <p style="font-size: 0.8125rem; color: #666; margin-bottom: 0.5rem;" data-i18n="same-email-reminder">
+                                <strong>Use el mismo correo de su registro</strong>
                             </p>
                             <div class="form-input-wrapper">
                                 <input
@@ -988,11 +1028,11 @@
             </form>
 
             <div class="back-link">
-                <a href="/">
+                <a href="/#programa">
                     <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    Volver al programa
+                    Ver programa del seminario
                 </a>
             </div>
         </div>
@@ -1033,11 +1073,11 @@
             </div>
 
             <div class="back-link">
-                <a href="/">
+                <a href="#" onclick="window.certificadosSystem.handleLogout(); return false;">
                     <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                     </svg>
-                    Volver al programa
+                    Buscar otro certificado
                 </a>
             </div>
         </div>
@@ -1056,6 +1096,67 @@
         </div>
     </div>
 
+    <script>
+        // Sistema de traducción
+        const translations = {
+            es: {
+                'header-title': 'Portal de Certificados Digitales',
+                'back-btn': 'Volver al Inicio',
+                'welcome-title': 'Acceso a Certificados',
+                'important-email': '<strong>Importante:</strong> Ingrese el <strong>mismo correo electrónico</strong> que utilizó al registrarse o enviar su ponencia al seminario.',
+                'presenter-desc': 'Ingresa tu ID de ponencia y el <strong>mismo correo</strong> que usaste al enviar tu trabajo.',
+                'attendee-desc': 'Ingresa el <strong>mismo correo</strong> que usaste al registrarte al seminario.',
+                'paper-id-label': 'ID de Ponencia',
+                'email-label': 'Correo Electrónico',
+                'same-email-reminder': '<strong>Use el mismo correo de su registro</strong>'
+            },
+            pt: {
+                'header-title': 'Portal de Certificados Digitais',
+                'back-btn': 'Voltar ao Início',
+                'welcome-title': 'Acesso aos Certificados',
+                'important-email': '<strong>Importante:</strong> Insira o <strong>mesmo e-mail</strong> que você usou ao se registrar ou enviar sua apresentação ao seminário.',
+                'presenter-desc': 'Insira o ID da sua apresentação e o <strong>mesmo e-mail</strong> que você usou ao enviar seu trabalho.',
+                'attendee-desc': 'Insira o <strong>mesmo e-mail</strong> que você usou ao se registrar no seminário.',
+                'paper-id-label': 'ID da Apresentação',
+                'email-label': 'E-mail',
+                'same-email-reminder': '<strong>Use o mesmo e-mail do seu registro</strong>'
+            }
+        };
+
+        let currentLang = 'es';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+
+            // Update button states
+            document.getElementById('btn-lang-es').classList.toggle('active', lang === 'es');
+            document.getElementById('btn-lang-pt').classList.toggle('active', lang === 'pt');
+
+            // Update all translated elements
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+
+            // Save preference
+            localStorage.setItem('preferred-language', lang);
+        }
+
+        // Detect browser language on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('preferred-language');
+            const browserLang = navigator.language || navigator.userLanguage;
+
+            // If user is from Brazil or has Portuguese browser, auto-switch
+            if (!savedLang && (browserLang.startsWith('pt') || browserLang === 'pt-BR')) {
+                changeLanguage('pt');
+            } else if (savedLang) {
+                changeLanguage(savedLang);
+            }
+        });
+    </script>
     <script src="src/js/certificados-api.js?v=20251027017"></script>
 </body>
 </html>

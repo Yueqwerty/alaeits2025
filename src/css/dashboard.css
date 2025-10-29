@@ -94,6 +94,12 @@ html, body {
   gap: var(--space-8);
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
 .header h1 {
   font-size: 1.25rem;
   font-weight: 600;

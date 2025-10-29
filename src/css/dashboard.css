@@ -308,6 +308,24 @@ html, body {
   grid-row: span 1;
 }
 
+/* Metric Card 5 - Certificados Ponentes */
+.metric-card:nth-child(5) {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
+/* Metric Card 6 - Certificados Oyentes */
+.metric-card:nth-child(6) {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
+/* Metric Card 7 - Total Certificados */
+.metric-card:nth-child(7) {
+  grid-column: span 4;
+  grid-row: span 1;
+}
+
 .metric-card {
   background: white;
   padding: var(--space-8);
@@ -372,6 +390,18 @@ html, body {
   background: #9B88A8;  /* Lavender */
 }
 
+.metric-card:nth-child(5)::before {
+  background: #6366f1;  /* Indigo */
+}
+
+.metric-card:nth-child(6)::before {
+  background: #8b5cf6;  /* Purple */
+}
+
+.metric-card:nth-child(7)::before {
+  background: #ec4899;  /* Pink */
+}
+
 .metric-content {
   display: flex;
   flex-direction: column;
@@ -411,29 +441,10 @@ html, body {
   display: contents;
 }
 
-/* Chart 1 - Events by Status */
-.chart-container:nth-child(1) {
-  grid-column: span 6;
-  grid-row: span 2;
-}
-
-/* Chart 2 - Events by Type */
-.chart-container:nth-child(2) {
-  grid-column: span 3;
-  grid-row: span 2;
-}
-
-/* Chart 3 - Events by Day */
-.chart-container:nth-child(3) {
-  grid-column: span 3;
-  grid-row: span 2;
-}
-
 /* Activity Container - Ancho completo y alto */
 .activity-container {
   grid-column: 1 / -1;
   grid-row: span 3;
-  margin-top: var(--space-6);
 }
 
 .chart-container {
@@ -3218,9 +3229,7 @@ html, body {
     grid-column: span 6;
   }
 
-  .chart-container:nth-child(1),
-  .chart-container:nth-child(2),
-  .chart-container:nth-child(3) {
+  .chart-container:nth-child(1) {
     grid-column: span 6;
   }
 
@@ -3260,9 +3269,10 @@ html, body {
   .metric-card:nth-child(2),
   .metric-card:nth-child(3),
   .metric-card:nth-child(4),
-  .chart-container:nth-child(1),
-  .chart-container:nth-child(2),
-  .chart-container:nth-child(3) {
+  .metric-card:nth-child(5),
+  .metric-card:nth-child(6),
+  .metric-card:nth-child(7),
+  .chart-container:nth-child(1) {
     grid-column: span 1;
   }
 

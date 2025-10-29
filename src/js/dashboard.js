@@ -226,14 +226,16 @@ class EnhancedCongressDashboard {
     this.state.loading = true;
 
     try {
-      const [dataResponse, analyticsResponse] = await Promise.all([
+      const [dataResponse, analyticsResponse, downloadStatsResponse] = await Promise.all([
         this.fetchWithCache('/api/admin/events'),
-        this.fetchWithCache('/api/admin/analytics')
+        this.fetchWithCache('/api/admin/analytics'),
+        this.fetchWithCache('/api/admin/download-stats')
       ]);
 
       this.data.drafts = dataResponse.drafts || [];
       this.data.published = dataResponse.published || [];
       this.data.analytics = analyticsResponse;
+      this.data.downloadStats = downloadStatsResponse.success ? downloadStatsResponse.data : null;
 
     } catch (error) {
       throw error;
@@ -501,7 +503,7 @@ class EnhancedCongressDashboard {
     `;
 
     try {
-      const response = await fetch('/api/admin/certificates/migrate', {
+      const response = await fetch('/api/admin/certificates-migrate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -848,6 +850,37 @@ class EnhancedCongressDashboard {
     if (!this.elements.metricsGrid) return;
 
     const { summary } = this.data.analytics;
+    const downloadStats = this.data.downloadStats;
+
+    // Métricas de certificados si están disponibles
+    let certificatesMetrics = '';
+    if (downloadStats) {
+      const { presenters, attendees, combined } = downloadStats;
+
+      certificatesMetrics = `
+        <div class="metric-card metric-animate">
+          <div class="metric-content">
+            <div class="metric-value" data-value="${presenters.total_downloads || 0}">0</div>
+            <div class="metric-label">Descargas Certificados Ponentes</div>
+            <div class="metric-trend">${presenters.unique_downloads || 0} únicas / ${presenters.repeated_downloads || 0} repetidas</div>
+          </div>
+        </div>
+        <div class="metric-card metric-animate">
+          <div class="metric-content">
+            <div class="metric-value" data-value="${attendees.total_downloads || 0}">0</div>
+            <div class="metric-label">Descargas Certificados Oyentes</div>
+            <div class="metric-trend">${attendees.unique_downloads || 0} únicas / ${attendees.repeated_downloads || 0} repetidas</div>
+          </div>
+        </div>
+        <div class="metric-card metric-animate">
+          <div class="metric-content">
+            <div class="metric-value" data-value="${combined.total_downloads || 0}">0</div>
+            <div class="metric-label">Total Descargas Certificados</div>
+            <div class="metric-trend">${combined.total_unique || 0} certificados únicos</div>
+          </div>
+        </div>
+      `;
+    }
 
     const metricsTemplate = `
       <div class="metric-card metric-animate">
@@ -860,7 +893,7 @@ class EnhancedCongressDashboard {
         <div class="metric-content">
           <div class="metric-value" data-value="${summary.totalScheduled || 0}">0</div>
           <div class="metric-label">Programados</div>
-          <div class="metric-trend">${summary.completionRate || 0}% completado</div>
+          <div class="metric-trend">${summary.totalScheduled || 0} de ${summary.totalEvents || 0} eventos</div>
         </div>
       </div>
       <div class="metric-card metric-animate">
@@ -875,6 +908,7 @@ class EnhancedCongressDashboard {
           <div class="metric-label">Ocupación de Salas</div>
         </div>
       </div>
+      ${certificatesMetrics}
     `;
 
     this.elements.metricsGrid.innerHTML = metricsTemplate;
@@ -884,11 +918,10 @@ class EnhancedCongressDashboard {
       const metricValues = this.elements.metricsGrid.querySelectorAll('.metric-value[data-value]');
       metricValues.forEach((element, index) => {
         const target = parseInt(element.dataset.value);
-        const suffix = element.closest('.metric-card:last-child') ? '%' : '';
 
         // Delay escalonado para efecto cascada
         setTimeout(() => {
-          this.animateCounter(element, target, 800, suffix);
+          this.animateCounter(element, target, 800, '');
         }, index * 100);
       });
 
@@ -904,76 +937,9 @@ class EnhancedCongressDashboard {
 
   renderCharts() {
     if (!this.elements.chartsContainer || !this.data.analytics) return;
-    
-    const { eventsByStatus, eventsByType, eventsByDay } = this.data.analytics;
-    const totalEvents = this.data.analytics.summary.totalEvents || 1;
-    
-    const chartsHTML = `
-      <div class="chart-container">
-        <h3>Por Estado</h3>
-        <div class="progress-chart">
-          ${(eventsByStatus || []).map(item => `
-            <div class="progress-item">
-              <span class="progress-label">${item.status === 'publicado' ? 'Publicado' : 'Borrador'}</span>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: ${(item.count / totalEvents) * 100}%"></div>
-              </div>
-              <span class="progress-value">${item.count}</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
 
-      <div class="chart-container">
-        <h3>Por Tipo</h3>
-        <div class="donut-chart">
-          ${(eventsByType || []).map((item) => {
-            let color, label;
-            switch(item.event_type) {
-              case 'ponencia':
-                color = 'var(--ponencia-color)';
-                label = 'Ponencia';
-                break;
-              case 'simposio':
-                color = 'var(--simposio-color)';
-                label = 'Simposio';
-                break;
-              case 'discusion':
-                color = 'var(--keynote-color)';
-                label = 'Discusión';
-                break;
-              default:
-                color = 'var(--gray-400)';
-                label = item.event_type;
-            }
-            return `
-              <div class="donut-item">
-                <span class="donut-color" style="background-color: ${color}"></span>
-                <span>${label}: ${item.count}</span>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-
-      <div class="chart-container">
-        <h3>Por Día</h3>
-        <div class="bar-chart">
-          ${(eventsByDay || []).map(item => {
-            const maxCount = Math.max(...(eventsByDay || []).map(d => d.count));
-            return `
-              <div class="bar-item">
-                <div class="bar" style="height: ${maxCount > 0 ? (item.count / maxCount) * 100 : 0}%"></div>
-                <span class="bar-label">${item.scheduled_day?.split(' ')[0] || 'N/A'}</span>
-                <span class="bar-value">${item.count}</span>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-    `;
-    
-    this.elements.chartsContainer.innerHTML = chartsHTML;
+    // Limpiar contenedor de gráficos
+    this.elements.chartsContainer.innerHTML = '';
   }
 
   renderRecentActivity() {
@@ -3318,6 +3284,11 @@ class EnhancedCongressDashboard {
 
   async loadAnalyticsData() {
     this.data.analytics = await this.fetchWithCache('/api/admin/analytics');
+  }
+
+  async loadDownloadStats() {
+    const response = await this.fetchWithCache('/api/admin/download-stats');
+    this.data.downloadStats = response.success ? response.data : null;
   }
 
   invalidateCache(patterns = []) {

@@ -692,10 +692,13 @@
         }
 
         // Descargar PDF directamente
-        downloadPDF(pdfUrl, paperId = 'ALAEITS2025') {
+        async downloadPDF(pdfUrl, paperId = 'ALAEITS2025') {
             if (!pdfUrl) {
                 return;
             }
+
+            // Registrar la descarga antes de descargar
+            await this.trackDownload(paperId);
 
             // Convertir a URL de descarga directa
             const downloadUrl = this.getPDFDownloadUrl(pdfUrl);
@@ -717,6 +720,37 @@
             setTimeout(() => {
                 document.body.removeChild(link);
             }, 100);
+        }
+
+        // Registrar descarga en la base de datos
+        async trackDownload(paperId) {
+            try {
+                if (!this.currentUserData || !this.currentUserData.author_email) {
+                    return;
+                }
+
+                // Determinar el tipo de certificado
+                const isAttendee = !paperId || paperId === 'ALAEITS2025';
+                const type = isAttendee ? 'attendee' : 'presenter';
+
+                const url = `${this.apiBaseUrl}/api/certificates/track-download`;
+
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: type,
+                        paperId: paperId || '',
+                        email: this.currentUserData.author_email
+                    })
+                });
+
+                // No mostramos error si falla el tracking, solo registramos en consola
+            } catch (error) {
+                console.log('No se pudo registrar la descarga:', error);
+            }
         }
     }
 

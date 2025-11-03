@@ -48,12 +48,13 @@ module.exports = async (req, res) => {
     }
 
     // Extraer y validar body
-    const { paper_id, email } = req.body || {};
+    const { paper_id, symposium_id, email } = req.body || {};
 
     log('info', 'Validate request received', {
       paper_id: paper_id || 'none',
+      symposium_id: symposium_id || 'none',
       email: email ? 'provided' : 'missing',
-      type: paper_id ? 'presenter' : 'attendee'
+      type: paper_id ? 'presenter' : symposium_id ? 'symposium' : 'attendee'
     });
 
     // Validar que al menos el email esté presente
@@ -87,13 +88,32 @@ module.exports = async (req, res) => {
       }
     }
 
+    // Validar formato de symposium_id solo si está presente (simposios)
+    if (symposium_id) {
+      const symposiumIdRegex = /^SIM\d{1,3}$/i;
+      if (!symposiumIdRegex.test(symposium_id)) {
+        log('warn', 'Invalid symposium_id format', { symposium_id });
+        return res.status(400).json({
+          success: false,
+          message: 'Formato de ID de simposio inválido'
+        });
+      }
+    }
+
     // Normalizar credenciales
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedPaperId = paper_id ? paper_id.trim().toUpperCase() : null;
+    const normalizedSymposiumId = symposium_id ? symposium_id.trim().toUpperCase() : null;
 
     // Sanitizar para prevenir SQL injection (aunque usamos parametrized queries)
-    if (normalizedEmail.length > 255 || (normalizedPaperId && normalizedPaperId.length > 20)) {
-      log('warn', 'Input too long', { emailLen: normalizedEmail.length, paperIdLen: normalizedPaperId?.length });
+    if (normalizedEmail.length > 255 ||
+        (normalizedPaperId && normalizedPaperId.length > 20) ||
+        (normalizedSymposiumId && normalizedSymposiumId.length > 20)) {
+      log('warn', 'Input too long', {
+        emailLen: normalizedEmail.length,
+        paperIdLen: normalizedPaperId?.length,
+        symposiumIdLen: normalizedSymposiumId?.length
+      });
       return res.status(400).json({
         success: false,
         message: 'Datos inválidos'
@@ -101,11 +121,18 @@ module.exports = async (req, res) => {
     }
 
     // Determinar tipo de búsqueda
-    const isPresenter = !!normalizedPaperId;
-    const searchType = isPresenter ? 'presenter' : 'attendee';
+    let searchType;
+    if (normalizedPaperId) {
+      searchType = 'presenter';
+    } else if (normalizedSymposiumId) {
+      searchType = 'symposium';
+    } else {
+      searchType = 'attendee';
+    }
 
     log('info', `Searching ${searchType} certificate`, {
       paper_id: normalizedPaperId || 'N/A',
+      symposium_id: normalizedSymposiumId || 'N/A',
       email: normalizedEmail
     });
 
@@ -113,7 +140,7 @@ module.exports = async (req, res) => {
     let certificateData;
     let recordId;
 
-    if (isPresenter) {
+    if (searchType === 'presenter') {
       // BÚSQUEDA PARA PONENTES: certificates table
       result = await pool.query(`
         SELECT
@@ -165,6 +192,54 @@ module.exports = async (req, res) => {
         generated_at: cert.generated_at
       };
 
+    } else if (searchType === 'symposium') {
+      // BÚSQUEDA PARA SIMPOSIOS: symposiums table
+      result = await pool.query(`
+        SELECT
+          id,
+          symposium_id,
+          author_name,
+          author_email,
+          title,
+          work_type,
+          review_status,
+          doc_url,
+          pdf_url,
+          created_at
+        FROM symposiums
+        WHERE UPPER(symposium_id) = $1
+          AND LOWER(author_email) = $2
+        LIMIT 1
+      `, [normalizedSymposiumId, normalizedEmail]);
+
+      if (result.rows.length === 0) {
+        log('warn', 'Symposium certificate not found', {
+          symposium_id: normalizedSymposiumId,
+          email: normalizedEmail
+        });
+        return res.status(404).json({
+          success: false,
+          message: 'Credenciales inválidas. Verifique su ID de simposio y correo electrónico.'
+        });
+      }
+
+      const symp = result.rows[0];
+      recordId = symp.id;
+      certificateData = {
+        type: 'symposium',
+        paper_id: symp.symposium_id,
+        author_name: symp.author_name,
+        author_email: symp.author_email,
+        title: symp.title,
+        eje: null,
+        paper_type: symp.work_type,
+        country: null,
+        institution: null,
+        doc_editable_url: symp.doc_url,
+        pdf_url: symp.pdf_url,
+        generated_at: symp.created_at
+      };
+
     } else {
       // BÚSQUEDA PARA OYENTES: attendees table
       result = await pool.query(`
@@ -214,10 +289,18 @@ module.exports = async (req, res) => {
     const userAgent = req.headers['user-agent'] || 'unknown';
 
     try {
-      if (isPresenter) {
+      if (searchType === 'presenter') {
         await pool.query(`
           INSERT INTO certificate_downloads (
             certificate_id,
+            ip_address,
+            user_agent
+          ) VALUES ($1, $2, $3)
+        `, [recordId, clientIp, userAgent]);
+      } else if (searchType === 'symposium') {
+        await pool.query(`
+          INSERT INTO symposium_downloads (
+            symposium_id,
             ip_address,
             user_agent
           ) VALUES ($1, $2, $3)
@@ -235,6 +318,7 @@ module.exports = async (req, res) => {
       log('info', 'Access registered', {
         type: searchType,
         paper_id: normalizedPaperId || 'N/A',
+        symposium_id: normalizedSymposiumId || 'N/A',
         email: normalizedEmail,
         ip: clientIp
       });
@@ -247,6 +331,7 @@ module.exports = async (req, res) => {
     log('info', 'Certificate validated successfully', {
       type: searchType,
       paper_id: normalizedPaperId || 'N/A',
+      symposium_id: normalizedSymposiumId || 'N/A',
       email: normalizedEmail,
       duration: `${duration}ms`
     });

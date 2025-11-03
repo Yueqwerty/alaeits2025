@@ -939,6 +939,9 @@
                         <button type="button" class="tab-button active" data-tab="presenter">
                             Ponente
                         </button>
+                        <button type="button" class="tab-button" data-tab="symposium">
+                            Simposio
+                        </button>
                         <button type="button" class="tab-button" data-tab="attendee">
                             Oyente
                         </button>
@@ -980,6 +983,50 @@
                                     type="email"
                                     id="email-presenter"
                                     name="email-presenter"
+                                    class="form-input"
+                                    placeholder="nombre@institucion.edu"
+                                    autocomplete="email"
+                                >
+                                <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Simposio -->
+                    <div class="tab-content" data-content="symposium">
+                        <p class="tab-description" data-i18n="symposium-desc">
+                            Ingresa tu ID de simposio y el <strong>mismo correo</strong> que usaste al registrarte.
+                        </p>
+
+                        <div class="form-group">
+                            <label for="symposium-id" class="form-label" data-i18n="symposium-id-label">ID de Simposio</label>
+                            <div class="form-input-wrapper">
+                                <input
+                                    type="text"
+                                    id="symposium-id"
+                                    name="symposium-id"
+                                    class="form-input"
+                                    placeholder="Ej: SIM1, SIM2, SIM10"
+                                    autocomplete="off"
+                                >
+                                <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email-symposium" class="form-label"><span data-i18n="email-label">Correo Electrónico</span> <span style="color: #C8102E;">*</span></label>
+                            <p style="font-size: 0.8125rem; color: #666; margin-bottom: 0.5rem;" data-i18n="same-email-reminder">
+                                <strong>Use el mismo correo de su registro</strong>
+                            </p>
+                            <div class="form-input-wrapper">
+                                <input
+                                    type="email"
+                                    id="email-symposium"
+                                    name="email-symposium"
                                     class="form-input"
                                     placeholder="nombre@institucion.edu"
                                     autocomplete="email"
@@ -1105,8 +1152,10 @@
                 'welcome-title': 'Acceso a Certificados',
                 'important-email': '<strong>Importante:</strong> Ingrese el <strong>mismo correo electrónico</strong> que utilizó al registrarse o enviar su ponencia al seminario.',
                 'presenter-desc': 'Ingresa tu ID de ponencia y el <strong>mismo correo</strong> que usaste al enviar tu trabajo.',
+                'symposium-desc': 'Ingresa tu ID de simposio y el <strong>mismo correo</strong> que usaste al registrarte.',
                 'attendee-desc': 'Ingresa el <strong>mismo correo</strong> que usaste al registrarte al seminario.',
                 'paper-id-label': 'ID de Ponencia',
+                'symposium-id-label': 'ID de Simposio',
                 'email-label': 'Correo Electrónico',
                 'same-email-reminder': '<strong>Use el mismo correo de su registro</strong>'
             },
@@ -1116,8 +1165,10 @@
                 'welcome-title': 'Acesso aos Certificados',
                 'important-email': '<strong>Importante:</strong> Insira o <strong>mesmo e-mail</strong> que você usou ao se registrar ou enviar sua apresentação ao seminário.',
                 'presenter-desc': 'Insira o ID da sua apresentação e o <strong>mesmo e-mail</strong> que você usou ao enviar seu trabalho.',
+                'symposium-desc': 'Insira o ID do seu simpósio e o <strong>mesmo e-mail</strong> que você usou ao se registrar.',
                 'attendee-desc': 'Insira o <strong>mesmo e-mail</strong> que você usou ao se registrar no seminário.',
                 'paper-id-label': 'ID da Apresentação',
+                'symposium-id-label': 'ID do Simpósio',
                 'email-label': 'E-mail',
                 'same-email-reminder': '<strong>Use o mesmo e-mail do seu registro</strong>'
             }

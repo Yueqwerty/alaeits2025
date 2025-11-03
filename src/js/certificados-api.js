@@ -57,7 +57,7 @@
 
                     // Update hidden input
                     if (participantTypeInput) {
-                        participantTypeInput.value = targetTab === 'presenter' ? 'presenter' : 'attendee';
+                        participantTypeInput.value = targetTab;
                     }
                 });
             });
@@ -155,9 +155,16 @@
 
             // Obtener los campos según el tipo
             const paperIdInput = document.getElementById('paper-id');
-            const emailInput = participantType === 'presenter'
-                ? document.getElementById('email-presenter')
-                : document.getElementById('email-attendee');
+            const symposiumIdInput = document.getElementById('symposium-id');
+
+            let emailInput;
+            if (participantType === 'presenter') {
+                emailInput = document.getElementById('email-presenter');
+            } else if (participantType === 'symposium') {
+                emailInput = document.getElementById('email-symposium');
+            } else {
+                emailInput = document.getElementById('email-attendee');
+            }
 
             if (!emailInput) {
                 this.showError('Error en el formulario. Por favor, recargue la página.');
@@ -165,7 +172,15 @@
             }
 
             // Sanitizar inputs (remover caracteres peligrosos)
-            let paperId = participantType === 'presenter' && paperIdInput ? this.sanitizeInput(paperIdInput.value.trim()) : null;
+            let paperId = null;
+            let symposiumId = null;
+
+            if (participantType === 'presenter' && paperIdInput) {
+                paperId = this.sanitizeInput(paperIdInput.value.trim());
+            } else if (participantType === 'symposium' && symposiumIdInput) {
+                symposiumId = this.sanitizeInput(symposiumIdInput.value.trim());
+            }
+
             let email = this.sanitizeInput(emailInput.value.trim());
 
             this.hideError();
@@ -186,6 +201,23 @@
                 // Límite de longitud para paper_id
                 if (paperId.length > 20) {
                     this.showError('El ID de ponencia es demasiado largo.');
+                    return;
+                }
+            } else if (participantType === 'symposium') {
+                if (!symposiumId) {
+                    this.showError('Por favor, ingrese el ID de su simposio.');
+                    return;
+                }
+
+                // Validar formato de symposium_id (SIM + números)
+                if (!this.isValidSymposiumId(symposiumId)) {
+                    this.showError('El ID de simposio debe tener formato: SIM1, SIM2, SIM10, etc.');
+                    return;
+                }
+
+                // Límite de longitud para symposium_id
+                if (symposiumId.length > 20) {
+                    this.showError('El ID de simposio es demasiado largo.');
                     return;
                 }
             }
@@ -217,9 +249,11 @@
                     email: email
                 };
 
-                // Solo agregar paper_id si es ponente
+                // Agregar ID según el tipo
                 if (participantType === 'presenter' && paperId) {
                     requestBody.paper_id = paperId;
+                } else if (participantType === 'symposium' && symposiumId) {
+                    requestBody.symposium_id = symposiumId;
                 }
 
                 const response = await fetch(url, {
@@ -362,6 +396,12 @@
             return paperIdRegex.test(paperId);
         }
 
+        isValidSymposiumId(symposiumId) {
+            // Formato: SIM seguido de 1-3 números (SIM1, SIM2, SIM10, etc.)
+            const symposiumIdRegex = /^SIM\d{1,3}$/i;
+            return symposiumIdRegex.test(symposiumId);
+        }
+
         showDocumentView() {
             const loginView = document.getElementById('login-view');
             const documentView = document.getElementById('document-view');
@@ -389,7 +429,7 @@
             if (userName) userName.textContent = this.currentUserData.author_name;
             if (userEmail) userEmail.textContent = this.currentUserData.author_email;
 
-            // Solo mostrar paper_id si es ponente
+            // Solo mostrar paper_id si es ponente o simposio
             if (userPaperId) {
                 const isAttendee = this.currentCertificates.length > 0 &&
                                  (this.currentCertificates[0].type === 'attendee' || !this.currentCertificates[0].paper_id);
@@ -416,18 +456,20 @@
 
             container.innerHTML = '';
 
-            // Ocultar sección "agregar certificado" si es oyente
+            // Ocultar sección "agregar certificado" si es oyente o simposio
             const addCertificateSection = document.querySelector('.add-certificate-section');
             const isAttendee = this.currentCertificates.length > 0 && this.currentCertificates[0].type === 'attendee';
+            const isSymposium = this.currentCertificates.length > 0 && this.currentCertificates[0].type === 'symposium';
 
             if (addCertificateSection) {
-                addCertificateSection.style.display = isAttendee ? 'none' : 'block';
+                addCertificateSection.style.display = (isAttendee || isSymposium) ? 'none' : 'block';
             }
 
             // Renderizar cada certificado
             this.currentCertificates.forEach((cert, index) => {
                 const tipoInfo = this.getTipoCertificado(cert.paper_id, cert.type);
                 const isAttendee = cert.type === 'attendee' || !cert.paper_id;
+                const isSymposium = cert.type === 'symposium' || (cert.paper_id && cert.paper_id.toUpperCase().startsWith('SIM'));
 
                 const card = document.createElement('div');
                 card.className = 'certificate-card fade-in';
@@ -438,9 +480,9 @@
                     ? `${tipoInfo.tipo} - ${this.escapeHtml(cert.paper_id)}`
                     : tipoInfo.tipo;
 
-                // Construir meta items solo para ponentes
+                // Construir meta items
                 let metaHtml = '';
-                if (!isAttendee) {
+                if (!isAttendee && !isSymposium) {
                     metaHtml = `
                         <div class="certificate-meta">
                             ${cert.eje ? `
@@ -468,6 +510,18 @@
                             </div>
                         </div>
                     `;
+                } else if (isSymposium) {
+                    // Para simposios, mostrar fecha
+                    metaHtml = `
+                        <div class="certificate-meta">
+                            <div class="meta-item">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span>${this.formatDate(cert.generated_at)}</span>
+                            </div>
+                        </div>
+                    `;
                 } else {
                     // Para oyentes, solo mostrar país si existe
                     metaHtml = `
@@ -487,7 +541,7 @@
 
                 // Institución solo para ponentes
                 let institutionHtml = '';
-                if (!isAttendee && cert.institution) {
+                if (!isAttendee && !isSymposium && cert.institution) {
                     institutionHtml = `
                         <div class="certificate-institution">
                             <strong>Institución:</strong> ${this.escapeHtml(cert.institution)}
@@ -532,6 +586,11 @@
             // Si es oyente
             if (certificateType === 'attendee' || !paperId) {
                 return { tipo: 'Asistencia', eje: 'Oyente' };
+            }
+
+            // Si es simposio
+            if (certificateType === 'symposium' || (paperId && paperId.toUpperCase().startsWith('SIM'))) {
+                return { tipo: 'Simposio', eje: 'Participación en Simposio' };
             }
 
             // Si es ponente

@@ -1,6 +1,6 @@
 /**
  * API Endpoint: POST /api/certificates/track-download
- * Registra una descarga de certificado (ponente, simposio u oyente)
+ * Registra una descarga de certificado (ponente, simposio, libro u oyente)
  */
 
 require('dotenv').config({ path: '.env.local' });
@@ -31,10 +31,18 @@ module.exports = async (req, res) => {
 
     const { type, paperId, email } = req.body;
 
-    if (!type || !paperId || !email) {
+    if (!type || !email) {
       return res.status(400).json({
         success: false,
-        message: 'Faltan parámetros requeridos: type, paperId, email'
+        message: 'Faltan parámetros requeridos: type, email'
+      });
+    }
+
+    // paperId es requerido excepto para oyentes
+    if (!paperId && type !== 'attendee' && type !== 'oyente') {
+      return res.status(400).json({
+        success: false,
+        message: 'El parámetro paperId es requerido para este tipo de certificado'
       });
     }
 
@@ -100,6 +108,32 @@ module.exports = async (req, res) => {
 
       downloadId = downloadResult.rows[0].id;
 
+    } else if (type === 'book' || type === 'libro') {
+      // Buscar el certificado de libro
+      const bookResult = await pool.query(
+        `SELECT id FROM books WHERE book_id = $1 AND author_email = $2`,
+        [paperId, email.toLowerCase()]
+      );
+
+      if (bookResult.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Certificado de libro no encontrado'
+        });
+      }
+
+      const bookId = bookResult.rows[0].id;
+
+      // Registrar la descarga
+      const downloadResult = await pool.query(
+        `INSERT INTO book_downloads (book_id, ip_address, user_agent)
+         VALUES ($1, $2, $3)
+         RETURNING id`,
+        [bookId, ipAddress, userAgent]
+      );
+
+      downloadId = downloadResult.rows[0].id;
+
     } else if (type === 'attendee' || type === 'oyente') {
       // Buscar el certificado de oyente
       const attendeeResult = await pool.query(
@@ -129,7 +163,7 @@ module.exports = async (req, res) => {
     } else {
       return res.status(400).json({
         success: false,
-        message: 'Tipo de certificado inválido. Use "presenter", "symposium" o "attendee"'
+        message: 'Tipo de certificado inválido. Use "presenter", "symposium", "book" o "attendee"'
       });
     }
 

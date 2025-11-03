@@ -48,13 +48,14 @@ module.exports = async (req, res) => {
     }
 
     // Extraer y validar body
-    const { paper_id, symposium_id, email } = req.body || {};
+    const { paper_id, symposium_id, book_id, email } = req.body || {};
 
     log('info', 'Validate request received', {
       paper_id: paper_id || 'none',
       symposium_id: symposium_id || 'none',
+      book_id: book_id || 'none',
       email: email ? 'provided' : 'missing',
-      type: paper_id ? 'presenter' : symposium_id ? 'symposium' : 'attendee'
+      type: paper_id ? 'presenter' : symposium_id ? 'symposium' : book_id ? 'book' : 'attendee'
     });
 
     // Validar que al menos el email esté presente
@@ -100,19 +101,34 @@ module.exports = async (req, res) => {
       }
     }
 
+    // Validar formato de book_id solo si está presente (libros)
+    if (book_id) {
+      const bookIdRegex = /^L\d{1,3}$/i;
+      if (!bookIdRegex.test(book_id)) {
+        log('warn', 'Invalid book_id format', { book_id });
+        return res.status(400).json({
+          success: false,
+          message: 'Formato de ID de libro inválido'
+        });
+      }
+    }
+
     // Normalizar credenciales
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedPaperId = paper_id ? paper_id.trim().toUpperCase() : null;
     const normalizedSymposiumId = symposium_id ? symposium_id.trim().toUpperCase() : null;
+    const normalizedBookId = book_id ? book_id.trim().toUpperCase() : null;
 
     // Sanitizar para prevenir SQL injection (aunque usamos parametrized queries)
     if (normalizedEmail.length > 255 ||
         (normalizedPaperId && normalizedPaperId.length > 20) ||
-        (normalizedSymposiumId && normalizedSymposiumId.length > 20)) {
+        (normalizedSymposiumId && normalizedSymposiumId.length > 20) ||
+        (normalizedBookId && normalizedBookId.length > 20)) {
       log('warn', 'Input too long', {
         emailLen: normalizedEmail.length,
         paperIdLen: normalizedPaperId?.length,
-        symposiumIdLen: normalizedSymposiumId?.length
+        symposiumIdLen: normalizedSymposiumId?.length,
+        bookIdLen: normalizedBookId?.length
       });
       return res.status(400).json({
         success: false,
@@ -126,6 +142,8 @@ module.exports = async (req, res) => {
       searchType = 'presenter';
     } else if (normalizedSymposiumId) {
       searchType = 'symposium';
+    } else if (normalizedBookId) {
+      searchType = 'book';
     } else {
       searchType = 'attendee';
     }
@@ -133,6 +151,7 @@ module.exports = async (req, res) => {
     log('info', `Searching ${searchType} certificate`, {
       paper_id: normalizedPaperId || 'N/A',
       symposium_id: normalizedSymposiumId || 'N/A',
+      book_id: normalizedBookId || 'N/A',
       email: normalizedEmail
     });
 
@@ -257,6 +276,51 @@ module.exports = async (req, res) => {
       recordId = result.rows[0].id;
       certificateData = symposiumCertificates;
 
+    } else if (searchType === 'book') {
+      // BÚSQUEDA PARA LIBROS: books table
+      result = await pool.query(`
+        SELECT
+          id,
+          book_id,
+          author_name,
+          author_email,
+          title,
+          pdf_url,
+          created_at
+        FROM books
+        WHERE UPPER(book_id) = $1
+          AND LOWER(author_email) = $2
+        LIMIT 1
+      `, [normalizedBookId, normalizedEmail]);
+
+      if (result.rows.length === 0) {
+        log('warn', 'Book certificate not found', {
+          book_id: normalizedBookId,
+          email: normalizedEmail
+        });
+        return res.status(404).json({
+          success: false,
+          message: 'Credenciales inválidas. Verifique su ID de libro y correo electrónico.'
+        });
+      }
+
+      const book = result.rows[0];
+      recordId = book.id;
+      certificateData = {
+        type: 'book',
+        paper_id: book.book_id,
+        author_name: book.author_name,
+        author_email: book.author_email,
+        title: book.title,
+        eje: null,
+        paper_type: 'Libro',
+        country: null,
+        institution: null,
+        doc_editable_url: null,
+        pdf_url: book.pdf_url,
+        generated_at: book.created_at
+      };
+
     } else {
       // BÚSQUEDA PARA OYENTES: attendees table
       result = await pool.query(`
@@ -322,6 +386,14 @@ module.exports = async (req, res) => {
             user_agent
           ) VALUES ($1, $2, $3)
         `, [recordId, clientIp, userAgent]);
+      } else if (searchType === 'book') {
+        await pool.query(`
+          INSERT INTO book_downloads (
+            book_id,
+            ip_address,
+            user_agent
+          ) VALUES ($1, $2, $3)
+        `, [recordId, clientIp, userAgent]);
       } else {
         await pool.query(`
           INSERT INTO attendee_downloads (
@@ -336,6 +408,7 @@ module.exports = async (req, res) => {
         type: searchType,
         paper_id: normalizedPaperId || 'N/A',
         symposium_id: normalizedSymposiumId || 'N/A',
+        book_id: normalizedBookId || 'N/A',
         email: normalizedEmail,
         ip: clientIp
       });
@@ -349,6 +422,7 @@ module.exports = async (req, res) => {
       type: searchType,
       paper_id: normalizedPaperId || 'N/A',
       symposium_id: normalizedSymposiumId || 'N/A',
+      book_id: normalizedBookId || 'N/A',
       email: normalizedEmail,
       duration: `${duration}ms`
     });

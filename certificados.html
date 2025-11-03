@@ -942,6 +942,9 @@
                         <button type="button" class="tab-button" data-tab="symposium">
                             Simposio
                         </button>
+                        <button type="button" class="tab-button" data-tab="book">
+                            Libro
+                        </button>
                         <button type="button" class="tab-button" data-tab="attendee">
                             Oyente
                         </button>
@@ -1029,6 +1032,50 @@
                                     name="email-symposium"
                                     class="form-input"
                                     placeholder="correo.coordinador@institucion.edu"
+                                    autocomplete="email"
+                                >
+                                <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Libro -->
+                    <div class="tab-content" data-content="book">
+                        <p class="tab-description" data-i18n="book-desc">
+                            Ingresa el ID del libro y el <strong>correo del autor/a</strong> para acceder al certificado.
+                        </p>
+
+                        <div class="form-group">
+                            <label for="book-id" class="form-label" data-i18n="book-id-label">ID de Libro</label>
+                            <div class="form-input-wrapper">
+                                <input
+                                    type="text"
+                                    id="book-id"
+                                    name="book-id"
+                                    class="form-input"
+                                    placeholder="Ej: L57, L45, L10"
+                                    autocomplete="off"
+                                >
+                                <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email-book" class="form-label"><span data-i18n="email-author-label">Correo del Autor/a</span> <span style="color: #C8102E;">*</span></label>
+                            <p style="font-size: 0.8125rem; color: #666; margin-bottom: 0.5rem;" data-i18n="author-email-reminder">
+                                <strong>Usar el correo del autor/a del libro</strong>
+                            </p>
+                            <div class="form-input-wrapper">
+                                <input
+                                    type="email"
+                                    id="email-book"
+                                    name="email-book"
+                                    class="form-input"
+                                    placeholder="autor@institucion.edu"
                                     autocomplete="email"
                                 >
                                 <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1153,13 +1200,17 @@
                 'important-email': '<strong>Importante:</strong> Ingrese el <strong>mismo correo electrónico</strong> que utilizó al registrarse o enviar su ponencia al seminario.',
                 'presenter-desc': 'Ingresa tu ID de ponencia y el <strong>mismo correo</strong> que usaste al enviar tu trabajo.',
                 'symposium-desc': 'Ingresa el ID del simposio y el <strong>correo del coordinador/a</strong>. Podrás ver y descargar los certificados de <strong>todos los participantes</strong> del simposio.',
+                'book-desc': 'Ingresa el ID del libro y el <strong>correo del autor/a</strong> para acceder al certificado.',
                 'attendee-desc': 'Ingresa el <strong>mismo correo</strong> que usaste al registrarte al seminario.',
                 'paper-id-label': 'ID de Ponencia',
                 'symposium-id-label': 'ID de Simposio',
+                'book-id-label': 'ID de Libro',
                 'email-label': 'Correo Electrónico',
                 'email-coordinator-label': 'Correo del Coordinador/a',
+                'email-author-label': 'Correo del Autor/a',
                 'same-email-reminder': '<strong>Use el mismo correo de su registro</strong>',
-                'coordinator-email-reminder': '<strong>Usar el correo del coordinador/a del simposio</strong>'
+                'coordinator-email-reminder': '<strong>Usar el correo del coordinador/a del simposio</strong>',
+                'author-email-reminder': '<strong>Usar el correo del autor/a del libro</strong>'
             },
             pt: {
                 'header-title': 'Portal de Certificados Digitais',
@@ -1168,13 +1219,17 @@
                 'important-email': '<strong>Importante:</strong> Insira o <strong>mesmo e-mail</strong> que você usou ao se registrar ou enviar sua apresentação ao seminário.',
                 'presenter-desc': 'Insira o ID da sua apresentação e o <strong>mesmo e-mail</strong> que você usou ao enviar seu trabalho.',
                 'symposium-desc': 'Insira o ID do simpósio e o <strong>e-mail do coordenador/a</strong>. Você poderá ver e baixar os certificados de <strong>todos os participantes</strong> do simpósio.',
+                'book-desc': 'Insira o ID do livro e o <strong>e-mail do autor/a</strong> para acessar o certificado.',
                 'attendee-desc': 'Insira o <strong>mesmo e-mail</strong> que você usou ao se registrar no seminário.',
                 'paper-id-label': 'ID da Apresentação',
                 'symposium-id-label': 'ID do Simpósio',
+                'book-id-label': 'ID do Livro',
                 'email-label': 'E-mail',
                 'email-coordinator-label': 'E-mail do Coordenador/a',
+                'email-author-label': 'E-mail do Autor/a',
                 'same-email-reminder': '<strong>Use o mesmo e-mail do seu registro</strong>',
-                'coordinator-email-reminder': '<strong>Usar o e-mail do coordenador/a do simpósio</strong>'
+                'coordinator-email-reminder': '<strong>Usar o e-mail do coordenador/a do simpósio</strong>',
+                'author-email-reminder': '<strong>Usar o e-mail do autor/a do livro</strong>'
             }
         };
 

@@ -156,12 +156,15 @@
             // Obtener los campos según el tipo
             const paperIdInput = document.getElementById('paper-id');
             const symposiumIdInput = document.getElementById('symposium-id');
+            const bookIdInput = document.getElementById('book-id');
 
             let emailInput;
             if (participantType === 'presenter') {
                 emailInput = document.getElementById('email-presenter');
             } else if (participantType === 'symposium') {
                 emailInput = document.getElementById('email-symposium');
+            } else if (participantType === 'book') {
+                emailInput = document.getElementById('email-book');
             } else {
                 emailInput = document.getElementById('email-attendee');
             }
@@ -174,11 +177,14 @@
             // Sanitizar inputs (remover caracteres peligrosos)
             let paperId = null;
             let symposiumId = null;
+            let bookId = null;
 
             if (participantType === 'presenter' && paperIdInput) {
                 paperId = this.sanitizeInput(paperIdInput.value.trim());
             } else if (participantType === 'symposium' && symposiumIdInput) {
                 symposiumId = this.sanitizeInput(symposiumIdInput.value.trim());
+            } else if (participantType === 'book' && bookIdInput) {
+                bookId = this.sanitizeInput(bookIdInput.value.trim());
             }
 
             let email = this.sanitizeInput(emailInput.value.trim());
@@ -220,6 +226,23 @@
                     this.showError('El ID de simposio es demasiado largo.');
                     return;
                 }
+            } else if (participantType === 'book') {
+                if (!bookId) {
+                    this.showError('Por favor, ingrese el ID del libro.');
+                    return;
+                }
+
+                // Validar formato de book_id (L + números)
+                if (!this.isValidBookId(bookId)) {
+                    this.showError('El ID de libro debe tener formato: L57, L45, L10, etc.');
+                    return;
+                }
+
+                // Límite de longitud para book_id
+                if (bookId.length > 20) {
+                    this.showError('El ID de libro es demasiado largo.');
+                    return;
+                }
             }
 
             if (!email) {
@@ -254,6 +277,8 @@
                     requestBody.paper_id = paperId;
                 } else if (participantType === 'symposium' && symposiumId) {
                     requestBody.symposium_id = symposiumId;
+                } else if (participantType === 'book' && bookId) {
+                    requestBody.book_id = bookId;
                 }
 
                 const response = await fetch(url, {
@@ -407,6 +432,12 @@
             return symposiumIdRegex.test(symposiumId);
         }
 
+        isValidBookId(bookId) {
+            // Formato: L seguido de 1-3 números (L57, L45, L10, etc.)
+            const bookIdRegex = /^L\d{1,3}$/i;
+            return bookIdRegex.test(bookId);
+        }
+
         showDocumentView() {
             const loginView = document.getElementById('login-view');
             const documentView = document.getElementById('document-view');
@@ -461,13 +492,14 @@
 
             container.innerHTML = '';
 
-            // Ocultar sección "agregar certificado" si es oyente o simposio
+            // Ocultar sección "agregar certificado" si es oyente, simposio o libro
             const addCertificateSection = document.querySelector('.add-certificate-section');
             const isAttendee = this.currentCertificates.length > 0 && this.currentCertificates[0].type === 'attendee';
             const isSymposium = this.currentCertificates.length > 0 && this.currentCertificates[0].type === 'symposium';
+            const isBook = this.currentCertificates.length > 0 && this.currentCertificates[0].type === 'book';
 
             if (addCertificateSection) {
-                addCertificateSection.style.display = (isAttendee || isSymposium) ? 'none' : 'block';
+                addCertificateSection.style.display = (isAttendee || isSymposium || isBook) ? 'none' : 'block';
             }
 
             // Renderizar cada certificado
@@ -475,6 +507,7 @@
                 const tipoInfo = this.getTipoCertificado(cert.paper_id, cert.type);
                 const isAttendee = cert.type === 'attendee' || !cert.paper_id;
                 const isSymposium = cert.type === 'symposium' || (cert.paper_id && cert.paper_id.toUpperCase().startsWith('SIM'));
+                const isBook = cert.type === 'book' || (cert.paper_id && cert.paper_id.toUpperCase().startsWith('L'));
 
                 const card = document.createElement('div');
                 card.className = 'certificate-card fade-in';
@@ -487,7 +520,7 @@
 
                 // Construir meta items
                 let metaHtml = '';
-                if (!isAttendee && !isSymposium) {
+                if (!isAttendee && !isSymposium && !isBook) {
                     metaHtml = `
                         <div class="certificate-meta">
                             ${cert.eje ? `
@@ -515,8 +548,8 @@
                             </div>
                         </div>
                     `;
-                } else if (isSymposium) {
-                    // Para simposios, mostrar fecha
+                } else if (isSymposium || isBook) {
+                    // Para simposios y libros, mostrar fecha
                     metaHtml = `
                         <div class="certificate-meta">
                             <div class="meta-item">
@@ -546,7 +579,7 @@
 
                 // Institución solo para ponentes
                 let institutionHtml = '';
-                if (!isAttendee && !isSymposium && cert.institution) {
+                if (!isAttendee && !isSymposium && !isBook && cert.institution) {
                     institutionHtml = `
                         <div class="certificate-institution">
                             <strong>Institución:</strong> ${this.escapeHtml(cert.institution)}
@@ -554,14 +587,18 @@
                     `;
                 }
 
-                // Para simposios, mostrar el nombre del participante como título principal
-                const mainTitle = isSymposium
-                    ? this.escapeHtml(cert.author_name || 'Participante')
-                    : this.escapeHtml(cert.title || 'Sin título');
-
-                const subtitle = isSymposium
-                    ? `<p class="certificate-subtitle" style="font-size: 0.875rem; color: #666; margin-top: 0.5rem; font-style: italic;">${this.escapeHtml(cert.title || 'Simposio')}</p>`
-                    : '';
+                // Para simposios y libros, mostrar el nombre del autor/participante como título principal
+                let mainTitle, subtitle;
+                if (isSymposium) {
+                    mainTitle = this.escapeHtml(cert.author_name || 'Participante');
+                    subtitle = `<p class="certificate-subtitle" style="font-size: 0.875rem; color: #666; margin-top: 0.5rem; font-style: italic;">${this.escapeHtml(cert.title || 'Simposio')}</p>`;
+                } else if (isBook) {
+                    mainTitle = this.escapeHtml(cert.author_name || 'Autor/a');
+                    subtitle = `<p class="certificate-subtitle" style="font-size: 0.875rem; color: #666; margin-top: 0.5rem; font-style: italic;">${this.escapeHtml(cert.title || 'Libro')}</p>`;
+                } else {
+                    mainTitle = this.escapeHtml(cert.title || 'Sin título');
+                    subtitle = '';
+                }
 
                 card.innerHTML = `
                     <div class="certificate-header">
@@ -606,6 +643,11 @@
             // Si es simposio
             if (certificateType === 'symposium' || (paperId && paperId.toUpperCase().startsWith('SIM'))) {
                 return { tipo: 'Simposio', eje: 'Participación en Simposio' };
+            }
+
+            // Si es libro
+            if (certificateType === 'book' || (paperId && paperId.toUpperCase().startsWith('L'))) {
+                return { tipo: 'Libro', eje: 'Presentación de Libro' };
             }
 
             // Si es ponente
@@ -809,6 +851,8 @@
                     type = 'attendee';
                 } else if (paperId.toUpperCase().startsWith('SIM')) {
                     type = 'symposium';
+                } else if (paperId.toUpperCase().startsWith('L')) {
+                    type = 'book';
                 } else {
                     type = 'presenter';
                 }

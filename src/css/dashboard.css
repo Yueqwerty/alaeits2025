@@ -284,45 +284,59 @@ html, body {
   display: contents;
 }
 
-/* Metric Card 1 - Grande (Total Events) */
+/* Fila 1: Eventos */
+/* Card 1 - Total Events (Grande) */
 .metric-card:nth-child(1) {
   grid-column: span 6;
   grid-row: span 2;
 }
 
-/* Metric Card 2 - Mediano (Scheduled) */
+/* Card 2 - Scheduled (Mediano) */
 .metric-card:nth-child(2) {
   grid-column: span 3;
   grid-row: span 1;
 }
 
-/* Metric Card 3 - Mediano (Drafts) */
+/* Card 3 - Drafts (Mediano) */
 .metric-card:nth-child(3) {
   grid-column: span 3;
   grid-row: span 1;
 }
 
-/* Metric Card 4 - Largo (Utilization) */
+/* Card 4 - Utilization (Largo) */
 .metric-card:nth-child(4) {
   grid-column: span 6;
   grid-row: span 1;
 }
 
-/* Metric Card 5 - Certificados Ponentes */
+/* Fila 2: Certificados */
+/* Card 5 - Total Descargas (Destacado) */
 .metric-card:nth-child(5) {
-  grid-column: span 4;
-  grid-row: span 1;
+  grid-column: span 6;
+  grid-row: span 2;
 }
 
-/* Metric Card 6 - Certificados Oyentes */
+/* Card 6 - Ponencias */
 .metric-card:nth-child(6) {
-  grid-column: span 4;
+  grid-column: span 3;
   grid-row: span 1;
 }
 
-/* Metric Card 7 - Total Certificados */
+/* Card 7 - Simposios */
 .metric-card:nth-child(7) {
-  grid-column: span 4;
+  grid-column: span 3;
+  grid-row: span 1;
+}
+
+/* Card 8 - Libros */
+.metric-card:nth-child(8) {
+  grid-column: span 3;
+  grid-row: span 1;
+}
+
+/* Card 9 - Oyentes */
+.metric-card:nth-child(9) {
+  grid-column: span 3;
   grid-row: span 1;
 }
 
@@ -374,32 +388,42 @@ html, body {
   transform: translateY(-2px);
 }
 
+/* Eventos - Tonos cálidos */
 .metric-card:nth-child(1)::before {
-  background: var(--primary);
+  background: linear-gradient(90deg, var(--primary), #D4A574);
 }
 
 .metric-card:nth-child(2)::before {
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--accent), #7EBDB4);
 }
 
 .metric-card:nth-child(3)::before {
-  background: var(--warning);
+  background: linear-gradient(90deg, var(--warning), #E8B4A0);
 }
 
 .metric-card:nth-child(4)::before {
-  background: #9B88A8;  /* Lavender */
+  background: linear-gradient(90deg, #9B88A8, #B8A8C8);
 }
 
+/* Certificados - Tonos fríos y vibrantes */
 .metric-card:nth-child(5)::before {
-  background: #6366f1;  /* Indigo */
+  background: linear-gradient(90deg, #6366f1, #818cf8);
 }
 
 .metric-card:nth-child(6)::before {
-  background: #8b5cf6;  /* Purple */
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
 }
 
 .metric-card:nth-child(7)::before {
-  background: #ec4899;  /* Pink */
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.metric-card:nth-child(8)::before {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.metric-card:nth-child(9)::before {
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
 }
 
 .metric-content {
@@ -416,8 +440,9 @@ html, body {
   letter-spacing: -0.02em;
 }
 
-/* Card 1 - Extra grande */
-.metric-card:nth-child(1) .metric-value {
+/* Cards grandes - Extra grande */
+.metric-card:nth-child(1) .metric-value,
+.metric-card:nth-child(5) .metric-value {
   font-size: 4rem;
 }
 
@@ -3272,6 +3297,8 @@ html, body {
   .metric-card:nth-child(5),
   .metric-card:nth-child(6),
   .metric-card:nth-child(7),
+  .metric-card:nth-child(8),
+  .metric-card:nth-child(9),
   .chart-container:nth-child(1) {
     grid-column: span 1;
   }

@@ -554,11 +554,21 @@
                     `;
                 }
 
+                // Para simposios, mostrar el nombre del participante como título principal
+                const mainTitle = isSymposium
+                    ? this.escapeHtml(cert.author_name || 'Participante')
+                    : this.escapeHtml(cert.title || 'Sin título');
+
+                const subtitle = isSymposium
+                    ? `<p class="certificate-subtitle" style="font-size: 0.875rem; color: #666; margin-top: 0.5rem; font-style: italic;">${this.escapeHtml(cert.title || 'Simposio')}</p>`
+                    : '';
+
                 card.innerHTML = `
                     <div class="certificate-header">
                         <div class="certificate-content">
                             <span class="certificate-type">${typeText}</span>
-                            <h3 class="certificate-title">${this.escapeHtml(cert.title || 'Sin título')}</h3>
+                            <h3 class="certificate-title">${mainTitle}</h3>
+                            ${subtitle}
                             <p class="certificate-description">Certificado oficial del XXIV Seminario ALAEITS 2025</p>
                         </div>
                     </div>

@@ -56,7 +56,7 @@ class EnhancedCongressDashboard {
     // Rate limiting para notificaciones
     this.notificationThrottle = new Map();
     this.lastNotification = 0;
-    
+
     this.init();
   }
 
@@ -855,28 +855,42 @@ class EnhancedCongressDashboard {
     // Métricas de certificados si están disponibles
     let certificatesMetrics = '';
     if (downloadStats) {
-      const { presenters, attendees, combined } = downloadStats;
+      const { presenters, symposiums, books, attendees, combined } = downloadStats;
 
       certificatesMetrics = `
         <div class="metric-card metric-animate">
           <div class="metric-content">
+            <div class="metric-value" data-value="${combined.total_downloads || 0}">0</div>
+            <div class="metric-label">📊 Total Descargas</div>
+            <div class="metric-trend">${combined.total_unique || 0} certificados únicos</div>
+          </div>
+        </div>
+        <div class="metric-card metric-animate">
+          <div class="metric-content">
             <div class="metric-value" data-value="${presenters.total_downloads || 0}">0</div>
-            <div class="metric-label">Descargas Certificados Ponentes</div>
-            <div class="metric-trend">${presenters.unique_downloads || 0} únicas / ${presenters.repeated_downloads || 0} repetidas</div>
+            <div class="metric-label">📝 Ponencias</div>
+            <div class="metric-trend">${presenters.download_rate || 0}% tasa de descarga</div>
+          </div>
+        </div>
+        <div class="metric-card metric-animate">
+          <div class="metric-content">
+            <div class="metric-value" data-value="${symposiums.total_downloads || 0}">0</div>
+            <div class="metric-label">🎤 Simposios</div>
+            <div class="metric-trend">${symposiums.download_rate || 0}% tasa de descarga</div>
+          </div>
+        </div>
+        <div class="metric-card metric-animate">
+          <div class="metric-content">
+            <div class="metric-value" data-value="${books.total_downloads || 0}">0</div>
+            <div class="metric-label">📚 Libros</div>
+            <div class="metric-trend">${books.download_rate || 0}% tasa de descarga</div>
           </div>
         </div>
         <div class="metric-card metric-animate">
           <div class="metric-content">
             <div class="metric-value" data-value="${attendees.total_downloads || 0}">0</div>
-            <div class="metric-label">Descargas Certificados Oyentes</div>
-            <div class="metric-trend">${attendees.unique_downloads || 0} únicas / ${attendees.repeated_downloads || 0} repetidas</div>
-          </div>
-        </div>
-        <div class="metric-card metric-animate">
-          <div class="metric-content">
-            <div class="metric-value" data-value="${combined.total_downloads || 0}">0</div>
-            <div class="metric-label">Total Descargas Certificados</div>
-            <div class="metric-trend">${combined.total_unique || 0} certificados únicos</div>
+            <div class="metric-label">👥 Oyentes</div>
+            <div class="metric-trend">${attendees.download_rate || 0}% tasa de descarga</div>
           </div>
         </div>
       `;

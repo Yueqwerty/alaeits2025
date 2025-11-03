@@ -113,10 +113,20 @@ api/db/
 
 # Archivos temporales del sistema
 nul
+*.db
+
+# Archivos de datos de desarrollo
+eventos_data.json
+
+# Documentación de setup (no necesaria en producción)
+CERTIFICADOS_API_SETUP.md
+*_SETUP.md
 
 # Archivos JS de certificados no utilizados (obsoletos)
 src/js/certificados.js
 src/js/certificados-data.js
+src/js/certificates-stats.js
+src/css/certificates-stats.css
 
 # 8. Archivos de Verificación y Scripts de Un Solo Uso
 # -------------------------------------------------------------------

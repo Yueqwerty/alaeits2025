@@ -56,7 +56,16 @@ module.exports = async (req, res) => {
       FROM symposium_downloads
     `);
 
-    // 3. Estadísticas generales de oyentes
+    // 3. Estadísticas generales de libros
+    const bookStats = await pool.query(`
+      SELECT
+        COUNT(*) as total_downloads,
+        COUNT(DISTINCT book_id) as unique_certificates,
+        COUNT(*) - COUNT(DISTINCT book_id) as repeated_downloads
+      FROM book_downloads
+    `);
+
+    // 4. Estadísticas generales de oyentes
     const attendeeStats = await pool.query(`
       SELECT
         COUNT(*) as total_downloads,
@@ -65,7 +74,7 @@ module.exports = async (req, res) => {
       FROM attendee_downloads
     `);
 
-    // 4. Descargas por día (últimos 30 días) - Ponentes
+    // 5. Descargas por día (últimos 30 días) - Ponentes
     const presentersByDay = await pool.query(`
       SELECT
         DATE(downloaded_at) as date,
@@ -77,7 +86,7 @@ module.exports = async (req, res) => {
       ORDER BY date DESC
     `);
 
-    // 5. Descargas por día (últimos 30 días) - Simposios
+    // 6. Descargas por día (últimos 30 días) - Simposios
     const symposiumsByDay = await pool.query(`
       SELECT
         DATE(downloaded_at) as date,
@@ -89,7 +98,19 @@ module.exports = async (req, res) => {
       ORDER BY date DESC
     `);
 
-    // 6. Descargas por día (últimos 30 días) - Oyentes
+    // 7. Descargas por día (últimos 30 días) - Libros
+    const booksByDay = await pool.query(`
+      SELECT
+        DATE(downloaded_at) as date,
+        COUNT(*) as downloads,
+        COUNT(DISTINCT book_id) as unique_downloads
+      FROM book_downloads
+      WHERE downloaded_at >= NOW() - INTERVAL '30 days'
+      GROUP BY DATE(downloaded_at)
+      ORDER BY date DESC
+    `);
+
+    // 8. Descargas por día (últimos 30 días) - Oyentes
     const attendeesByDay = await pool.query(`
       SELECT
         DATE(downloaded_at) as date,
@@ -101,7 +122,7 @@ module.exports = async (req, res) => {
       ORDER BY date DESC
     `);
 
-    // 7. Top 10 certificados de ponentes más descargados
+    // 9. Top 10 certificados de ponentes más descargados
     const topPresenters = await pool.query(`
       SELECT
         c.paper_id,
@@ -115,7 +136,7 @@ module.exports = async (req, res) => {
       LIMIT 10
     `);
 
-    // 8. Top 10 certificados de simposios más descargados
+    // 10. Top 10 certificados de simposios más descargados
     const topSymposiums = await pool.query(`
       SELECT
         s.symposium_id,
@@ -129,7 +150,21 @@ module.exports = async (req, res) => {
       LIMIT 10
     `);
 
-    // 6. Certificados de ponentes con múltiples descargas
+    // 11. Top 10 certificados de libros más descargados
+    const topBooks = await pool.query(`
+      SELECT
+        b.book_id,
+        b.author_name,
+        b.title,
+        COUNT(bd.id) as download_count
+      FROM books b
+      INNER JOIN book_downloads bd ON b.id = bd.book_id
+      GROUP BY b.id, b.book_id, b.author_name, b.title
+      ORDER BY download_count DESC
+      LIMIT 10
+    `);
+
+    // 12. Certificados de ponentes con múltiples descargas
     const repeatedPresenters = await pool.query(`
       SELECT
         c.paper_id,
@@ -142,7 +177,20 @@ module.exports = async (req, res) => {
       ORDER BY download_count DESC
     `);
 
-    // 7. Certificados de oyentes con múltiples descargas
+    // 13. Certificados de libros con múltiples descargas
+    const repeatedBooks = await pool.query(`
+      SELECT
+        b.book_id,
+        b.author_name,
+        COUNT(bd.id) as download_count
+      FROM books b
+      INNER JOIN book_downloads bd ON b.id = bd.book_id
+      GROUP BY b.id, b.book_id, b.author_name
+      HAVING COUNT(bd.id) > 1
+      ORDER BY download_count DESC
+    `);
+
+    // 14. Certificados de oyentes con múltiples descargas
     const repeatedAttendees = await pool.query(`
       SELECT
         a.full_name,
@@ -155,7 +203,7 @@ module.exports = async (req, res) => {
       ORDER BY download_count DESC
     `);
 
-    // 11. Descargas por hora del día (últimos 7 días)
+    // 15. Descargas por hora del día (últimos 7 días)
     const downloadsByHour = await pool.query(`
       SELECT
         EXTRACT(HOUR FROM downloaded_at) as hour,
@@ -165,20 +213,24 @@ module.exports = async (req, res) => {
         UNION ALL
         SELECT downloaded_at FROM symposium_downloads WHERE downloaded_at >= NOW() - INTERVAL '7 days'
         UNION ALL
+        SELECT downloaded_at FROM book_downloads WHERE downloaded_at >= NOW() - INTERVAL '7 days'
+        UNION ALL
         SELECT downloaded_at FROM attendee_downloads WHERE downloaded_at >= NOW() - INTERVAL '7 days'
       ) as all_downloads
       GROUP BY hour
       ORDER BY hour
     `);
 
-    // 12. Total de certificados disponibles vs descargados
+    // 16. Total de certificados disponibles vs descargados
     const totalCertificates = await pool.query(`
       SELECT
         (SELECT COUNT(*) FROM certificates) as total_presenter_certs,
         (SELECT COUNT(*) FROM symposiums) as total_symposium_certs,
+        (SELECT COUNT(*) FROM books) as total_book_certs,
         (SELECT COUNT(*) FROM attendees) as total_attendee_certs,
         (SELECT COUNT(DISTINCT certificate_id) FROM certificate_downloads) as downloaded_presenter_certs,
         (SELECT COUNT(DISTINCT symposium_id) FROM symposium_downloads) as downloaded_symposium_certs,
+        (SELECT COUNT(DISTINCT book_id) FROM book_downloads) as downloaded_book_certs,
         (SELECT COUNT(DISTINCT attendee_id) FROM attendee_downloads) as downloaded_attendee_certs
     `);
 
@@ -188,6 +240,9 @@ module.exports = async (req, res) => {
       : 0;
     const symposiumDownloadRate = totalStats.total_symposium_certs > 0
       ? ((totalStats.downloaded_symposium_certs / totalStats.total_symposium_certs) * 100).toFixed(2)
+      : 0;
+    const bookDownloadRate = totalStats.total_book_certs > 0
+      ? ((totalStats.downloaded_book_certs / totalStats.total_book_certs) * 100).toFixed(2)
       : 0;
     const attendeeDownloadRate = totalStats.total_attendee_certs > 0
       ? ((totalStats.downloaded_attendee_certs / totalStats.total_attendee_certs) * 100).toFixed(2)
@@ -217,6 +272,17 @@ module.exports = async (req, res) => {
           by_day: symposiumsByDay.rows,
           top_downloads: topSymposiums.rows
         },
+        books: {
+          total_downloads: parseInt(bookStats.rows[0].total_downloads),
+          unique_downloads: parseInt(bookStats.rows[0].unique_certificates),
+          repeated_downloads: parseInt(bookStats.rows[0].repeated_downloads),
+          total_certificates: parseInt(totalStats.total_book_certs),
+          downloaded_certificates: parseInt(totalStats.downloaded_book_certs),
+          download_rate: parseFloat(bookDownloadRate),
+          by_day: booksByDay.rows,
+          top_downloads: topBooks.rows,
+          repeated: repeatedBooks.rows
+        },
         attendees: {
           total_downloads: parseInt(attendeeStats.rows[0].total_downloads),
           unique_downloads: parseInt(attendeeStats.rows[0].unique_certificates),
@@ -228,8 +294,8 @@ module.exports = async (req, res) => {
           repeated: repeatedAttendees.rows
         },
         combined: {
-          total_downloads: parseInt(presenterStats.rows[0].total_downloads) + parseInt(symposiumStats.rows[0].total_downloads) + parseInt(attendeeStats.rows[0].total_downloads),
-          total_unique: parseInt(presenterStats.rows[0].unique_certificates) + parseInt(symposiumStats.rows[0].unique_certificates) + parseInt(attendeeStats.rows[0].unique_certificates),
+          total_downloads: parseInt(presenterStats.rows[0].total_downloads) + parseInt(symposiumStats.rows[0].total_downloads) + parseInt(bookStats.rows[0].total_downloads) + parseInt(attendeeStats.rows[0].total_downloads),
+          total_unique: parseInt(presenterStats.rows[0].unique_certificates) + parseInt(symposiumStats.rows[0].unique_certificates) + parseInt(bookStats.rows[0].unique_certificates) + parseInt(attendeeStats.rows[0].unique_certificates),
           by_hour: downloadsByHour.rows
         }
       }

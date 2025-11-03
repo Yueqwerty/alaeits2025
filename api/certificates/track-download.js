@@ -1,6 +1,6 @@
 /**
  * API Endpoint: POST /api/certificates/track-download
- * Registra una descarga de certificado (ponente u oyente)
+ * Registra una descarga de certificado (ponente, simposio u oyente)
  */
 
 require('dotenv').config({ path: '.env.local' });
@@ -74,6 +74,32 @@ module.exports = async (req, res) => {
 
       downloadId = downloadResult.rows[0].id;
 
+    } else if (type === 'symposium' || type === 'simposio') {
+      // Buscar el certificado de simposio
+      const symposiumResult = await pool.query(
+        `SELECT id FROM symposiums WHERE symposium_id = $1 AND author_email = $2`,
+        [paperId, email.toLowerCase()]
+      );
+
+      if (symposiumResult.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Certificado de simposio no encontrado'
+        });
+      }
+
+      const symposiumId = symposiumResult.rows[0].id;
+
+      // Registrar la descarga
+      const downloadResult = await pool.query(
+        `INSERT INTO symposium_downloads (symposium_id, ip_address, user_agent)
+         VALUES ($1, $2, $3)
+         RETURNING id`,
+        [symposiumId, ipAddress, userAgent]
+      );
+
+      downloadId = downloadResult.rows[0].id;
+
     } else if (type === 'attendee' || type === 'oyente') {
       // Buscar el certificado de oyente
       const attendeeResult = await pool.query(
@@ -103,7 +129,7 @@ module.exports = async (req, res) => {
     } else {
       return res.status(400).json({
         success: false,
-        message: 'Tipo de certificado inválido. Use "presenter" o "attendee"'
+        message: 'Tipo de certificado inválido. Use "presenter", "symposium" o "attendee"'
       });
     }
 

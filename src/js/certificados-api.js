@@ -789,8 +789,14 @@
                 }
 
                 // Determinar el tipo de certificado
-                const isAttendee = !paperId || paperId === 'ALAEITS2025';
-                const type = isAttendee ? 'attendee' : 'presenter';
+                let type;
+                if (!paperId || paperId === 'ALAEITS2025') {
+                    type = 'attendee';
+                } else if (paperId.toUpperCase().startsWith('SIM')) {
+                    type = 'symposium';
+                } else {
+                    type = 'presenter';
+                }
 
                 const url = `${this.apiBaseUrl}/api/certificates/track-download`;
 

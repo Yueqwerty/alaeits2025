@@ -194,6 +194,27 @@ module.exports = async (req, res) => {
 
     } else if (searchType === 'symposium') {
       // BÚSQUEDA PARA SIMPOSIOS: symposiums table
+      // Primero validar que existe al menos un registro con ese symposium_id + email (autenticación)
+      const authResult = await pool.query(`
+        SELECT id
+        FROM symposiums
+        WHERE UPPER(symposium_id) = $1
+          AND LOWER(author_email) = $2
+        LIMIT 1
+      `, [normalizedSymposiumId, normalizedEmail]);
+
+      if (authResult.rows.length === 0) {
+        log('warn', 'Symposium authentication failed', {
+          symposium_id: normalizedSymposiumId,
+          email: normalizedEmail
+        });
+        return res.status(404).json({
+          success: false,
+          message: 'Credenciales inválidas. Verifique su ID de simposio y correo electrónico.'
+        });
+      }
+
+      // Una vez autenticado, traer TODOS los certificados de ese simposio
       result = await pool.query(`
         SELECT
           id,
@@ -208,28 +229,20 @@ module.exports = async (req, res) => {
           created_at
         FROM symposiums
         WHERE UPPER(symposium_id) = $1
-          AND LOWER(author_email) = $2
-        LIMIT 1
-      `, [normalizedSymposiumId, normalizedEmail]);
+        ORDER BY author_name
+      `, [normalizedSymposiumId]);
 
-      if (result.rows.length === 0) {
-        log('warn', 'Symposium certificate not found', {
-          symposium_id: normalizedSymposiumId,
-          email: normalizedEmail
-        });
-        return res.status(404).json({
-          success: false,
-          message: 'Credenciales inválidas. Verifique su ID de simposio y correo electrónico.'
-        });
-      }
+      log('info', 'Symposium certificates found', {
+        symposium_id: normalizedSymposiumId,
+        total_certificates: result.rows.length
+      });
 
-      const symp = result.rows[0];
-      recordId = symp.id;
-      certificateData = {
+      // Devolver todos los certificados del simposio como array
+      const symposiumCertificates = result.rows.map(symp => ({
         type: 'symposium',
         paper_id: symp.symposium_id,
         author_name: symp.author_name,
-        author_email: symp.author_email,
+        author_email: symp.author_email || normalizedEmail,
         title: symp.title,
         eje: null,
         paper_type: symp.work_type,
@@ -238,7 +251,11 @@ module.exports = async (req, res) => {
         doc_editable_url: symp.doc_url,
         pdf_url: symp.pdf_url,
         generated_at: symp.created_at
-      };
+      }));
+
+      // Usar el primer certificado para recordId (para tracking)
+      recordId = result.rows[0].id;
+      certificateData = symposiumCertificates;
 
     } else {
       // BÚSQUEDA PARA OYENTES: attendees table

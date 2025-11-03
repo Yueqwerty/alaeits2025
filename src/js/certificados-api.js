@@ -267,11 +267,16 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    // Inicializar con el primer certificado
-                    this.currentCertificates = [data.certificate];
+                    // Manejar tanto array (simposios) como objeto (ponentes/oyentes)
+                    this.currentCertificates = Array.isArray(data.certificate)
+                        ? data.certificate
+                        : [data.certificate];
+
+                    // Usar el primer certificado para userData
+                    const firstCert = this.currentCertificates[0];
                     this.currentUserData = {
-                        author_name: data.certificate.author_name,
-                        author_email: data.certificate.author_email
+                        author_name: firstCert.author_name,
+                        author_email: firstCert.author_email
                     };
 
                     sessionStorage.setItem('certificados_data', JSON.stringify({
